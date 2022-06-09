@@ -16,7 +16,7 @@ import unittest
 
 class TestModels(unittest.TestCase):
     def setUp(self):
-        self.model_features= hk.transform(feature_extractor)
+        self.model_features= hk.transform(my_model)
         self.rng = jax.random.PRNGKey(0)
         self.examples = jax.random.normal(self.rng,(1,84,84,4))
         self.model_features_params = self.model_features.init(self.rng, self.examples)
@@ -57,21 +57,33 @@ class TestModels(unittest.TestCase):
             status =0
         self.assertEqual(status,1)
     def test_PPO_model_output(self):
-        #env = environment_setup()
+        env = environment_setup()
         model = PPO(
             CnnPolicy,env,verbose=3,gamma=0.95, 
-            n_steps=32,ent_coef=0.0905168,learning_rate=0.00062211, 
+            n_steps=16,ent_coef=0.0905168,learning_rate=0.00062211, 
             vf_coef=0.042202,max_grad_norm=0.9,gae_lambda=0.99, 
-            n_epochs=2,clip_range=0.3,batch_size=4
+            n_epochs=2,clip_range=0.3,batch_size=16
         )
         root= Path(__file__).resolve().parent.parent
         _path = os.path.join(root,'pkls/models/policy_test')
-        #model.learn(total_timesteps=5)
+        model.learn(total_timesteps=5000)
         try: 
-            #model.save(_path)
-            status = 1
+            model.save(_path)
         except:
             status = 0
+        else:
+            status=1
+        # load environemnt examples
+        env_examples = jax.random.normal(self.rng,(32,84,84,4))
+        tensor_examples= np.array(env_examples)
+        #
+        root= Path(__file__).resolve().parent.parent
+        _path = os.path.join(root,'pkls/models/policy_test')
+        model = PPO.load(_path)
+        model_predictions= model.predict(tensor_examples)
+        #
+        self.assertEqual(type(model_predictions[0]),np.ndarray)
+        self.assertEqual(type(model_predictions[1]),type(None))
         self.assertEqual(status,1)
     def test_model_comparison(self):
         root= Path(__file__).resolve().parent.parent
@@ -87,8 +99,6 @@ class TestModels(unittest.TestCase):
             lambda x: x.shape, 
             self.model_features_params
         )
-        print(pytorch_model,'\n \n')
-        print(haiku_model,'\n \n')
         self.assertEqual(len(pytorch_model),len(haiku_model)*2 - 1)
 
     def test_parameter_transfer_functionality(self):
@@ -97,16 +107,14 @@ class TestModels(unittest.TestCase):
         model = PPO.load(_path)
         trained_params = model.get_parameters()
         #
-        try: 
-            transferred_params = transfer_params(trained_params['policy'], self.model_features_params)
-            transferred_shapes = jax.tree_map(lambda x,y: x.shape, transferred_params,self.model_features_params)
-            transferred_forward = self.model_features.apply(transferred_params,self.rng,self.examples)
-            self.assertEqual(transferred_forward[0].shape,(1,1))
-            self.assertEqual(transferred_forward[1].shape,(1,1))
-            status = 1
-        except:
-            status = 0
-        self.assertEqual(status,1)
+        example_params = self.model_features_params.copy()
+        transferred_params = transfer_params(trained_params['policy'], example_params)
+        transferred_shapes = jax.tree_map(lambda x,y: x.shape, transferred_params,self.model_features_params)
+        transferred_forward = self.model_features.apply(transferred_params,self.rng,self.examples)
+        self.assertEqual(type(transferred_forward[0]),type(jnp.array([1])))
+        self.assertEqual(type(transferred_forward[1]),type(jnp.array([1])))
+        self.assertEqual(transferred_forward[0].shape,(1,1))
+        self.assertEqual(transferred_forward[1].shape,(1,1))
     def test_transfer_trained_output_comparison(self):
         root= Path(__file__).resolve().parent.parent
         _path = os.path.join(root,'pkls/models/policy_test')
@@ -118,13 +126,11 @@ class TestModels(unittest.TestCase):
         env_examples = jax.random.normal(self.rng,(32,84,84,4))
         tensor_examples= np.array(env_examples)
         # get both model predictions
-        model_predictions= model.predict(tensor_examples)
+        model_predictions= model.predict(tensor_examples, deterministic=True)
         transferred_predictions = self.model_features.apply(transferred_params,self.rng,env_examples)
         #
-        self.assertEqual(type(model_predictions[0]),np.ndarray)
-        self.assertEqual(type(model_predictions[1]),np.ndarray)
-        self.assertEqual(type(transferred_predictions[0]),type(jnp.array([1])))
-        self.assertEqual(type(transferred_predictions[1]),type(jnp.array([1])))
+        print(model_predictions, '\n \n')
+        print(transferred_predictions, '\n \n')
         self.assertEqual(model_predictions[0][0], transferred_predictions[0][0])
 
 if __name__ == '__main__':

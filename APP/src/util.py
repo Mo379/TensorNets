@@ -17,15 +17,6 @@ import numpy as np
 #    nn.ReLU(),
 #    nn.Flatten(),
 #}
-class log_std(hk.Module):
-
-  def __init__(self, name=None):
-    super().__init__(name=name)
-
-  def __call__(self, x):
-    w = hk.get_parameter("constant", shape=(1,), dtype=x.dtype, init=jnp.ones)
-    x = x*w
-    return x
 # Feature extractor CNN 
 def feature_extractor(x):
   x = x/255
@@ -67,30 +58,73 @@ def feature_extractor(x):
       b_init=None, 
       name='NatureCNN_l4'
   )(x)
+  return x
+def policy_net(x):
   policy_out = hk.nets.MLP([1], name='policy_net')(x)
-  policy_out = log_std(name='log_std')(policy_out)
-  value_out = hk.nets.MLP([1], name='value_net')(x)
-  return policy_out,value_out
+  return policy_out
+def value_net(x):
+    value_out = hk.nets.MLP([1], name='value_net')(x)
+    return value_out
+
+def Normal(rng,mean, sd):
+    def random_sample(rng=rng,mean=mean,sd=sd):
+        x = mean + sd * jax.random.normal(rng, (1,))
+        return x
+    def log_prob(x,rng=rng,mean=mean,sd=sd):
+        var = (sd ** 2)
+        log_sd = jnp.log(sd) 
+        return -((x - mean) ** 2) / (2 * var) - log_sd - jnp.log(jnp.sqrt(2 * jnp.pi))
+    return random_sample, log_prob
+def my_model(x):
+    features = feature_extractor(x)
+    #
+    values = value_net(features)
+    action_mean = policy_net(features)
+    #
+    actions, log_prob = log_std(name='log_std')(action_mean)
+    #
+    return actions,values,log_prob
+
+class log_std(hk.Module):
+
+  def __init__(self, name=None):
+    super().__init__(name=name)
+
+  def __call__(self, action_mean):
+    log_std = hk.get_parameter("constant", shape=(1,), dtype=action_mean.dtype, init=jnp.ones)
+    key = hk.next_rng_key()
+    get_actions, get_log_prob = Normal(key, action_mean, log_std)
+    #
+    actions = get_actions()
+    log_prob = get_log_prob(actions)
+    return actions, log_prob
+
+
+
+
+
 
 
 
 
 
 def transfer_params(trained_params, model_params):
-  trained_keys =  list(trained_params.keys())[1:]
-  trained_keys = [trained_keys[i:i+2] for i in range(0, len(trained_keys), 2)]
-  model_keys = list(model_params.keys())
   transferred_dict = {}
-
   #log_std layer
-  trained_log_std = list(trained_params.keys())[0]
+  trained_log_std = 'log_std'
   log_std_constant = trained_params[trained_log_std].numpy()
-  transferred_dict.update({ model_keys[0]: {
+  transferred_dict.update({ 'log_std': {
           'constant': log_std_constant
       } 
   })
+
   #reset of the network
-  for trained_keys, my_keys in zip(trained_keys,model_keys[1:]):
+  trained_params.pop('log_std')
+  trained_keys =  list(trained_params.keys())
+  trained_keys = [trained_keys[i:i+2] for i in range(0, len(trained_keys), 2)]
+  model_params.pop('log_std')
+  model_keys = list(model_params.keys())
+  for trained_keys, my_keys in zip(trained_keys,model_keys):
     #get layer params
     weights = trained_params[trained_keys[0]].numpy().T
     bias = trained_params[trained_keys[1]].numpy()
