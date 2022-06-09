@@ -23,7 +23,7 @@ fastjsonschema==2.15.3
 flatbuffers==2.0
 fonttools==4.33.3
 graphviz==0.20
-gym==0.24.0
+gym
 gym-notices==0.0.6
 idna==3.3
 importlib-metadata==4.11.4
@@ -85,9 +85,9 @@ scipy==1.8.1
 Send2Trash==1.8.0
 six==1.16.0
 soupsieve==2.3.2.post1
-stable-baselines3==1.5.0
+stable-baselines3
 stack-data==0.2.0
-SuperSuit==3.4.0
+SuperSuit
 tabulate==0.8.9
 terminado==0.15.0
 tinycss2==1.1.1
