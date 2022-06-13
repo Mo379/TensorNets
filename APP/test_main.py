@@ -26,6 +26,7 @@ class TestModels(unittest.TestCase):
         self.assertEqual(type(output),tuple)
         self.assertEqual(output[0].shape,(1,1))
         self.assertEqual(output[1].shape,(1,1))
+        self.assertEqual(output[2].shape,(1,1))
     def test_model_structure(self):
         layer_names = [
                 'log_std',

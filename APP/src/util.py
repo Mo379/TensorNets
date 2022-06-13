@@ -8,15 +8,6 @@ import jax
 import jax.numpy as jnp 
 import numpy as np
 
-#self.cnn = nn.Sequential(
-#    nn.Conv2d(n_input_channels, 32, kernel_size=8, stride=4, padding=0),
-#    nn.ReLU(),
-#    nn.Conv2d(32, 64, kernel_size=4, stride=2, padding=0),
-#    nn.ReLU(),
-#    nn.Conv2d(64, 64, kernel_size=3, stride=1, padding=0),
-#    nn.ReLU(),
-#    nn.Flatten(),
-#}
 # Feature extractor CNN 
 def feature_extractor(x):
   x = x/255
@@ -65,7 +56,6 @@ def policy_net(x):
 def value_net(x):
     value_out = hk.nets.MLP([1], name='value_net')(x)
     return value_out
-
 def Normal(rng,mean, sd):
     def random_sample(rng=rng,mean=mean,sd=sd):
         x = mean + sd * jax.random.normal(rng, (1,))
@@ -85,11 +75,22 @@ def my_model(x):
     #
     return actions,values,log_prob
 
-class log_std(hk.Module):
+def my_TN_model(x):
+    features = feature_extractor(x)
+    pass
 
+class TN_layer(hk.Module):
   def __init__(self, name=None):
     super().__init__(name=name)
+  def __call__(self, x):
+    return x
 
+
+
+
+class log_std(hk.Module):
+  def __init__(self, name=None):
+    super().__init__(name=name)
   def __call__(self, action_mean):
     log_std = hk.get_parameter("constant", shape=(1,), dtype=action_mean.dtype, init=jnp.ones)
     key = hk.next_rng_key()
