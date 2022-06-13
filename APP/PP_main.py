@@ -25,16 +25,16 @@ max_grad_norm=0.9
 gae_lambda=0.99 
 clip_range=0.3
 
-n_epochs=5
+n_epochs=10
 n_steps=256
 batch_size=256
-total_timesteps=2000000
+total_timesteps=3000000
 
 
-n_epochs=10
-n_steps=8
-batch_size=8
-total_timesteps=10000
+#n_epochs=10
+#n_steps=8
+#batch_size=8
+#total_timesteps=10000
 if __name__ == '__main__':
     if track == 1:
         print('----Tracking----')
