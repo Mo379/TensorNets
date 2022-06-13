@@ -25,10 +25,10 @@ max_grad_norm=0.9
 gae_lambda=0.99 
 clip_range=0.3
 
-n_epochs=10
-n_steps=256
-batch_size=256
-total_timesteps=3000000
+n_epochs=15
+n_steps=512
+batch_size=512
+total_timesteps=4000000
 
 
 #n_epochs=10
@@ -38,9 +38,10 @@ total_timesteps=3000000
 if __name__ == '__main__':
     if track == 1:
         print('----Tracking----')
+        run_name=f"Training-PPO-SB-{int(time.time())}" 
         run = wandb.init(
             project="TensorNets",
-            name='Training-PPO-SB', 
+            name = run_name,
             entity="mo379",
             sync_tensorboard=True,  # auto-upload sb3's tensorboard metrics
             monitor_gym=True,  # auto-upload the videos of agents playing the game
