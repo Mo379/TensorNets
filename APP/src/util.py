@@ -140,7 +140,7 @@ def transfer_params(trained_params, model_params):
 def environment_setup():
     env = pistonball_v6.parallel_env(
         n_pistons=30,
-        time_penalty=-1,
+        time_penalty=-0.1,
         continuous=True,
         random_drop=True,
         random_rotate=True,
@@ -155,8 +155,8 @@ def environment_setup():
     env = ss.pettingzoo_env_to_vec_env_v1(env)
     env = ss.concat_vec_envs_v1(
         env, 
-        4, 
-        num_cpus=2, 
+        16, 
+        num_cpus=8, 
         base_class='stable_baselines3'
     )
     return env
