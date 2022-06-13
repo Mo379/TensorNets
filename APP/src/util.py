@@ -147,7 +147,7 @@ def environment_setup():
         ball_mass=0.75,
         ball_friction=0.3,
         ball_elasticity=1.5,
-        max_cycles=125
+        max_cycles=200
     )
     env = ss.color_reduction_v0(env, mode='B')
     env = ss.resize_v1(env, x_size=84,y_size=84)
@@ -155,8 +155,8 @@ def environment_setup():
     env = ss.pettingzoo_env_to_vec_env_v1(env)
     env = ss.concat_vec_envs_v1(
         env, 
-        16, 
-        num_cpus=8, 
+        10, 
+        num_cpus=10, 
         base_class='stable_baselines3'
     )
     return env

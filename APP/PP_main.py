@@ -25,10 +25,10 @@ max_grad_norm=0.9
 gae_lambda=0.99 
 clip_range=0.3
 
-n_epochs=15
-n_steps=512
-batch_size=512
-total_timesteps=4000000
+n_epochs=20
+n_steps=256
+batch_size=256
+total_timesteps=5000000
 
 
 #n_epochs=10
@@ -51,7 +51,7 @@ if __name__ == '__main__':
     env = Monitor(env)
     env = VecVideoRecorder(
             env, f"videos/{run.id}", 
-            record_video_trigger=lambda x: x % 2000 == 0, video_length=200
+            record_video_trigger=lambda x: x % 1000 == 0, video_length=100
         )
 
     model = PPO(
@@ -64,7 +64,7 @@ if __name__ == '__main__':
     _path = os.path.join(root,'pkls/models/policy')
     if track ==1:
         model.learn(total_timesteps=total_timesteps, callback=WandbCallback(
-                gradient_save_freq=100,
+                gradient_save_freq=50,
                 model_save_path=f"models/{run.id}",
                 verbose=2,
             ))
