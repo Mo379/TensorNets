@@ -140,14 +140,14 @@ def transfer_params(trained_params, model_params):
 def environment_setup():
     env = pistonball_v6.parallel_env(
         n_pistons=20,
-        time_penalty=-0.2,
+        time_penalty=-0.3,
         continuous=True,
         random_drop=True,
         random_rotate=True,
         ball_mass=0.75,
         ball_friction=0.3,
         ball_elasticity=1.5,
-        max_cycles=400
+        max_cycles=200
     )
     env = ss.color_reduction_v0(env, mode='B')
     env = ss.resize_v1(env, x_size=84,y_size=84)
