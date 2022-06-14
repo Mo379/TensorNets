@@ -17,18 +17,18 @@ from wandb.integration.sb3 import WandbCallback
 track =1
 #hyper params
 verbose=3
-gamma=0.95 
+gamma=0.95
 ent_coef=0.0905168
-learning_rate=0.00062211 
+learning_rate=0.00032211
 vf_coef=0.042202
 max_grad_norm=0.9
 gae_lambda=0.99 
 clip_range=0.3
 
-n_epochs=5
+n_epochs=10
 n_steps=256
 batch_size=256
-total_timesteps=3000000
+total_timesteps=10000000
 
 
 #n_epochs=10

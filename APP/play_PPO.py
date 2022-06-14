@@ -50,7 +50,7 @@ if __name__ == '__main__':
     #
     for reward in rewards:
         wandb.log({"rewards": reward})
-    imageio.mimsave('play_videos/0.gif', [np.array(img) for i, img in enumerate(imgs) if i%30 == 0], fps=30)
+    imageio.mimsave('play_videos/0.gif', [np.array(img) for i, img in enumerate(imgs) if i%20 == 0], fps=30)
     wandb.log({"video": wandb.Video('play_videos/0.gif',fps=30,format='gif')})
     run.finish()
 
