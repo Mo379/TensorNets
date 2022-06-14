@@ -25,10 +25,10 @@ max_grad_norm=0.9
 gae_lambda=0.99 
 clip_range=0.3
 
-n_epochs=20
+n_epochs=5
 n_steps=256
 batch_size=256
-total_timesteps=5000000
+total_timesteps=3000000
 
 
 #n_epochs=10
