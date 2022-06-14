@@ -38,10 +38,9 @@ total_timesteps=5000000
 if __name__ == '__main__':
     if track == 1:
         print('----Tracking----')
-        run_name=f"Training-PPO-SB-{int(time.time())}" 
         run = wandb.init(
             project="TensorNets",
-            name = run_name,
+            name = "Training-PPO-SB",
             entity="mo379",
             sync_tensorboard=True,  # auto-upload sb3's tensorboard metrics
             monitor_gym=True,  # auto-upload the videos of agents playing the game
@@ -51,7 +50,7 @@ if __name__ == '__main__':
     env = Monitor(env)
     env = VecVideoRecorder(
             env, f"videos/{run.id}", 
-            record_video_trigger=lambda x: x % 1000 == 0, video_length=100
+            record_video_trigger=lambda x: x % 1000 == 0, video_length=250
         )
 
     model = PPO(
@@ -72,3 +71,4 @@ if __name__ == '__main__':
     else:
         model.learn(total_timesteps=total_timesteps)
         model.save(_path)
+    exit()
