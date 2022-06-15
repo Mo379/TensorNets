@@ -1,7 +1,7 @@
 import os
 from stable_baselines3.ppo import CnnPolicy
 from stable_baselines3 import PPO
-from pettingzoo.butterfly import pistonball_v6
+from pettingzoo.butterfly import pistonball_v5
 from src.util import *
 import supersuit as ss
 import haiku as hk

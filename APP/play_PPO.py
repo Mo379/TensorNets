@@ -32,7 +32,7 @@ if __name__ == '__main__':
             monitor_gym=True,  # auto-upload the videos of agents playing the game
             save_code=True,  # optional
         )
-    env = pistonball_v6.env()
+    env = pistonball_v5.env()
     env = ss.color_reduction_v0(env, mode="B")
     env = ss.resize_v1(env, x_size=84, y_size=84)
     env = ss.frame_stack_v1(env, 3)
