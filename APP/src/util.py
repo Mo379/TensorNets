@@ -1,7 +1,7 @@
 import os
 from stable_baselines3.ppo import CnnPolicy
 from stable_baselines3 import PPO
-from pettingzoo.butterfly import pistonball_v5
+from pettingzoo.butterfly import pistonball_v6
 import supersuit as ss
 import haiku as hk
 import jax
@@ -154,7 +154,7 @@ def transfer_params(trained_params, model_params):
 
 
 def environment_setup():
-    env = pistonball_v5.parallel_env(
+    env = pistonball_v6.parallel_env(
         n_pistons=20,
         time_penalty=-0.1,
         continuous=True,
