@@ -15,7 +15,7 @@ import imageio
 from src.util import *
 
 root= Path(__file__).resolve().parent.parent
-_path = os.path.join(root,'pkls/models/policy')
+_path = os.path.join(root,'pkls/models/model')
 model = PPO.load(_path)
 
 track =1
@@ -35,24 +35,25 @@ if __name__ == '__main__':
     env = pistonball_v6.env()
     env = ss.color_reduction_v0(env, mode="B")
     env = ss.resize_v1(env, x_size=84, y_size=84)
-    env = ss.frame_stack_v1(env, 4)
+    env = ss.frame_stack_v1(env, 3)
     env.reset()
     imgs = []
     rewards = []
     for agent in env.agent_iter():
         obs, reward, done, info = env.last()
-        act = model.predict(obs, deterministic=True)[0] if not done else None
+        act = model.predict(obs, deterministic=False)[0] if not done else None
         env.step(act)
         img = env.render(mode='rgb_array')
         imgs.append(img)
         rewards.append(reward)
     env.reset()
     #
-    for reward in rewards:
-        wandb.log({"rewards": reward})
-    imageio.mimsave('play_videos/0.gif', [np.array(img) for i, img in enumerate(imgs) if i%20 == 0], fps=30)
-    wandb.log({"video": wandb.Video('play_videos/0.gif',fps=30,format='gif')})
-    run.finish()
+    if track == 1:
+        for reward in rewards:
+            wandb.log({"rewards": reward})
+        imageio.mimsave('play_videos/0.gif', [pic for i, pic in enumerate(imgs) if i%20 == 0], fps=24)
+        wandb.log({"video": wandb.Video('play_videos/0.gif',fps=24,format='gif')})
+        run.finish()
 
 
 

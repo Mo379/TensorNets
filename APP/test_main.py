@@ -18,7 +18,7 @@ class TestModels(unittest.TestCase):
     def setUp(self):
         self.model_features= hk.transform(my_model)
         self.rng = jax.random.PRNGKey(0)
-        self.examples = jax.random.normal(self.rng,(1,84,84,4))
+        self.examples = jax.random.normal(self.rng,(1,84,84,3))
         self.model_features_params = self.model_features.init(self.rng, self.examples)
     #
     def test_model_apply_ouput(self):
@@ -48,7 +48,7 @@ class TestModels(unittest.TestCase):
             output_shape = i.output_spec
         self.assertEqual(len(set(names) & set(layer_names)), len(names))
     def test_model_visualisation(self):
-        batch_input = jax.random.normal(self.rng,(32,84,84,4))
+        batch_input = jax.random.normal(self.rng,(32,84,84,3))
         dot = hk.experimental.to_dot(self.model_features.apply)(
                 self.model_features_params,self.rng,batch_input)
         try:
@@ -75,7 +75,7 @@ class TestModels(unittest.TestCase):
         else:
             status=1
         # load environemnt examples
-        env_examples = jax.random.normal(self.rng,(32,84,84,4))
+        env_examples = jax.random.normal(self.rng,(32,84,84,3))
         tensor_examples= np.array(env_examples)
         #
         root= Path(__file__).resolve().parent.parent
@@ -118,17 +118,17 @@ class TestModels(unittest.TestCase):
         self.assertEqual(transferred_forward[1].shape,(1,1))
     def test_transfer_trained_output_comparison(self):
         root= Path(__file__).resolve().parent.parent
-        _path = os.path.join(root,'pkls/models/policy_test')
+        _path = os.path.join(root,'pkls/models/model')
         model = PPO.load(_path)
         trained_params = model.get_parameters()
         #execute parameter transfer
         transferred_params = transfer_params(trained_params['policy'], self.model_features_params)
         # load environemnt examples
-        env_examples = jax.random.normal(self.rng,(32,84,84,4))
+        env_examples = jax.random.normal(self.rng,(32,84,84,3))
         tensor_examples= np.array(env_examples)
         # get both model predictions
-        model_predictions= model.predict(tensor_examples, deterministic=True)
-        transferred_predictions = self.model_features.apply(transferred_params,self.rng,env_examples)
+        model_predictions= model.predict(tensor_examples, deterministic=False)
+        transferred_predictions,_,_= self.model_features.apply(transferred_params,self.rng,env_examples)
         #
         print(model_predictions, '\n \n')
         print(transferred_predictions, '\n \n')

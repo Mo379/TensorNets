@@ -49,6 +49,7 @@ def feature_extractor(x):
       b_init=None, 
       name='NatureCNN_l4'
   )(x)
+  x = jax.nn.relu(x)
   return x
 def policy_net(x):
   policy_out = hk.nets.MLP([1], name='policy_net')(x)
@@ -56,15 +57,6 @@ def policy_net(x):
 def value_net(x):
     value_out = hk.nets.MLP([1], name='value_net')(x)
     return value_out
-def Normal(rng,mean, sd):
-    def random_sample(rng=rng,mean=mean,sd=sd):
-        x = mean + sd * jax.random.normal(rng, (1,))
-        return x
-    def log_prob(x,rng=rng,mean=mean,sd=sd):
-        var = (sd ** 2)
-        log_sd = jnp.log(sd) 
-        return -((x - mean) ** 2) / (2 * var) - log_sd - jnp.log(jnp.sqrt(2 * jnp.pi))
-    return random_sample, log_prob
 def my_model(x):
     features = feature_extractor(x)
     #
@@ -74,6 +66,34 @@ def my_model(x):
     actions, log_prob = log_std(name='log_std')(action_mean)
     #
     return actions,values,log_prob
+class log_std(hk.Module):
+  def __init__(self, name=None):
+    super().__init__(name=name)
+  def __call__(self, action_mean):
+    log_std = hk.get_parameter("constant", shape=(1,), dtype=action_mean.dtype, init=jnp.ones)
+    key = hk.next_rng_key()
+    get_actions, get_log_prob = Normal(key, action_mean, log_std)
+    #
+    actions = get_actions()
+    log_prob = get_log_prob(actions)
+    return actions, log_prob
+def Normal(rng,mean, sd):
+    def random_sample(rng=rng,mean=mean,sd=sd):
+        x = mean + sd * jax.random.normal(rng, (1,))
+        return x
+    def log_prob(x,rng=rng,mean=mean,sd=sd):
+        var = (sd ** 2)
+        log_sd = jnp.log(sd) 
+        return -((x - mean) ** 2) / (2 * var) - log_sd - jnp.log(jnp.sqrt(2 * jnp.pi))
+    return random_sample, log_prob
+
+
+
+
+
+
+
+
 
 def my_TN_model(x):
     features = feature_extractor(x)
@@ -86,19 +106,6 @@ class TN_layer(hk.Module):
     return x
 
 
-
-
-class log_std(hk.Module):
-  def __init__(self, name=None):
-    super().__init__(name=name)
-  def __call__(self, action_mean):
-    log_std = hk.get_parameter("constant", shape=(1,), dtype=action_mean.dtype, init=jnp.ones)
-    key = hk.next_rng_key()
-    get_actions, get_log_prob = Normal(key, action_mean, log_std)
-    #
-    actions = get_actions()
-    log_prob = get_log_prob(actions)
-    return actions, log_prob
 
 
 
@@ -136,6 +143,15 @@ def transfer_params(trained_params, model_params):
       } 
     })
   return transferred_dict
+
+
+
+
+
+
+
+
+
 
 def environment_setup():
     env = pistonball_v6.parallel_env(

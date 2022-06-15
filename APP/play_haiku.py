@@ -19,11 +19,11 @@ from src.util import *
 # Initialising the feature extractor
 model_features= hk.transform(my_model)
 rng = jax.random.PRNGKey(0)
-examples = jax.random.normal(rng,(1,84,84,4))
+examples = jax.random.normal(rng,(1,84,84,3))
 model_features_params = model_features.init(rng, examples)
 # Transfer parameters from the saved model
 root= Path(__file__).resolve().parent.parent
-_path = os.path.join(root,'pkls/models/policy')
+_path = os.path.join(root,'pkls/models/model')
 model = PPO.load(_path)
 trained_params = model.get_parameters()
 transferred_params = transfer_params(trained_params['policy'], model_features_params)
@@ -38,7 +38,7 @@ with open(_path_pkl, 'wb') as f:  # Python 3: open(..., 'wb')
 # making haiku model
 model= hk.transform(my_model)
 rng = jax.random.PRNGKey(0)
-examples = jax.random.normal(rng,(1,84,84,4))
+examples = jax.random.normal(rng,(1,84,84,3))
 #Loading haiku params
 root= Path(__file__).resolve().parent.parent
 file = open(_path_pkl, 'rb')
@@ -64,7 +64,7 @@ if __name__ == '__main__':
     env = pistonball_v6.env()
     env = ss.color_reduction_v0(env,mode='B')
     env = ss.resize_v1(env, x_size=84,y_size=84)
-    env = ss.frame_stack_v1(env, 4)
+    env = ss.frame_stack_v1(env, 3)
     env.reset()
 
     imgs = []
