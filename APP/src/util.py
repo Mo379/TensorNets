@@ -72,7 +72,7 @@ class log_std(hk.Module):
     self.deterministic=deterministic
     self.rng = hk.PRNGSequence(0)
   def __call__(self, action_mean):
-    log_std = hk.get_parameter("constant", shape=(1,), dtype=action_mean.dtype, init=initializer)
+    log_std = hk.get_parameter("constant", shape=(1,), dtype=action_mean.dtype, init=jnp.ones)
     key = next(self.rng)
     get_actions, get_log_prob = Normal(key, action_mean, log_std, sample_maxima=self.deterministic)
     #
