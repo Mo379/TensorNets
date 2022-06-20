@@ -279,7 +279,7 @@ class my_Trainer:
         for step in range(1, self.num_agent_steps + 1):
             state = self.algo.step(self.env, state)
 
-            if self.algo.is_update():
+            if self.algo.is_update(state.shape[0]):
                 print('learning')
                 self.algo.update(self.writer)
 
