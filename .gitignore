@@ -7,3 +7,4 @@ APP/wandb/**
 APP/runs/**
 APP/models/**
 APP/output/**
+APP/logs/**

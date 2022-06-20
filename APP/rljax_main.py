@@ -62,14 +62,14 @@ def run(args):
 if __name__ == "__main__":
     p = argparse.ArgumentParser()
     p.add_argument("--env_id", type=str, default="PistonBallv6")
-    p.add_argument("--num_agent_steps", type=int, default=3000000)#3 * 10 ** 6)
-    p.add_argument("--eval_interval", type=int, default=300000)
+    p.add_argument("--num_agent_steps", type=int, default=1000)#3 * 10 ** 6)
+    p.add_argument("--eval_interval", type=int, default=100)
     p.add_argument("--seed", type=int, default=0)
     #
     p.add_argument("--max_grad_norm", type=float, default=0.9)
     p.add_argument("--gamma", type=float, default=0.95)
-    p.add_argument("--buffer_size", type=int, default=2048)
-    p.add_argument("--batch_size", type=int, default=32)
+    p.add_argument("--buffer_size", type=int, default=1000)
+    p.add_argument("--batch_size", type=int, default=10)
     p.add_argument("--lr_actor", type=float, default=0.0006)
     p.add_argument("--lr_critic", type=float, default=0.0006)
     p.add_argument("--epochs", type=int, default=5)

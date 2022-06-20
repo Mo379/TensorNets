@@ -11,3 +11,5 @@ pettingzoo
 supersuit
 pygame
 pymunk
+wandb
+imageio
