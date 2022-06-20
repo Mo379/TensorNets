@@ -46,7 +46,10 @@ root= Path(__file__).resolve().parent.parent
 file = open(_path_pkl, 'rb')
 #params = pickle.load(file)
 params = load_params(j_path)
+print(params)
 params = load_params(k_path)
+print(params)
+exit()
 file.close()
 #
 

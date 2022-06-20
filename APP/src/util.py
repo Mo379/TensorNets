@@ -67,7 +67,7 @@ def value_net(x):
     value_out = hk.nets.MLP([1], name='value_net')(x)
     return value_out
 class log_std(hk.Module):
-  def __init__(self, deterministic=False, name=None):
+  def __init__(self, deterministic=True, name=None):
     super().__init__(name=name)
     self.deterministic=deterministic
     self.rng = hk.PRNGSequence(0)
