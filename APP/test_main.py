@@ -43,9 +43,11 @@ class TestModels(unittest.TestCase):
         names = []
         for i in hk.experimental.eval_summary(self.model_features)(self.examples):
             #mod := NatureCNN_l1   | in := f32[1,84,84,4] out := f32[1,20,20,32]
-            names.append(i.module_details.module.module_name)
+            name = i.module_details.module.module_name
             input_shape = i.args_spec[0]
             output_shape = i.output_spec
+            names.append(name)
+            print(name,input_shape,output_shape,'\n')
         self.assertEqual(len(set(names) & set(layer_names)), len(names))
     def test_model_visualisation(self):
         batch_input = jax.random.normal(self.rng,(32,84,84,3))
@@ -127,12 +129,13 @@ class TestModels(unittest.TestCase):
         env_examples = jax.random.normal(self.rng,(32,84,84,3))
         tensor_examples= np.array(env_examples)
         # get both model predictions
-        model_predictions= model.predict(tensor_examples, deterministic=False)
-        transferred_predictions,_,_= self.model_features.apply(transferred_params,self.rng,env_examples)
+        model_predictions= model.predict(tensor_examples, deterministic=True)
+        transferred_predictions,a,b= self.model_features.apply(transferred_params,self.rng,env_examples)
         #
-        print(model_predictions, '\n \n')
-        print(transferred_predictions, '\n \n')
+        if (model_predictions[0]== transferred_predictions).all():
+            equal = 1
         self.assertEqual(model_predictions[0][0], transferred_predictions[0][0])
+        self.assertEqual(equal, 1)
 
 if __name__ == '__main__':
     unittest.main()

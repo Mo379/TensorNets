@@ -19,18 +19,15 @@ from src.util import *
 # Initialising the feature extractor
 model_features= hk.transform(my_model)
 rng = jax.random.PRNGKey(0)
-examples = jax.random.normal(rng,(1,84,84,4))
-model_features_params = model_features.init(rng, examples)
-# Transfer parameters from the saved model
+examples = jax.random.normal(rng,(1,84,84,3))
+params = model_features.init(rng, examples)
+
+
 
 # making haiku model
 model= hk.transform(my_model)
 rng = jax.random.PRNGKey(0)
-examples = jax.random.normal(rng,(1,84,84,4))
-#Loading haiku params
-params = model.init(rng,examples)
-#
-
+examples = jax.random.normal(rng,(1,84,84,3))
 
 track =1
 
@@ -49,7 +46,7 @@ if __name__ == '__main__':
     env = pistonball_v6.env()
     env = ss.color_reduction_v0(env,mode='B')
     env = ss.resize_v1(env, x_size=84,y_size=84)
-    env = ss.frame_stack_v1(env, 4)
+    env = ss.frame_stack_v1(env, 3)
     env.reset()
 
     imgs = []
@@ -57,7 +54,7 @@ if __name__ == '__main__':
     for agent in env.agent_iter():
         obs, reward, done, info = env.last()
         obs = obs.reshape((1,) + obs.shape)
-        act= model.apply(params,rng,obs)[0][0] if not done else None
+        act = model.apply(params,rng,obs)[0][0] if not done else None
         env.step(act)
         img = env.render(mode='rgb_array')
         imgs.append(img)
@@ -66,7 +63,7 @@ if __name__ == '__main__':
     #
     for reward in rewards:
         wandb.log({"rewards": reward})
-    imageio.mimsave('play_videos/0.gif', [np.array(img) for i, img in enumerate(imgs) if i%30 == 0], fps=30)
-    wandb.log({"video": wandb.Video('play_videos/0.gif',fps=30,format='gif')})
+    imageio.mimsave('play_videos/0.gif', [np.array(img) for i, img in enumerate(imgs) if i%20 == 0], fps=15)
+    wandb.log({"video": wandb.Video('play_videos/0.gif',fps=15,format='gif')})
 
     run.finish()

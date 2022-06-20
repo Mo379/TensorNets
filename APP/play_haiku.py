@@ -13,6 +13,7 @@ from stable_baselines3.common.vec_env import DummyVecEnv, VecVideoRecorder
 from stable_baselines3.common.monitor import Monitor
 from pettingzoo.utils import random_demo
 import imageio
+from rljax.util import load_params
 from src.util import *
 
 
@@ -24,6 +25,8 @@ model_features_params = model_features.init(rng, examples)
 # Transfer parameters from the saved model
 root= Path(__file__).resolve().parent.parent
 _path = os.path.join(root,'pkls/models/model')
+j_path = os.path.join(root,'pkls/models/params_actor.npz')
+k_path = os.path.join(root,'pkls/models/params_actor2.npz')
 model = PPO.load(_path)
 trained_params = model.get_parameters()
 transferred_params = transfer_params(trained_params['policy'], model_features_params)
@@ -31,18 +34,19 @@ transferred_params = transfer_params(trained_params['policy'], model_features_pa
 
 _path_pkl = os.path.join(root,'pkls/models/haiku_transfer.pkl')
 # Saving the objects:
-print(_path_pkl, type(_path_pkl))
 with open(_path_pkl, 'wb') as f:  # Python 3: open(..., 'wb')
     pickle.dump(transferred_params, f)
 
 # making haiku model
-model= hk.transform(my_model)
+model= hk.transform(my_actor)
 rng = jax.random.PRNGKey(0)
 examples = jax.random.normal(rng,(1,84,84,3))
 #Loading haiku params
 root= Path(__file__).resolve().parent.parent
 file = open(_path_pkl, 'rb')
-params = pickle.load(file)
+#params = pickle.load(file)
+params = load_params(j_path)
+params = load_params(k_path)
 file.close()
 #
 
@@ -61,7 +65,7 @@ if __name__ == '__main__':
             monitor_gym=True,  # auto-upload the videos of agents playing the game
             save_code=True,  # optional
         )
-    env = pistonball_v6.env()
+    env = pistonball_v6.env(n_pistons=20)
     env = ss.color_reduction_v0(env,mode='B')
     env = ss.resize_v1(env, x_size=84,y_size=84)
     env = ss.frame_stack_v1(env, 3)
@@ -72,16 +76,18 @@ if __name__ == '__main__':
     for agent in env.agent_iter():
         obs, reward, done, info = env.last()
         obs = obs.reshape((1,) + obs.shape)
-        act= model.apply(params,rng,obs)[0][0] if not done else None
+        act = model.apply(params,rng,obs)[0][0] if not done else None
+        act = np.array(act)
         env.step(act)
         img = env.render(mode='rgb_array')
         imgs.append(img)
         rewards.append(reward)
     env.reset()
     #
-    for reward in rewards:
-        wandb.log({"rewards": reward})
-    imageio.mimsave('play_videos/0.gif', [np.array(img) for i, img in enumerate(imgs) if i%20 == 0], fps=10)
-    wandb.log({"video": wandb.Video('play_videos/0.gif',fps=30,format='gif')})
+    if track == 1:
+        for reward in rewards:
+            wandb.log({"rewards": reward})
+        imageio.mimsave('play_videos/0.gif', [np.array(img) for i, img in enumerate(imgs) if i%20 == 0], fps=15)
+        wandb.log({"video": wandb.Video('play_videos/0.gif',fps=15,format='gif')})
 
-    run.finish()
+        run.finish()

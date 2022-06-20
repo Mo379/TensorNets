@@ -13,23 +13,18 @@ stylesheet = <
   .node text {
     font-size: 12px;
   }
-%23node58217097440:hover { stroke-width: 0.2em; }
-%23node58217097440:hover ~ %23node58217097441 { stroke-width: 0.2em; }
-%23node58217097441:hover ~ %23node58217097440 { stroke-width: 0.2em; }
-%23node58217097441:hover { stroke-width: 0.2em; }
-%23node58225356000:hover { stroke-width: 0.2em; }
-%23node58225356000:hover ~ %23node58225356001 { stroke-width: 0.2em; }
-%23node58225356000:hover ~ %23node58225356002 { stroke-width: 0.2em; }
-%23node58225356001:hover ~ %23node58225356000 { stroke-width: 0.2em; }
-%23node58225356001:hover { stroke-width: 0.2em; }
-%23node58225356001:hover ~ %23node58225356002 { stroke-width: 0.2em; }
-%23node58225356002:hover ~ %23node58225356000 { stroke-width: 0.2em; }
-%23node58225356002:hover ~ %23node58225356001 { stroke-width: 0.2em; }
-%23node58225356002:hover { stroke-width: 0.2em; }
+%23node57427459040:hover { stroke-width: 0.2em; }
+%23node57427459040:hover ~ %23node57427459041 { stroke-width: 0.2em; }
+%23node57427459041:hover ~ %23node57427459040 { stroke-width: 0.2em; }
+%23node57427459041:hover { stroke-width: 0.2em; }
+%23node57433770720:hover { stroke-width: 0.2em; }
+%23node57433770720:hover ~ %23node57433770721 { stroke-width: 0.2em; }
+%23node57433770721:hover ~ %23node57433770720 { stroke-width: 0.2em; }
+%23node57433770721:hover { stroke-width: 0.2em; }
 >
-5821707824 [label=<<b>convert_element_type</b><br/>f32[]>,  id="node5821707824", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-5820210608 [label=<<b>div</b><br/>f32[32,84,84,3]>,  id="node5820210608", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-subgraph cluster_5860924608 {
+5741731248 [label=<<b>convert_element_type</b><br/>f32[]>,  id="node5741731248", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+5750107184 [label=<<b>div</b><br/>f32[32,84,84,3]>,  id="node5750107184", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+subgraph cluster_5742936928 {
   style="rounded,filled";
   fillcolor="#F0F5F5";
   color="#14234B;";
@@ -37,8 +32,8 @@ subgraph cluster_5860924608 {
   fontsize=27;
   label = <<b>NatureCNN_l1 (__init__)</b>>;
   labelloc = t;
-}  // subgraph cluster_5860924608
-subgraph cluster_5860924928 {
+}  // subgraph cluster_5742936928
+subgraph cluster_5742938128 {
   style="rounded,filled";
   fillcolor="#F0F5F5";
   color="#14234B;";
@@ -46,16 +41,16 @@ subgraph cluster_5860924928 {
   fontsize=27;
   label = <<b>NatureCNN_l1</b>>;
   labelloc = t;
-5822534832 [label=<<b>conv_general_dilated</b><br/>f32[32,20,20,32]>,  id="node5822534832", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-5821708592 [label=<<b>broadcast_in_dim</b><br/>f32[32,20,20,32]>,  id="node5821708592", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-5860954160 [label=<<b>add</b><br/>f32[32,20,20,32]>,  id="node5860954160", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-}  // subgraph cluster_5860924928
-5820210608 -> 5822534832;
-58217062880 -> 5822534832;
-58202098400 -> 5821708592;
-5822534832 -> 5860954160;
-5821708592 -> 5860954160;
-subgraph cluster_5860999056 {
+5750106800 [label=<<b>conv_general_dilated</b><br/>f32[32,20,20,32]>,  id="node5750106800", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+5742744752 [label=<<b>broadcast_in_dim</b><br/>f32[32,20,20,32]>,  id="node5742744752", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+5743376688 [label=<<b>add</b><br/>f32[32,20,20,32]>,  id="node5743376688", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+}  // subgraph cluster_5742938128
+5750107184 -> 5750106800;
+57427439840 -> 5750106800;
+57427455200 -> 5742744752;
+5750106800 -> 5743376688;
+5742744752 -> 5743376688;
+subgraph cluster_5743364752 {
   style="rounded,filled";
   fillcolor="#F0F5F5";
   color="#14234B;";
@@ -63,13 +58,13 @@ subgraph cluster_5860999056 {
   fontsize=27;
   label = <<b>xla_call (relu)</b>>;
   labelloc = t;
-5821708208 [label=<<b>convert_element_type</b><br/>f32[]>,  id="node5821708208", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-5860954928 [label=<<b>max</b><br/>f32[32,20,20,32]>,  id="node5860954928", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-}  // subgraph cluster_5860999056
-4524779792 -> 5821708208;
-5860954160 -> 5860954928;
-5821708208 -> 5860954928;
-subgraph cluster_5860995216 {
+5743374384 [label=<<b>convert_element_type</b><br/>f32[]>,  id="node5743374384", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+5743374768 [label=<<b>max</b><br/>f32[32,20,20,32]>,  id="node5743374768", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+}  // subgraph cluster_5743364752
+4443203856 -> 5743374384;
+5743376688 -> 5743374768;
+5743374384 -> 5743374768;
+subgraph cluster_5750016576 {
   style="rounded,filled";
   fillcolor="#F0F5F5";
   color="#14234B;";
@@ -77,8 +72,8 @@ subgraph cluster_5860995216 {
   fontsize=27;
   label = <<b>NatureCNN_l2 (__init__)</b>>;
   labelloc = t;
-}  // subgraph cluster_5860995216
-subgraph cluster_5880166256 {
+}  // subgraph cluster_5750016576
+subgraph cluster_5743312704 {
   style="rounded,filled";
   fillcolor="#F0F5F5";
   color="#14234B;";
@@ -86,16 +81,16 @@ subgraph cluster_5880166256 {
   fontsize=27;
   label = <<b>NatureCNN_l2</b>>;
   labelloc = t;
-5860955312 [label=<<b>conv_general_dilated</b><br/>f32[32,9,9,64]>,  id="node5860955312", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-5860954544 [label=<<b>broadcast_in_dim</b><br/>f32[32,9,9,64]>,  id="node5860954544", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-5860956080 [label=<<b>add</b><br/>f32[32,9,9,64]>,  id="node5860956080", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-}  // subgraph cluster_5880166256
-5860954928 -> 5860955312;
-58202086880 -> 5860955312;
-58202083040 -> 5860954544;
-5860955312 -> 5860956080;
-5860954544 -> 5860956080;
-subgraph cluster_5861146768 {
+5743377840 [label=<<b>conv_general_dilated</b><br/>f32[32,9,9,64]>,  id="node5743377840", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+5743376304 [label=<<b>broadcast_in_dim</b><br/>f32[32,9,9,64]>,  id="node5743376304", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+5743375536 [label=<<b>add</b><br/>f32[32,9,9,64]>,  id="node5743375536", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+}  // subgraph cluster_5743312704
+5743374768 -> 5743377840;
+57427462880 -> 5743377840;
+57427436000 -> 5743376304;
+5743377840 -> 5743375536;
+5743376304 -> 5743375536;
+subgraph cluster_5797533472 {
   style="rounded,filled";
   fillcolor="#F0F5F5";
   color="#14234B;";
@@ -103,13 +98,13 @@ subgraph cluster_5861146768 {
   fontsize=27;
   label = <<b>xla_call (relu)</b>>;
   labelloc = t;
-5860955696 [label=<<b>convert_element_type</b><br/>f32[]>,  id="node5860955696", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-5860956848 [label=<<b>max</b><br/>f32[32,9,9,64]>,  id="node5860956848", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-}  // subgraph cluster_5861146768
-4524779792 -> 5860955696;
-5860956080 -> 5860956848;
-5860955696 -> 5860956848;
-subgraph cluster_5861146688 {
+5743375152 [label=<<b>convert_element_type</b><br/>f32[]>,  id="node5743375152", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+5743375920 [label=<<b>max</b><br/>f32[32,9,9,64]>,  id="node5743375920", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+}  // subgraph cluster_5797533472
+4443203856 -> 5743375152;
+5743375536 -> 5743375920;
+5743375152 -> 5743375920;
+subgraph cluster_5750014256 {
   style="rounded,filled";
   fillcolor="#F0F5F5";
   color="#14234B;";
@@ -117,8 +112,8 @@ subgraph cluster_5861146688 {
   fontsize=27;
   label = <<b>NatureCNN_l3 (__init__)</b>>;
   labelloc = t;
-}  // subgraph cluster_5861146688
-subgraph cluster_5828618336 {
+}  // subgraph cluster_5750014256
+subgraph cluster_5797541424 {
   style="rounded,filled";
   fillcolor="#F0F5F5";
   color="#14234B;";
@@ -126,16 +121,16 @@ subgraph cluster_5828618336 {
   fontsize=27;
   label = <<b>NatureCNN_l3</b>>;
   labelloc = t;
-5860957232 [label=<<b>conv_general_dilated</b><br/>f32[32,7,7,64]>,  id="node5860957232", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-5860956464 [label=<<b>broadcast_in_dim</b><br/>f32[32,7,7,64]>,  id="node5860956464", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-5861195824 [label=<<b>add</b><br/>f32[32,7,7,64]>,  id="node5861195824", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-}  // subgraph cluster_5828618336
-5860956848 -> 5860957232;
-58217066720 -> 5860957232;
-58225371360 -> 5860956464;
-5860957232 -> 5861195824;
-5860956464 -> 5861195824;
-subgraph cluster_5860996336 {
+5797711920 [label=<<b>conv_general_dilated</b><br/>f32[32,7,7,64]>,  id="node5797711920", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+5750104880 [label=<<b>broadcast_in_dim</b><br/>f32[32,7,7,64]>,  id="node5750104880", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+5797712688 [label=<<b>add</b><br/>f32[32,7,7,64]>,  id="node5797712688", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+}  // subgraph cluster_5797541424
+5743375920 -> 5797711920;
+57427466720 -> 5797711920;
+57501052640 -> 5750104880;
+5797711920 -> 5797712688;
+5750104880 -> 5797712688;
+subgraph cluster_5743025344 {
   style="rounded,filled";
   fillcolor="#F0F5F5";
   color="#14234B;";
@@ -143,13 +138,13 @@ subgraph cluster_5860996336 {
   fontsize=27;
   label = <<b>xla_call (relu)</b>>;
   labelloc = t;
-5821707056 [label=<<b>convert_element_type</b><br/>f32[]>,  id="node5821707056", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-5861196592 [label=<<b>max</b><br/>f32[32,7,7,64]>,  id="node5861196592", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-}  // subgraph cluster_5860996336
-4524779792 -> 5821707056;
-5861195824 -> 5861196592;
-5821707056 -> 5861196592;
-subgraph cluster_5861087248 {
+5797712304 [label=<<b>convert_element_type</b><br/>f32[]>,  id="node5797712304", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+5797713456 [label=<<b>max</b><br/>f32[32,7,7,64]>,  id="node5797713456", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+}  // subgraph cluster_5743025344
+4443203856 -> 5797712304;
+5797712688 -> 5797713456;
+5797712304 -> 5797713456;
+subgraph cluster_5797924752 {
   style="rounded,filled";
   fillcolor="#F0F5F5";
   color="#14234B;";
@@ -157,8 +152,8 @@ subgraph cluster_5861087248 {
   fontsize=27;
   label = <<b>flatten (__init__)</b>>;
   labelloc = t;
-}  // subgraph cluster_5861087248
-subgraph cluster_5861191744 {
+}  // subgraph cluster_5797924752
+subgraph cluster_5797918896 {
   style="rounded,filled";
   fillcolor="#F0F5F5";
   color="#14234B;";
@@ -166,10 +161,10 @@ subgraph cluster_5861191744 {
   fontsize=27;
   label = <<b>flatten</b>>;
   labelloc = t;
-5861196208 [label=<<b>reshape</b><br/>f32[32,3136]>,  id="node5861196208", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-}  // subgraph cluster_5861191744
-5861196592 -> 5861196208;
-subgraph cluster_5861192384 {
+5797713072 [label=<<b>reshape</b><br/>f32[32,3136]>,  id="node5797713072", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+}  // subgraph cluster_5797918896
+5797713456 -> 5797713072;
+subgraph cluster_5797920656 {
   style="rounded,filled";
   fillcolor="#F0F5F5";
   color="#14234B;";
@@ -177,8 +172,8 @@ subgraph cluster_5861192384 {
   fontsize=27;
   label = <<b>NatureCNN_l4 (__init__)</b>>;
   labelloc = t;
-}  // subgraph cluster_5861192384
-subgraph cluster_5861192064 {
+}  // subgraph cluster_5797920656
+subgraph cluster_5797918736 {
   style="rounded,filled";
   fillcolor="#F0F5F5";
   color="#14234B;";
@@ -186,16 +181,30 @@ subgraph cluster_5861192064 {
   fontsize=27;
   label = <<b>NatureCNN_l4</b>>;
   labelloc = t;
-5861197360 [label=<<b>dot_general</b><br/>f32[32,512]>,  id="node5861197360", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-5861196976 [label=<<b>broadcast_in_dim</b><br/>f32[32,512]>,  id="node5861196976", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-5861198128 [label=<<b>add</b><br/>f32[32,512]>,  id="node5861198128", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-}  // subgraph cluster_5861192064
-5861196208 -> 5861197360;
-58225344480 -> 5861197360;
-58225336800 -> 5861196976;
-5861197360 -> 5861198128;
-5861196976 -> 5861198128;
-subgraph cluster_5861195424 {
+5797714224 [label=<<b>dot_general</b><br/>f32[32,512]>,  id="node5797714224", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+5797713840 [label=<<b>broadcast_in_dim</b><br/>f32[32,512]>,  id="node5797713840", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+5797714992 [label=<<b>add</b><br/>f32[32,512]>,  id="node5797714992", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+}  // subgraph cluster_5797918736
+5797713072 -> 5797714224;
+57501041120 -> 5797714224;
+57501056480 -> 5797713840;
+5797714224 -> 5797714992;
+5797713840 -> 5797714992;
+subgraph cluster_5797944112 {
+  style="rounded,filled";
+  fillcolor="#F0F5F5";
+  color="#14234B;";
+  pad=0.1;
+  fontsize=27;
+  label = <<b>xla_call (relu)</b>>;
+  labelloc = t;
+5797714608 [label=<<b>convert_element_type</b><br/>f32[]>,  id="node5797714608", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+5797961776 [label=<<b>max</b><br/>f32[32,512]>,  id="node5797961776", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+}  // subgraph cluster_5797944112
+4443203856 -> 5797714608;
+5797714992 -> 5797961776;
+5797714608 -> 5797961776;
+subgraph cluster_5789135712 {
   style="rounded,filled";
   fillcolor="#F0F5F5";
   color="#14234B;";
@@ -203,7 +212,7 @@ subgraph cluster_5861195424 {
   fontsize=27;
   label = <<b>value_net (__init__)</b>>;
   labelloc = t;
-subgraph cluster_5861087168 {
+subgraph cluster_5797944032 {
   style="rounded,filled";
   fillcolor="#F0F5F5";
   color="#14234B;";
@@ -211,9 +220,9 @@ subgraph cluster_5861087168 {
   fontsize=19;
   label = <<b>value_net/~/linear_0 (__init__)</b>>;
   labelloc = t;
-}  // subgraph cluster_5861087168
-}  // subgraph cluster_5861195424
-subgraph cluster_5861085648 {
+}  // subgraph cluster_5797944032
+}  // subgraph cluster_5789135712
+subgraph cluster_5797921952 {
   style="rounded,filled";
   fillcolor="#F0F5F5";
   color="#14234B;";
@@ -221,7 +230,7 @@ subgraph cluster_5861085648 {
   fontsize=27;
   label = <<b>value_net</b>>;
   labelloc = t;
-subgraph cluster_5828706688 {
+subgraph cluster_5749608176 {
   style="rounded,filled";
   fillcolor="#F0F5F5";
   color="#14234B;";
@@ -229,17 +238,17 @@ subgraph cluster_5828706688 {
   fontsize=19;
   label = <<b>value_net/~/linear_0</b>>;
   labelloc = t;
-5861198512 [label=<<b>dot_general</b><br/>f32[32,1]>,  id="node5861198512", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-5861197744 [label=<<b>broadcast_in_dim</b><br/>f32[32,1]>,  id="node5861197744", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-5861199280 [label=<<b>output[1]</b><br/><b>add</b><br/>f32[32,1]>,  id="node5861199280", shape=rect, style="filled,bold", tooltip=" ", fontcolor="black", color="#0053D6", fillcolor="#AABFFF"];
-}  // subgraph cluster_5828706688
-5861198128 -> 5861198512;
-58225340640 -> 5861198512;
-58225352160 -> 5861197744;
-5861198512 -> 5861199280;
-5861197744 -> 5861199280;
-}  // subgraph cluster_5861085648
-subgraph cluster_5861195104 {
+5797962160 [label=<<b>dot_general</b><br/>f32[32,1]>,  id="node5797962160", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+5741729712 [label=<<b>broadcast_in_dim</b><br/>f32[32,1]>,  id="node5741729712", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+5797962928 [label=<<b>output[1]</b><br/><b>add</b><br/>f32[32,1]>,  id="node5797962928", shape=rect, style="filled,bold", tooltip=" ", fontcolor="black", color="#0053D6", fillcolor="#AABFFF"];
+}  // subgraph cluster_5749608176
+5797961776 -> 5797962160;
+57501060320 -> 5797962160;
+57501064160 -> 5741729712;
+5797962160 -> 5797962928;
+5741729712 -> 5797962928;
+}  // subgraph cluster_5797921952
+subgraph cluster_5797922112 {
   style="rounded,filled";
   fillcolor="#F0F5F5";
   color="#14234B;";
@@ -247,7 +256,7 @@ subgraph cluster_5861195104 {
   fontsize=27;
   label = <<b>policy_net (__init__)</b>>;
   labelloc = t;
-subgraph cluster_5861205712 {
+subgraph cluster_5797943312 {
   style="rounded,filled";
   fillcolor="#F0F5F5";
   color="#14234B;";
@@ -255,9 +264,9 @@ subgraph cluster_5861205712 {
   fontsize=19;
   label = <<b>policy_net/~/linear_0 (__init__)</b>>;
   labelloc = t;
-}  // subgraph cluster_5861205712
-}  // subgraph cluster_5861195104
-subgraph cluster_5861192704 {
+}  // subgraph cluster_5797943312
+}  // subgraph cluster_5797922112
+subgraph cluster_5797942432 {
   style="rounded,filled";
   fillcolor="#F0F5F5";
   color="#14234B;";
@@ -265,7 +274,7 @@ subgraph cluster_5861192704 {
   fontsize=27;
   label = <<b>policy_net</b>>;
   labelloc = t;
-subgraph cluster_5861206112 {
+subgraph cluster_5797958976 {
   style="rounded,filled";
   fillcolor="#F0F5F5";
   color="#14234B;";
@@ -273,17 +282,17 @@ subgraph cluster_5861206112 {
   fontsize=19;
   label = <<b>policy_net/~/linear_0</b>>;
   labelloc = t;
-5861183536 [label=<<b>dot_general</b><br/>f32[32,1]>,  id="node5861183536", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-5860957616 [label=<<b>broadcast_in_dim</b><br/>f32[32,1]>,  id="node5860957616", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-5861184304 [label=<<b>add</b><br/>f32[32,1]>,  id="node5861184304", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-}  // subgraph cluster_5861206112
-5861198128 -> 5861183536;
-58225363680 -> 5861183536;
-58225367520 -> 5860957616;
-5861183536 -> 5861184304;
-5860957616 -> 5861184304;
-}  // subgraph cluster_5861192704
-subgraph cluster_5861194704 {
+5797963312 [label=<<b>dot_general</b><br/>f32[32,1]>,  id="node5797963312", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+5797962544 [label=<<b>broadcast_in_dim</b><br/>f32[32,1]>,  id="node5797962544", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+5797964080 [label=<<b>add</b><br/>f32[32,1]>,  id="node5797964080", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+}  // subgraph cluster_5797958976
+5797961776 -> 5797963312;
+57501044960 -> 5797963312;
+57501075680 -> 5797962544;
+5797963312 -> 5797964080;
+5797962544 -> 5797964080;
+}  // subgraph cluster_5797942432
+subgraph cluster_5797945152 {
   style="rounded,filled";
   fillcolor="#F0F5F5";
   color="#14234B;";
@@ -291,8 +300,8 @@ subgraph cluster_5861194704 {
   fontsize=27;
   label = <<b>log_std (__init__)</b>>;
   labelloc = t;
-}  // subgraph cluster_5861194704
-subgraph cluster_5861203376 {
+}  // subgraph cluster_5797945152
+subgraph cluster_5797763728 {
   style="rounded,filled";
   fillcolor="#F0F5F5";
   color="#14234B;";
@@ -300,172 +309,116 @@ subgraph cluster_5861203376 {
   fontsize=27;
   label = <<b>log_std</b>>;
   labelloc = t;
-5861184688 [label=<<b>slice</b><br/>u32[1]>,  id="node5861184688", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-5861185072 [label=<<b>squeeze</b><br/>u32[]>,  id="node5861185072", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-5861185456 [label=<<b>slice</b><br/>u32[1]>,  id="node5861185456", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-5861185840 [label=<<b>squeeze</b><br/>u32[]>,  id="node5861185840", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-5861186224 [label=<<b>slice</b><br/>u32[2]>,  id="node5861186224", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-5861186608 [label=<<b>slice</b><br/>u32[2]>,  id="node5861186608", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-5860865200 [label=<<b>threefry2x32</b><br/>u32[2]<br/>u32[2]>,  id="node5860865200", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-5860864432 [label=<<b>concatenate</b><br/>u32[4]>,  id="node5860864432", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-5861183920 [label=<<b>reshape</b><br/>u32[2,2]>,  id="node5861183920", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-5860864816 [label=<<b>slice</b><br/>u32[1,2]>,  id="node5860864816", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-5860864048 [label=<<b>squeeze</b><br/>u32[2]>,  id="node5860864048", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-5860865968 [label=<<b>slice</b><br/>u32[1,2]>,  id="node5860865968", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-5860866352 [label=<<b>squeeze</b><br/>u32[2]>,  id="node5860866352", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-5860866736 [label=<<b>broadcast_in_dim</b><br/>f32[1]>,  id="node5860866736", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-5860867120 [label=<<b>broadcast_in_dim</b><br/>f32[1]>,  id="node5860867120", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-5860835376 [label=<<b>slice</b><br/>u32[1]>,  id="node5860835376", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-5860835760 [label=<<b>squeeze</b><br/>u32[]>,  id="node5860835760", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-5860836144 [label=<<b>slice</b><br/>u32[1]>,  id="node5860836144", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-5860836528 [label=<<b>squeeze</b><br/>u32[]>,  id="node5860836528", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-5860837680 [label=<<b>concatenate</b><br/>u32[2]>,  id="node5860837680", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-5860836912 [label=<<b>slice</b><br/>u32[1]>,  id="node5860836912", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-5860838064 [label=<<b>slice</b><br/>u32[1]>,  id="node5860838064", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-5861061424 [label=<<b>threefry2x32</b><br/>u32[1]<br/>u32[1]>,  id="node5861061424", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-5860838832 [label=<<b>concatenate</b><br/>u32[2]>,  id="node5860838832", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-5861061040 [label=<<b>gather</b><br/>u32[1]>,  id="node5861061040", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-5861061040 [label=<<b>broadcast_in_dim</b><br/>u32[1]>,  id="node5861061040", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-5861062192 [label=<<b>shift_right_logical</b><br/>u32[1]>,  id="node5861062192", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-5861062576 [label=<<b>or</b><br/>u32[1]>,  id="node5861062576", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-5860837296 [label=<<b>bitcast_convert_type</b><br/>f32[1]>,  id="node5860837296", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-5861063344 [label=<<b>sub</b><br/>f32[1]>,  id="node5861063344", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-5861063728 [label=<<b>sub</b><br/>f32[1]>,  id="node5861063728", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-5861064112 [label=<<b>mul</b><br/>f32[1]>,  id="node5861064112", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-5860790320 [label=<<b>add</b><br/>f32[1]>,  id="node5860790320", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-5860790704 [label=<<b>max</b><br/>f32[1]>,  id="node5860790704", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-5861062960 [label=<<b>erf_inv</b><br/>f32[1]>,  id="node5861062960", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-5860791472 [label=<<b>mul</b><br/>f32[1]>,  id="node5860791472", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-5860791856 [label=<<b>mul</b><br/>f32[1]>,  id="node5860791856", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-5860791088 [label=<<b>broadcast_in_dim</b><br/>f32[1,1]>,  id="node5860791088", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-5860792624 [label=<<b>output[0]</b><br/><b>add</b><br/>f32[32,1]>,  id="node5860792624", shape=rect, style="filled,bold", tooltip=" ", fontcolor="black", color="#0053D6", fillcolor="#AABFFF"];
-5860792240 [label=<<b>integer_pow</b><br/>f32[1]>,  id="node5860792240", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-5860793008 [label=<<b>log</b><br/>f32[1]>,  id="node5860793008", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-5860793776 [label=<<b>sub</b><br/>f32[32,1]>,  id="node5860793776", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-5861186992 [label=<<b>integer_pow</b><br/>f32[32,1]>,  id="node5861186992", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-5860798512 [label=<<b>neg</b><br/>f32[32,1]>,  id="node5860798512", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-5860798896 [label=<<b>convert_element_type</b><br/>f32[]>,  id="node5860798896", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-5860799664 [label=<<b>mul</b><br/>f32[1]>,  id="node5860799664", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-5860799280 [label=<<b>broadcast_in_dim</b><br/>f32[1,1]>,  id="node5860799280", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-5860800432 [label=<<b>div</b><br/>f32[32,1]>,  id="node5860800432", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-5860800048 [label=<<b>broadcast_in_dim</b><br/>f32[1,1]>,  id="node5860800048", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-5860801200 [label=<<b>sub</b><br/>f32[32,1]>,  id="node5860801200", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-5860801584 [label=<<b>convert_element_type</b><br/>f32[]>,  id="node5860801584", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-5861249072 [label=<<b>output[2]</b><br/><b>sub</b><br/>f32[32,1]>,  id="node5861249072", shape=rect, style="filled,bold", tooltip=" ", fontcolor="black", color="#0053D6", fillcolor="#AABFFF"];
-}  // subgraph cluster_5861203376
-58217097440 -> 5861184688;
-5861184688 -> 5861185072;
-58217097441 -> 5861185456;
-5861185456 -> 5861185840;
-5822535984 -> 5861186224;
-5822535984 -> 5861186608;
-5861185072 -> 5860865200;
-5861185840 -> 5860865200;
-5861186224 -> 5860865200;
-5861186608 -> 5860865200;
-5860865200 -> 5860864432;
-5860865584 -> 5860864432;
-5860864432 -> 5861183920;
-5861183920 -> 5860864816;
-5860864816 -> 5860864048;
-5861183920 -> 5860865968;
-5860865968 -> 5860866352;
-5861098224 -> 5860866736;
-5821644016 -> 5860867120;
-5860866352 -> 5860835376;
-5860835376 -> 5860835760;
-5860866352 -> 5860836144;
-5860836144 -> 5860836528;
-5861198896 -> 5860837680;
-5860867504 -> 5860837680;
-5860837680 -> 5860836912;
-5860837680 -> 5860838064;
-5860835760 -> 5861061424;
-5860836528 -> 5861061424;
-5860836912 -> 5861061424;
-5860838064 -> 5861061424;
-5861061424 -> 5860838832;
-5861061808 -> 5860838832;
-5860838832 -> 5861061040;
-5861060656 -> 5861061040;
-5861061040 -> 5861061040;
-5861061040 -> 5861062192;
-5821746512 -> 5861062192;
-5861062192 -> 5861062576;
-5821746416 -> 5861062576;
-5861062576 -> 5860837296;
-5860837296 -> 5861063344;
-5821743248 -> 5861063344;
-5860867120 -> 5861063728;
-5860866736 -> 5861063728;
-5861063344 -> 5861064112;
-5861063728 -> 5861064112;
-5861064112 -> 5860790320;
-5860866736 -> 5860790320;
-5860866736 -> 5860790704;
-5860790320 -> 5860790704;
-5860790704 -> 5861062960;
-5861062960 -> 5860791472;
-5821746224 -> 5860791472;
-58225356000 -> 5860791856;
-5860791472 -> 5860791856;
-5860791856 -> 5860791088;
-5861184304 -> 5860792624;
-5860791088 -> 5860792624;
-58225356001 -> 5860792240;
-58225356002 -> 5860793008;
-5860792624 -> 5860793776;
-5861184304 -> 5860793776;
-5860793776 -> 5861186992;
-5861186992 -> 5860798512;
-4524779856 -> 5860798896;
-5860792240 -> 5860799664;
-5860798896 -> 5860799664;
-5860799664 -> 5860799280;
-5860798512 -> 5860800432;
-5860799280 -> 5860800432;
-5860793008 -> 5860800048;
-5860800432 -> 5860801200;
-5860800048 -> 5860801200;
-5860793392 -> 5860801584;
-5860801200 -> 5861249072;
-5860801584 -> 5861249072;
-4524976496 -> 5821707824;
-58217089760 -> 5820210608;
-5821707824 -> 5820210608;
-58202098400 [label=<<b>args[0]: NatureCNN_l1/b</b><br/>f32[32]> id="node58202098400", shape=rect, style="filled", fontcolor="black", color="#FF8A4F", fillcolor="#FFDEAF"];
-58217062880 [label=<<b>args[0]: NatureCNN_l1/w</b><br/>f32[8,8,3,32]> id="node58217062880", shape=rect, style="filled", fontcolor="black", color="#FF8A4F", fillcolor="#FFDEAF"];
-58202083040 [label=<<b>args[0]: NatureCNN_l2/b</b><br/>f32[64]> id="node58202083040", shape=rect, style="filled", fontcolor="black", color="#FF8A4F", fillcolor="#FFDEAF"];
-58202086880 [label=<<b>args[0]: NatureCNN_l2/w</b><br/>f32[4,4,32,64]> id="node58202086880", shape=rect, style="filled", fontcolor="black", color="#FF8A4F", fillcolor="#FFDEAF"];
-58225371360 [label=<<b>args[0]: NatureCNN_l3/b</b><br/>f32[64]> id="node58225371360", shape=rect, style="filled", fontcolor="black", color="#FF8A4F", fillcolor="#FFDEAF"];
-58217066720 [label=<<b>args[0]: NatureCNN_l3/w</b><br/>f32[3,3,64,64]> id="node58217066720", shape=rect, style="filled", fontcolor="black", color="#FF8A4F", fillcolor="#FFDEAF"];
-58225336800 [label=<<b>args[0]: NatureCNN_l4/b</b><br/>f32[512]> id="node58225336800", shape=rect, style="filled", fontcolor="black", color="#FF8A4F", fillcolor="#FFDEAF"];
-58225344480 [label=<<b>args[0]: NatureCNN_l4/w</b><br/>f32[3136,512]> id="node58225344480", shape=rect, style="filled", fontcolor="black", color="#FF8A4F", fillcolor="#FFDEAF"];
-58225356000 [label=<<b>args[0]: log_std/constant</b><br/>f32[1]> id="node58225356000", shape=rect, style="filled", fontcolor="black", color="#FF8A4F", fillcolor="#FFDEAF"];
-58225356001 [label=<<b>(reuse)</b><br/><b>args[0]: log_std/constant</b><br/>f32[1]> id="node58225356001", shape=rect, style="filled", fontcolor="#565858", color="#FF8A4F", fillcolor="#FFEACC"];
-58225356002 [label=<<b>(reuse)</b><br/><b>args[0]: log_std/constant</b><br/>f32[1]> id="node58225356002", shape=rect, style="filled", fontcolor="#565858", color="#FF8A4F", fillcolor="#FFEACC"];
-58225367520 [label=<<b>args[0]: policy_net/~/linear_0/b</b><br/>f32[1]> id="node58225367520", shape=rect, style="filled", fontcolor="black", color="#FF8A4F", fillcolor="#FFDEAF"];
-58225363680 [label=<<b>args[0]: policy_net/~/linear_0/w</b><br/>f32[512,1]> id="node58225363680", shape=rect, style="filled", fontcolor="black", color="#FF8A4F", fillcolor="#FFDEAF"];
-58225352160 [label=<<b>args[0]: value_net/~/linear_0/b</b><br/>f32[1]> id="node58225352160", shape=rect, style="filled", fontcolor="black", color="#FF8A4F", fillcolor="#FFDEAF"];
-58225340640 [label=<<b>args[0]: value_net/~/linear_0/w</b><br/>f32[512,1]> id="node58225340640", shape=rect, style="filled", fontcolor="black", color="#FF8A4F", fillcolor="#FFDEAF"];
-58217097440 [label=<<b>args[1]</b><br/>u32[2]> id="node58217097440", shape=rect, style="filled", fontcolor="black", color="#FF8A4F", fillcolor="#FFDEAF"];
-58217097441 [label=<<b>(reuse)</b><br/><b>args[1]</b><br/>u32[2]> id="node58217097441", shape=rect, style="filled", fontcolor="#565858", color="#FF8A4F", fillcolor="#FFEACC"];
-58217089760 [label=<<b>args[2]</b><br/>f32[32,84,84,3]> id="node58217089760", shape=rect, style="filled", fontcolor="black", color="#FF8A4F", fillcolor="#FFDEAF"];
-4524779792 [label=<<b>0</b>> shape=rect, style="filled", fontcolor="black", color="#A261FF", fillcolor="#E6D6FF"];
-4524779792 [label=<<b>0</b>> shape=rect, style="filled", fontcolor="black", color="#A261FF", fillcolor="#E6D6FF"];
-4524779792 [label=<<b>0</b>> shape=rect, style="filled", fontcolor="black", color="#A261FF", fillcolor="#E6D6FF"];
-5822535984 [label=<<b>u32[4]</b>> shape=rect, style="filled", fontcolor="black", color="#A261FF", fillcolor="#E6D6FF"];
-5822535984 [label=<<b>u32[4]</b>> shape=rect, style="filled", fontcolor="black", color="#A261FF", fillcolor="#E6D6FF"];
-5861098224 [label=<<b>-0.9999999403953552</b>> shape=rect, style="filled", fontcolor="black", color="#A261FF", fillcolor="#E6D6FF"];
-5821644016 [label=<<b>1.0</b>> shape=rect, style="filled", fontcolor="black", color="#A261FF", fillcolor="#E6D6FF"];
-5861198896 [label=<<b>u32[1]</b>> shape=rect, style="filled", fontcolor="black", color="#A261FF", fillcolor="#E6D6FF"];
-5860867504 [label=<<b>u32[1]</b>> shape=rect, style="filled", fontcolor="black", color="#A261FF", fillcolor="#E6D6FF"];
-5861060656 [label=<<b>s32[1]</b>> shape=rect, style="filled", fontcolor="black", color="#A261FF", fillcolor="#E6D6FF"];
-5821746512 [label=<<b>9</b>> shape=rect, style="filled", fontcolor="black", color="#A261FF", fillcolor="#E6D6FF"];
-5821746416 [label=<<b>1065353216</b>> shape=rect, style="filled", fontcolor="black", color="#A261FF", fillcolor="#E6D6FF"];
-5821743248 [label=<<b>1.0</b>> shape=rect, style="filled", fontcolor="black", color="#A261FF", fillcolor="#E6D6FF"];
-5821746224 [label=<<b>1.4142135381698608</b>> shape=rect, style="filled", fontcolor="black", color="#A261FF", fillcolor="#E6D6FF"];
-4524779856 [label=<<b>2</b>> shape=rect, style="filled", fontcolor="black", color="#A261FF", fillcolor="#E6D6FF"];
-5860793392 [label=<<b>f32[]</b>> shape=rect, style="filled", fontcolor="black", color="#A261FF", fillcolor="#E6D6FF"];
-4524976496 [label=<<b>255</b>> shape=rect, style="filled", fontcolor="black", color="#A261FF", fillcolor="#E6D6FF"];
+5797964464 [label=<<b>slice</b><br/>u32[1]>,  id="node5797964464", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+5797964848 [label=<<b>squeeze</b><br/>u32[]>,  id="node5797964848", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+5797965232 [label=<<b>slice</b><br/>u32[1]>,  id="node5797965232", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+5797597232 [label=<<b>squeeze</b><br/>u32[]>,  id="node5797597232", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+5797597616 [label=<<b>slice</b><br/>u32[2]>,  id="node5797597616", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+5797598000 [label=<<b>slice</b><br/>u32[2]>,  id="node5797598000", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+5797599920 [label=<<b>threefry2x32</b><br/>u32[2]<br/>u32[2]>,  id="node5797599920", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+5797599536 [label=<<b>concatenate</b><br/>u32[4]>,  id="node5797599536", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+5797599152 [label=<<b>reshape</b><br/>u32[2,2]>,  id="node5797599152", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+5797598384 [label=<<b>slice</b><br/>u32[1,2]>,  id="node5797598384", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+5797598768 [label=<<b>squeeze</b><br/>u32[2]>,  id="node5797598768", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+5797600688 [label=<<b>slice</b><br/>u32[1,2]>,  id="node5797600688", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+5797818416 [label=<<b>squeeze</b><br/>u32[2]>,  id="node5797818416", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+5797818800 [label=<<b>integer_pow</b><br/>f32[1]>,  id="node5797818800", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+5797819184 [label=<<b>log</b><br/>f32[1]>,  id="node5797819184", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+5797819952 [label=<<b>sub</b><br/>f32[32,1]>,  id="node5797819952", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+5797819568 [label=<<b>integer_pow</b><br/>f32[32,1]>,  id="node5797819568", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+5797820336 [label=<<b>neg</b><br/>f32[32,1]>,  id="node5797820336", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+5797820720 [label=<<b>convert_element_type</b><br/>f32[]>,  id="node5797820720", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+5797821488 [label=<<b>mul</b><br/>f32[1]>,  id="node5797821488", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+5797821104 [label=<<b>broadcast_in_dim</b><br/>f32[1,1]>,  id="node5797821104", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+5797937200 [label=<<b>div</b><br/>f32[32,1]>,  id="node5797937200", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+5743377456 [label=<<b>broadcast_in_dim</b><br/>f32[1,1]>,  id="node5743377456", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+5797937968 [label=<<b>sub</b><br/>f32[32,1]>,  id="node5797937968", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+5797938352 [label=<<b>convert_element_type</b><br/>f32[]>,  id="node5797938352", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+5797939120 [label=<<b>output[2]</b><br/><b>sub</b><br/>f32[32,1]>,  id="node5797939120", shape=rect, style="filled,bold", tooltip=" ", fontcolor="black", color="#0053D6", fillcolor="#AABFFF"];
+subgraph cluster_5797751920 {
+  style="rounded,filled";
+  fillcolor="#F0F5F5";
+  color="#14234B;";
+  pad=0.1;
+  fontsize=19;
+  label = <<b>xla_call (clip)</b>>;
+  labelloc = t;
+5797937584 [label=<<b>convert_element_type</b><br/>f32[]>,  id="node5797937584", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+5797939888 [label=<<b>max</b><br/>f32[32,1]>,  id="node5797939888", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+5797938736 [label=<<b>convert_element_type</b><br/>f32[]>,  id="node5797938736", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+5797940656 [label=<<b>output[0]</b><br/><b>min</b><br/>f32[32,1]>,  id="node5797940656", shape=rect, style="filled,bold", tooltip=" ", fontcolor="black", color="#0053D6", fillcolor="#AABFFF"];
+}  // subgraph cluster_5797751920
+4443203824 -> 5797937584;
+5797937584 -> 5797939888;
+5797964080 -> 5797939888;
+4443203888 -> 5797938736;
+5797938736 -> 5797940656;
+5797939888 -> 5797940656;
+}  // subgraph cluster_5797763728
+57427459040 -> 5797964464;
+5797964464 -> 5797964848;
+57427459041 -> 5797965232;
+5797965232 -> 5797597232;
+5797715376 -> 5797597616;
+5797715376 -> 5797598000;
+5797964848 -> 5797599920;
+5797597232 -> 5797599920;
+5797597616 -> 5797599920;
+5797598000 -> 5797599920;
+5797599920 -> 5797599536;
+5797600304 -> 5797599536;
+5797599536 -> 5797599152;
+5797599152 -> 5797598384;
+5797598384 -> 5797598768;
+5797599152 -> 5797600688;
+5797600688 -> 5797818416;
+57433770720 -> 5797818800;
+57433770721 -> 5797819184;
+5797964080 -> 5797819952;
+5797964080 -> 5797819952;
+5797819952 -> 5797819568;
+5797819568 -> 5797820336;
+4443203920 -> 5797820720;
+5797818800 -> 5797821488;
+5797820720 -> 5797821488;
+5797821488 -> 5797821104;
+5797820336 -> 5797937200;
+5797821104 -> 5797937200;
+5797819184 -> 5743377456;
+5797937200 -> 5797937968;
+5743377456 -> 5797937968;
+5797821872 -> 5797938352;
+5797937968 -> 5797939120;
+5797938352 -> 5797939120;
+5203079120 -> 5741731248;
+57427451360 -> 5750107184;
+5741731248 -> 5750107184;
+57427455200 [label=<<b>args[0]: NatureCNN_l1/b</b><br/>f32[32]> id="node57427455200", shape=rect, style="filled", fontcolor="black", color="#FF8A4F", fillcolor="#FFDEAF"];
+57427439840 [label=<<b>args[0]: NatureCNN_l1/w</b><br/>f32[8,8,3,32]> id="node57427439840", shape=rect, style="filled", fontcolor="black", color="#FF8A4F", fillcolor="#FFDEAF"];
+57427436000 [label=<<b>args[0]: NatureCNN_l2/b</b><br/>f32[64]> id="node57427436000", shape=rect, style="filled", fontcolor="black", color="#FF8A4F", fillcolor="#FFDEAF"];
+57427462880 [label=<<b>args[0]: NatureCNN_l2/w</b><br/>f32[4,4,32,64]> id="node57427462880", shape=rect, style="filled", fontcolor="black", color="#FF8A4F", fillcolor="#FFDEAF"];
+57501052640 [label=<<b>args[0]: NatureCNN_l3/b</b><br/>f32[64]> id="node57501052640", shape=rect, style="filled", fontcolor="black", color="#FF8A4F", fillcolor="#FFDEAF"];
+57427466720 [label=<<b>args[0]: NatureCNN_l3/w</b><br/>f32[3,3,64,64]> id="node57427466720", shape=rect, style="filled", fontcolor="black", color="#FF8A4F", fillcolor="#FFDEAF"];
+57501056480 [label=<<b>args[0]: NatureCNN_l4/b</b><br/>f32[512]> id="node57501056480", shape=rect, style="filled", fontcolor="black", color="#FF8A4F", fillcolor="#FFDEAF"];
+57501041120 [label=<<b>args[0]: NatureCNN_l4/w</b><br/>f32[3136,512]> id="node57501041120", shape=rect, style="filled", fontcolor="black", color="#FF8A4F", fillcolor="#FFDEAF"];
+57433770720 [label=<<b>args[0]: log_std/constant</b><br/>f32[1]> id="node57433770720", shape=rect, style="filled", fontcolor="black", color="#FF8A4F", fillcolor="#FFDEAF"];
+57433770721 [label=<<b>(reuse)</b><br/><b>args[0]: log_std/constant</b><br/>f32[1]> id="node57433770721", shape=rect, style="filled", fontcolor="#565858", color="#FF8A4F", fillcolor="#FFEACC"];
+57501075680 [label=<<b>args[0]: policy_net/~/linear_0/b</b><br/>f32[1]> id="node57501075680", shape=rect, style="filled", fontcolor="black", color="#FF8A4F", fillcolor="#FFDEAF"];
+57501044960 [label=<<b>args[0]: policy_net/~/linear_0/w</b><br/>f32[512,1]> id="node57501044960", shape=rect, style="filled", fontcolor="black", color="#FF8A4F", fillcolor="#FFDEAF"];
+57501064160 [label=<<b>args[0]: value_net/~/linear_0/b</b><br/>f32[1]> id="node57501064160", shape=rect, style="filled", fontcolor="black", color="#FF8A4F", fillcolor="#FFDEAF"];
+57501060320 [label=<<b>args[0]: value_net/~/linear_0/w</b><br/>f32[512,1]> id="node57501060320", shape=rect, style="filled", fontcolor="black", color="#FF8A4F", fillcolor="#FFDEAF"];
+57427459040 [label=<<b>args[1]</b><br/>u32[2]> id="node57427459040", shape=rect, style="filled", fontcolor="black", color="#FF8A4F", fillcolor="#FFDEAF"];
+57427459041 [label=<<b>(reuse)</b><br/><b>args[1]</b><br/>u32[2]> id="node57427459041", shape=rect, style="filled", fontcolor="#565858", color="#FF8A4F", fillcolor="#FFEACC"];
+57427451360 [label=<<b>args[2]</b><br/>f32[32,84,84,3]> id="node57427451360", shape=rect, style="filled", fontcolor="black", color="#FF8A4F", fillcolor="#FFDEAF"];
+4443203856 [label=<<b>0</b>> shape=rect, style="filled", fontcolor="black", color="#A261FF", fillcolor="#E6D6FF"];
+4443203856 [label=<<b>0</b>> shape=rect, style="filled", fontcolor="black", color="#A261FF", fillcolor="#E6D6FF"];
+4443203856 [label=<<b>0</b>> shape=rect, style="filled", fontcolor="black", color="#A261FF", fillcolor="#E6D6FF"];
+4443203856 [label=<<b>0</b>> shape=rect, style="filled", fontcolor="black", color="#A261FF", fillcolor="#E6D6FF"];
+4443203824 [label=<<b>-1</b>> shape=rect, style="filled", fontcolor="black", color="#A261FF", fillcolor="#E6D6FF"];
+4443203888 [label=<<b>1</b>> shape=rect, style="filled", fontcolor="black", color="#A261FF", fillcolor="#E6D6FF"];
+5797715376 [label=<<b>u32[4]</b>> shape=rect, style="filled", fontcolor="black", color="#A261FF", fillcolor="#E6D6FF"];
+5797715376 [label=<<b>u32[4]</b>> shape=rect, style="filled", fontcolor="black", color="#A261FF", fillcolor="#E6D6FF"];
+4443203920 [label=<<b>2</b>> shape=rect, style="filled", fontcolor="black", color="#A261FF", fillcolor="#E6D6FF"];
+5797821872 [label=<<b>f32[]</b>> shape=rect, style="filled", fontcolor="black", color="#A261FF", fillcolor="#E6D6FF"];
+5203079120 [label=<<b>255.0</b>> shape=rect, style="filled", fontcolor="black", color="#A261FF", fillcolor="#E6D6FF"];
 } // digraph G
