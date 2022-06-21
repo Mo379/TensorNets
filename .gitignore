@@ -1,10 +1,2 @@
 venv/*
-pkls/*
-doc/*
-APP/videos/**
-APP/play_videos/**
-APP/wandb/**
-APP/runs/**
-APP/models/**
-APP/output/**
 APP/logs/**
