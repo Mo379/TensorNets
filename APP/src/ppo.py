@@ -105,7 +105,7 @@ class PPO(OnPolicyActorCritic):
         dataframe= (states, actions, rewards, dones, log_pi_olds, next_states,gaes,targets)
         n_outputs= []
         for data in dataframe:
-            reshaped = jnp.reshape(data,(-1,)+data.shape[2:]))
+            reshaped = jnp.reshape(data,(-1,)+data.shape[2:])
             n_outputs.append(reshaped)
 
         #rearranged data
