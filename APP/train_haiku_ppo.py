@@ -33,7 +33,7 @@ test = True
 if test:
     num_agent_steps=1000
     buffer_size=32
-    epochs=1
+    epochs=5
     batch_size=32
 # evaluation hyperparams
 eval_interval=num_agent_steps//10

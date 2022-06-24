@@ -137,9 +137,9 @@ class PPO(OnPolicyActorCritic):
                     log_pi_old=log_pi_old[idx],
                     gae=gae[idx],
                 )
-        #log the losses
-        wandb.log({"loss/critic": np.array(loss_critic)})
-        wandb.log({"loss/actor": np.array(loss_actor)})
+            #log the losses
+            wandb.log({"loss/critic": np.array(loss_critic)})
+            wandb.log({"loss/actor": np.array(loss_actor)})
 
     @partial(jax.jit, static_argnums=0)
     def _loss_critic(
