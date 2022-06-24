@@ -110,11 +110,12 @@ class PPO(OnPolicyActorCritic):
 
         #rearranged data
         state, action, reward, done, log_pi_old, next_state,gae,target = n_outputs
+        idxes = np.arange(len(state)) 
         for i_count in range(self.epoch_ppo):
             print(f"epoch {i_count}")
             for start in range(0, len(state), self.batch_size):
                 self.learning_step += 1
-                idx = self.idxes[start : start + self.batch_size]
+                idx = idxes[start : start + self.batch_size]
                 # Update critic.
                 self.opt_state_critic, self.params_critic, loss_critic, _ = optimize(
                     self._loss_critic,
