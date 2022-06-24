@@ -102,13 +102,17 @@ class PPO(OnPolicyActorCritic):
             actors_next_states=next_states,
         )
         #
+        dataframe= (states, actions, rewards, dones, log_pi_olds, next_states,gaes,targets)
+        n_outputs= []
+        for data in dataframe:
+            reshaped = jnp.reshape(data,(-1,)+data.shape[2:]))
+            n_outputs.append(reshaped)
+
+        #rearranged data
+        state, action, reward, done, log_pi_old, next_state,gae,target = n_outputs
         for i_count in range(self.epoch_ppo):
             print(f"epoch {i_count}")
-            for state, action, reward, done, log_pi_old, next_state,gae,target in zip(states, actions, rewards, dones, log_pi_olds, next_states,gaes,targets):
-            for output in outputs:
-                actor_first_output.append(jnp.swapaxes(output, 0,1))
-                np.random.shuffle(self.idxes)
-            for start in range(0, self.buffer_size, self.batch_size):
+            for start in range(0, len(state), self.batch_size):
                 self.learning_step += 1
                 idx = self.idxes[start : start + self.batch_size]
                 # Update critic.
@@ -189,4 +193,4 @@ class PPO(OnPolicyActorCritic):
             gae = jnp.array(gae)
             actors_gae.append((gae - gae.mean()) / (gae.std() + 1e-8))
             actors_targets.append(gae + value)
-        return actors_gae, actors_targets
+        return jnp.array(actors_gae), jnp.array(actors_targets)

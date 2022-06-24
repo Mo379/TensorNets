@@ -14,8 +14,8 @@ from src.env_setup import environment_setup,play_enviromnet_setup
 from src.trainer import trainer
 
 #setting up model hyperparams
-lr_actor=0.00001
-lr_critic=0.00001
+lr_actor=0.00031
+lr_critic=0.00031
 # setting up algorithm hyperparameters
 max_grad_norm = 0.9
 gamma=0.95
