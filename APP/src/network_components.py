@@ -6,7 +6,7 @@ import numpy as np
 
 
 # Feature extractonesor CNN 
-initializer = hk.initializers.VarianceScaling(1.0, "fan_avg", "truncated_normal")
+initializer = jnp.zeros #hk.initializers.VarianceScaling(1.0, "fan_avg", "truncated_normal")
 initializer_bias = jnp.zeros
 def feature_extractor(x):
   x = jnp.array(x, dtype=jnp.float32)
