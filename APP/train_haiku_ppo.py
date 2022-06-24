@@ -17,9 +17,9 @@ from src.trainer import trainer
 lr_actor=0.00001
 lr_critic=0.00001
 # setting up algorithm hyperparameters
-max_grad_norm = 0.1
+max_grad_norm = 0.9
 gamma=0.95
-clip_eps=0.2
+clip_eps=0.3
 lambd=0.95
 seed=0
 action_repeat=1

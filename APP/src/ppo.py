@@ -105,32 +105,34 @@ class PPO(OnPolicyActorCritic):
         for i_count in range(self.epoch_ppo):
             print(f"epoch {i_count}")
             for state, action, reward, done, log_pi_old, next_state,gae,target in zip(states, actions, rewards, dones, log_pi_olds, next_states,gaes,targets):
+            for output in outputs:
+                actor_first_output.append(jnp.swapaxes(output, 0,1))
                 np.random.shuffle(self.idxes)
-                for start in range(0, self.buffer_size, self.batch_size):
-                    self.learning_step += 1
-                    idx = self.idxes[start : start + self.batch_size]
-                    # Update critic.
-                    self.opt_state_critic, self.params_critic, loss_critic, _ = optimize(
-                        self._loss_critic,
-                        self.opt_critic,
-                        self.opt_state_critic,
-                        self.params_critic,
-                        self.max_grad_norm,
-                        state=state[idx],
-                        target=target[idx],
-                    )
-                    # Update actor.
-                    self.opt_state_actor, self.params_actor, loss_actor, _ = optimize(
-                        self._loss_actor,
-                        self.opt_actor,
-                        self.opt_state_actor,
-                        self.params_actor,
-                        self.max_grad_norm,
-                        state=state[idx],
-                        action=action[idx],
-                        log_pi_old=log_pi_old[idx],
-                        gae=gae[idx],
-                    )
+            for start in range(0, self.buffer_size, self.batch_size):
+                self.learning_step += 1
+                idx = self.idxes[start : start + self.batch_size]
+                # Update critic.
+                self.opt_state_critic, self.params_critic, loss_critic, _ = optimize(
+                    self._loss_critic,
+                    self.opt_critic,
+                    self.opt_state_critic,
+                    self.params_critic,
+                    self.max_grad_norm,
+                    state=state[idx],
+                    target=target[idx],
+                )
+                # Update actor.
+                self.opt_state_actor, self.params_actor, loss_actor, _ = optimize(
+                    self._loss_actor,
+                    self.opt_actor,
+                    self.opt_state_actor,
+                    self.params_actor,
+                    self.max_grad_norm,
+                    state=state[idx],
+                    action=action[idx],
+                    log_pi_old=log_pi_old[idx],
+                    gae=gae[idx],
+                )
         #log the losses
         wandb.log({"loss/critic": np.array(loss_critic)})
         wandb.log({"loss/actor": np.array(loss_actor)})
