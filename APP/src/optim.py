@@ -18,6 +18,7 @@ def optimize(
     *args,
     **kwargs,
 ) -> Tuple[Any, hk.Params, jnp.ndarray, Any]:
+    #get grad
     (loss, aux), grad = jax.value_and_grad(fn_loss, has_aux=True)(
         params_to_update,
         *args,
