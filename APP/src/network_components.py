@@ -7,6 +7,7 @@ import numpy as np
 
 # Feature extractonesor CNN 
 initializer = hk.initializers.VarianceScaling(1.0, "fan_avg", "truncated_normal")
+initializer_bias = jnp.zeros
 def feature_extractor(x):
   x = jnp.array(x, dtype=jnp.float32)
   x = x/255.0
@@ -18,7 +19,7 @@ def feature_extractor(x):
       padding='VALID', 
       with_bias=True, 
       w_init=initializer, 
-      b_init=initializer, 
+      b_init=initializer_bias, 
       name='NatureCNN_l1'
   )(x)
   x = jax.nn.relu(x)
@@ -28,7 +29,7 @@ def feature_extractor(x):
       padding='VALID', 
       with_bias=True, 
       w_init=initializer, 
-      b_init=initializer, 
+      b_init=initializer_bias, 
       name='NatureCNN_l2'
   )(x)
   x = jax.nn.relu(x)
@@ -38,7 +39,7 @@ def feature_extractor(x):
       padding='VALID', 
       with_bias=True, 
       w_init=initializer, 
-      b_init=initializer, 
+      b_init=initializer_bias, 
       name='NatureCNN_l3'
   )(x)
   x = jax.nn.relu(x)
@@ -47,7 +48,7 @@ def feature_extractor(x):
       512,
       with_bias=True, 
       w_init=initializer, 
-      b_init=initializer, 
+      b_init=initializer_bias, 
       name='NatureCNN_l4'
   )(x)
   x = jax.nn.relu(x)
@@ -59,7 +60,12 @@ def feature_extractor(x):
 
 
 def policy_net(x):
-  policy_out = hk.nets.MLP([1], name='policy_net')(x)
+  policy_out = hk.nets.MLP(
+          [1], 
+          with_bias=True, 
+          w_init=initializer, 
+          b_init=initializer_bias, 
+          name='policy_net')(x)
   return policy_out
 
 
@@ -68,7 +74,12 @@ def policy_net(x):
 
 
 def value_net(x):
-    value_out = hk.nets.MLP([1], name='value_net')(x)
+    value_out = hk.nets.MLP(
+        [1], 
+        with_bias=True, 
+        w_init=initializer, 
+        b_init=initializer_bias, 
+        name='value_net')(x)
     return value_out
 
 
@@ -76,19 +87,19 @@ def value_net(x):
 
 
 class log_std(hk.Module):
-  def __init__(self, deterministic=True, name=None):
+  def __init__(self, deterministic=False, name=None):
     super().__init__(name=name)
     self.deterministic=deterministic
     self.rng = hk.PRNGSequence(0)
   def __call__(self, action_mean):
     log_std = hk.get_parameter("constant", shape=(1,), dtype=action_mean.dtype, init=jnp.ones)
-    key = next(self.rng)
-    get_actions, get_log_prob = Normal(key, action_mean, log_std, sample_maxima=self.deterministic)
-    #
-    actions = get_actions()
-    log_prob = get_log_prob(actions)
-    actions = jnp.clip(actions,-1,1)
-    return actions, log_std
+    #key = next(self.rng)
+    #get_actions, get_log_prob = Normal(key, action_mean, log_std, sample_maxima=self.deterministic)
+    ##
+    #actions = get_actions()
+    #log_prob = get_log_prob(actions)
+    #actions = jnp.clip(actions,-1,1)
+    return action_mean, log_std
 
 
 

@@ -1,2 +1,2 @@
 venv/*
-APP/logs/**
+APP/logs/*

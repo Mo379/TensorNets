@@ -73,6 +73,7 @@ def reparameterize_gaussian_and_tanh(
     """
     Sample from gaussian distributions and tanh transforamation.
     """
+    print(f"params: mean-{mean}, log_std-{log_std}")
     std = jnp.exp(log_std)
     noise = jax.random.normal(key, std.shape)
     action = jnp.tanh(mean + noise * std)

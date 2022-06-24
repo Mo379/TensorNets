@@ -6,8 +6,8 @@ import numpy as np
 from gym.spaces import Box
 from haiku import PRNGSequence
 
-from rollout_buffer import RolloutBuffer
-from optim import soft_update
+from .rollout_buffer import RolloutBuffer
+from .optim import soft_update
 
 
 class BaseAlgorithm(ABC):
@@ -110,20 +110,21 @@ class OnPolicyAlgorithm(BaseAlgorithm):
         self.buffer_size = buffer_size
         self.batch_size = batch_size
 
-    def step(self, env, state):
+    def step(self, env, state, done):
+        #
         self.agent_step += 1
         self.episode_step += 1
-
+        #
+        if self.agent_step > 1 and done.any():
+            self.episode_step = 0
+            state = env.reset()
+        #
         action, log_pi = self.explore(state)
         action = np.clip(action,-1,1)
         next_state, reward, done, _ = env.step(action)
         mask = self.get_mask(env, done)
+        #
         if done.any() == False:
-            for i in range(0,len(action)):
-                self.buffer.append(state[i], action[i], reward[i], mask[i], log_pi[i], next_state[i])
-
-        if done.any():
-            self.episode_step = 0
-            next_state = env.reset()
-
-        return next_state
+            self.buffer.append(state, action, reward, mask, log_pi, next_state)
+        #
+        return next_state, done

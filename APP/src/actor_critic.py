@@ -8,9 +8,9 @@ import jax
 import jax.numpy as jnp
 import numpy as np
 
-from base_algoirithm import OnPolicyAlgorithm
-from saving import load_params, save_params     
-from fake_input import fake_action, fake_state 
+from .base_algoirithm import OnPolicyAlgorithm
+from .saving import load_params, save_params     
+from .fake_input import fake_action, fake_state 
 
 
 class ActorCriticMixIn:
@@ -34,7 +34,7 @@ class ActorCriticMixIn:
 
     def select_action(self, state):
         action = self._select_action(self.params_actor, state[None, ...])
-        return np.array(action[0])
+        return np.array(action)
 
     @abstractmethod
     def _select_action(self, params_actor, state):

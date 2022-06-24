@@ -7,9 +7,10 @@ import jax.numpy as jnp
 import numpy as np
 import optax as optix
 
-from actor_critic import OnPolicyActorCritic
-from distribution import evaluate_gaussian_and_tanh_log_prob, reparameterize_gaussian_and_tanh
-from optim import optimize
+from .actor_critic import OnPolicyActorCritic
+from .distribution import evaluate_gaussian_and_tanh_log_prob, reparameterize_gaussian_and_tanh
+from .optim import optimize
+import wandb
 
 
 class PPO(OnPolicyActorCritic):
@@ -79,30 +80,37 @@ class PPO(OnPolicyActorCritic):
         state: np.ndarray,
         key: jnp.ndarray,
     ) -> Tuple[jnp.ndarray, jnp.ndarray]:
+        #no randomisation done by actor apply!!
         mean, log_std = self.actor.apply(params_actor, state)
         return reparameterize_gaussian_and_tanh(mean, log_std, key, True)
 
-    def update(self, writer=None):
+    def update(self, wandb_run):
+        #get buffer values
         print('getting_instance')
-        state, action, reward, done, log_pi_old, next_state = self.buffer.get()
-        # Calculate gamma-returns and GAEs.
+        outputs = self.buffer.get()
+        actor_first_output= []
+        for output in outputs:
+            actor_first_output.append(jnp.swapaxes(output, 0,1))
+        states, actions, rewards, dones, log_pi_olds, next_states = actor_first_output
+        # Calculate gamma-retwandb_runurns and GAEs.
         print('Calculate gamma-returns and GAEs.')
         gae, target = self.calculate_gae(
             params_critic=self.params_critic,
-            state=state,
-            reward=reward,
-            done=done,
-            next_state=next_state,
+            actors_states=states,
+            actors_rewards=rewards,
+            actors_dones=dones,
+            actors_next_states=next_states,
         )
-
-        for _ in range(self.epoch_ppo):
+        print('done gae got')
+        exit()
+        #
+        for i_count in range(self.epoch_ppo):
+            print(f"epoch {i_count}")
             np.random.shuffle(self.idxes)
             for start in range(0, self.buffer_size, self.batch_size):
                 self.learning_step += 1
                 idx = self.idxes[start : start + self.batch_size]
-
                 # Update critic.
-                print('update critic')
                 self.opt_state_critic, self.params_critic, loss_critic, _ = optimize(
                     self._loss_critic,
                     self.opt_critic,
@@ -112,9 +120,7 @@ class PPO(OnPolicyActorCritic):
                     state=state[idx],
                     target=target[idx],
                 )
-
                 # Update actor.
-                print('update actor')
                 self.opt_state_actor, self.params_actor, loss_actor, _ = optimize(
                     self._loss_actor,
                     self.opt_actor,
@@ -126,11 +132,9 @@ class PPO(OnPolicyActorCritic):
                     log_pi_old=log_pi_old[idx],
                     gae=gae[idx],
                 )
-                print(loss_critic, loss_actor)
-
-        if writer:
-            writer.add_scalar("loss/critic", loss_critic, self.learning_step)
-            writer.add_scalar("loss/actor", loss_actor, self.learning_step)
+        #log the losses
+        wandb.log({"loss/critic": np.array(loss_critic)})
+        wandb.log({"loss/actor": np.array(loss_actor)})
 
     @partial(jax.jit, static_argnums=0)
     def _loss_critic(
@@ -164,19 +168,25 @@ class PPO(OnPolicyActorCritic):
     def calculate_gae(
         self,
         params_critic: hk.Params,
-        state: np.ndarray,
-        reward: np.ndarray,
-        done: np.ndarray,
-        next_state: np.ndarray,
+        actors_states: np.ndarray,
+        actors_rewards: np.ndarray,
+        actors_dones: np.ndarray,
+        actors_next_states: np.ndarray,
     ) -> Tuple[jnp.ndarray, jnp.ndarray]:
-        # Current and next value estimates.
-        value = jax.lax.stop_gradient(self.critic.apply(params_critic, state))
-        next_value = jax.lax.stop_gradient(self.critic.apply(params_critic, next_state))
-        # Calculate TD errors.
-        delta = reward + self.gamma * next_value * (1.0 - done) - value
-        # Calculate GAE recursively from behind.
-        gae = [delta[-1]]
-        for t in jnp.arange(self.buffer_size - 2, -1, -1):
-            gae.insert(0, delta[t] + self.gamma * self.lambd * (1 - done[t]) * gae[0])
-        gae = jnp.array(gae)
-        return (gae - gae.mean()) / (gae.std() + 1e-8), gae + value
+        actors_gae = []
+        actors_targets = []
+        for state, reward, done, next_state in zip(actors_states,actors_rewards,actors_dones,actors_next_states): 
+            # Current and next value estimates.
+            value = jax.lax.stop_gradient(self.critic.apply(params_critic, state))
+            next_value = jax.lax.stop_gradient(self.critic.apply(params_critic, next_state))
+            # Calculate TD errors.
+            delta = reward + self.gamma * next_value * (1.0 - done) - value
+            # Calculate GAE recursively from behind.
+            gae = [delta[-1]]
+            for t in jnp.arange(self.buffer_size - 2, -1, -1):
+                gae.insert(0, delta[t] + self.gamma * self.lambd * (1 - done[t]) * gae[0])
+            gae = jnp.array(gae)
+            actors_gae.append((gae - gae.mean()) / (gae.std() + 1e-8))
+            actors_targets.append(gae + value)
+        print('done internal gae loop')
+        return actors_gae, actors_targets
