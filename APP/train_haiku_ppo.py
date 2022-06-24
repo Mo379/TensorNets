@@ -32,9 +32,9 @@ batch_size=128
 test = True
 if test:
     num_agent_steps=1000
-    buffer_size=64
+    buffer_size=32
     epochs=5
-    batch_size=64
+    batch_size=32
 # evaluation hyperparams
 eval_interval=num_agent_steps//10
 num_eval_episodes = 3
