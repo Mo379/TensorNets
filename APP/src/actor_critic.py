@@ -88,8 +88,8 @@ class OnPolicyActorCritic(ActorCriticMixIn, OnPolicyAlgorithm):
         if not hasattr(self, "fake_args_actor"):
             self.fake_args_actor = (fake_state(state_space),)
 
-    def is_update(self, parallel_shape):
-        return self.agent_step * parallel_shape % self.buffer_size == 0
+    def is_update(self):
+        return self.agent_step % self.buffer_size == 0
 
     def explore(self, state):
         action, log_pi = self._explore(self.params_actor, state[None, ...], next(self.rng))

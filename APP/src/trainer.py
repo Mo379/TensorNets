@@ -81,14 +81,14 @@ class trainer:
         done = np.array([0])
         for step in range(1, self.num_agent_steps + 1):
             #take a step and load the buffer
-            while self.algo.is_update(state.shape[0]) == True:
-                print(f"step {step}")
-                state,done = self.algo.step(self.env, state,done)
-            print('learning')
-            self.algo.update(self.wandb_run)
+            print(f"step {step}")
+            state,done = self.algo.step(self.env, state,done)
+            if self.algo.is_update() == True:
+                print('learning')
+                self.algo.update(self.wandb_run)
             #if we are at a step where evaluation is wanted then evaluate
             print(f"step-{step}, interval {self.eval_interval}: evaluation modulus {step % self.eval_interval}")
-            if step % self.eval_interval == 1:
+            if step % self.eval_interval == 0:
                 #evaluate current model
                 self.evaluate(step)
                 # save current model and log

@@ -94,44 +94,43 @@ class PPO(OnPolicyActorCritic):
         states, actions, rewards, dones, log_pi_olds, next_states = actor_first_output
         # Calculate gamma-retwandb_runurns and GAEs.
         print('Calculate gamma-returns and GAEs.')
-        gae, target = self.calculate_gae(
+        gaes, targets = self.calculate_gae(
             params_critic=self.params_critic,
             actors_states=states,
             actors_rewards=rewards,
             actors_dones=dones,
             actors_next_states=next_states,
         )
-        print('done gae got')
-        exit()
         #
         for i_count in range(self.epoch_ppo):
             print(f"epoch {i_count}")
-            np.random.shuffle(self.idxes)
-            for start in range(0, self.buffer_size, self.batch_size):
-                self.learning_step += 1
-                idx = self.idxes[start : start + self.batch_size]
-                # Update critic.
-                self.opt_state_critic, self.params_critic, loss_critic, _ = optimize(
-                    self._loss_critic,
-                    self.opt_critic,
-                    self.opt_state_critic,
-                    self.params_critic,
-                    self.max_grad_norm,
-                    state=state[idx],
-                    target=target[idx],
-                )
-                # Update actor.
-                self.opt_state_actor, self.params_actor, loss_actor, _ = optimize(
-                    self._loss_actor,
-                    self.opt_actor,
-                    self.opt_state_actor,
-                    self.params_actor,
-                    self.max_grad_norm,
-                    state=state[idx],
-                    action=action[idx],
-                    log_pi_old=log_pi_old[idx],
-                    gae=gae[idx],
-                )
+            for state, action, reward, done, log_pi_old, next_state,gae,target in zip(states, actions, rewards, dones, log_pi_olds, next_states,gaes,targets):
+                np.random.shuffle(self.idxes)
+                for start in range(0, self.buffer_size, self.batch_size):
+                    self.learning_step += 1
+                    idx = self.idxes[start : start + self.batch_size]
+                    # Update critic.
+                    self.opt_state_critic, self.params_critic, loss_critic, _ = optimize(
+                        self._loss_critic,
+                        self.opt_critic,
+                        self.opt_state_critic,
+                        self.params_critic,
+                        self.max_grad_norm,
+                        state=state[idx],
+                        target=target[idx],
+                    )
+                    # Update actor.
+                    self.opt_state_actor, self.params_actor, loss_actor, _ = optimize(
+                        self._loss_actor,
+                        self.opt_actor,
+                        self.opt_state_actor,
+                        self.params_actor,
+                        self.max_grad_norm,
+                        state=state[idx],
+                        action=action[idx],
+                        log_pi_old=log_pi_old[idx],
+                        gae=gae[idx],
+                    )
         #log the losses
         wandb.log({"loss/critic": np.array(loss_critic)})
         wandb.log({"loss/actor": np.array(loss_actor)})
@@ -188,5 +187,4 @@ class PPO(OnPolicyActorCritic):
             gae = jnp.array(gae)
             actors_gae.append((gae - gae.mean()) / (gae.std() + 1e-8))
             actors_targets.append(gae + value)
-        print('done internal gae loop')
         return actors_gae, actors_targets

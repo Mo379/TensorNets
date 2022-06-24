@@ -14,13 +14,13 @@ from src.env_setup import environment_setup,play_enviromnet_setup
 from src.trainer import trainer
 
 #setting up model hyperparams
-lr_actor=0.00032211
-lr_critic=0.00032211
+lr_actor=0.0001
+lr_critic=0.0001
 # setting up algorithm hyperparameters
 max_grad_norm = 0.9
 gamma=0.95
-clip_eps=0.35
-lambd=0.97
+clip_eps=0.2
+lambd=0.95
 seed=0
 action_repeat=1
 #setting training length hyperparams
@@ -32,9 +32,9 @@ batch_size=128
 test = True
 if test:
     num_agent_steps=1000
-    buffer_size=128
-    epochs=3
-    batch_size=32
+    buffer_size=64
+    epochs=5
+    batch_size=64
 # evaluation hyperparams
 eval_interval=num_agent_steps//10
 num_eval_episodes = 3
