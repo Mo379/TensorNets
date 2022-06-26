@@ -26,8 +26,10 @@ class PPO(OnPolicyActorCritic):
         gamma,
         buffer_size,
         batch_size,
+        fn_policy,
         fn_actor,
         fn_critic,
+        lr_policy,
         lr_actor,
         lr_critic,
         epoch_ppo,
@@ -47,17 +49,23 @@ class PPO(OnPolicyActorCritic):
             buffer_size=buffer_size,
             batch_size=batch_size,
         )
-        # Critic.
-        self.critic = hk.without_apply_rng(hk.transform(fn_critic))
-        self.params_critic = self.params_critic_target = self.critic.init(next(self.rng), *self.fake_args_critic)
-        opt_init, self.opt_critic = optix.adam(lr_critic)
-        self.opt_state_critic = opt_init(self.params_critic)
+        # Policy.
+        self.policy= hk.without_apply_rng(hk.transform(fn_policy))
+        self.params_policy = self.params_policy_target = self.policy.init(next(self.rng), *self.fake_args_policy)
+        opt_init, self.opt_policy= optix.adam(lr_policy)
+        self.opt_state_policy= opt_init(self.params_policy)
 
-        # Actor.
-        self.actor = hk.without_apply_rng(hk.transform(fn_actor))
-        self.params_actor = self.params_actor_target = self.actor.init(next(self.rng), *self.fake_args_actor)
-        opt_init, self.opt_actor = optix.adam(lr_actor)
-        self.opt_state_actor = opt_init(self.params_actor)
+        # Critic.
+        #self.critic = hk.without_apply_rng(hk.transform(fn_critic))
+        #self.params_critic = self.params_critic_target = self.critic.init(next(self.rng), *self.fake_args_critic)
+        #opt_init, self.opt_critic = optix.adam(lr_critic)
+        #self.opt_state_critic = opt_init(self.params_critic)
+
+        ## Actor.
+        #self.actor = hk.without_apply_rng(hk.transform(fn_actor))
+        #self.params_actor = self.params_actor_target = self.actor.init(next(self.rng), *self.fake_args_actor)
+        #opt_init, self.opt_actor = optix.adam(lr_actor)
+        #self.opt_state_actor = opt_init(self.params_actor)
 
         # Other parameters.
         self.epoch_ppo = epoch_ppo
@@ -71,21 +79,21 @@ class PPO(OnPolicyActorCritic):
     @partial(jax.jit, static_argnums=0)
     def _select_action(
         self,
-        params_actor: hk.Params,
+        params_policy: hk.Params,
         state: np.ndarray,
     ) -> jnp.ndarray:
-        mean, _ = self.actor.apply(params_actor, state)
+        mean, _ , _ = self.policy.apply(params_policy, state)
         return jnp.tanh(mean)
 
     @partial(jax.jit, static_argnums=0)
     def _explore(
         self,
-        params_actor: hk.Params,
+        params_policy: hk.Params,
         state: np.ndarray,
         key: jnp.ndarray,
     ) -> Tuple[jnp.ndarray, jnp.ndarray]:
         #no randomisation done by actor apply!!
-        mean, log_std = self.actor.apply(params_actor, state)
+        mean, _ ,log_std = self.policy.apply(params_policy, state)
         return reparameterize_gaussian_and_tanh(mean, log_std, key, True)
 
     def update(self, wandb_run):
@@ -99,7 +107,7 @@ class PPO(OnPolicyActorCritic):
         # Calculate gamma-retwandb_runurns and GAEs.
         print('Calculate gamma-returns and GAEs.')
         gaes, targets = self.calculate_gae(
-            params_critic=self.params_critic,
+            params_policy=self.params_policy,
             actors_states=states,
             actors_rewards=rewards,
             actors_dones=dones,
@@ -121,21 +129,26 @@ class PPO(OnPolicyActorCritic):
                 self.learning_step += 1
                 idx = idxes[start : start + self.batch_size]
                 # Update critic.
-                self.opt_state_critic, self.params_critic, loss_critic, _ = optimize(
-                    self._loss_critic,
-                    self.opt_critic,
-                    self.opt_state_critic,
-                    self.params_critic,
-                    self.max_grad_norm,
-                    state=state[idx],
-                    target=target[idx],
+                #self.opt_state_policy, self.params_policy, loss_critic, _ = optimize(
+                #    self._loss_critic,
+                #    self.opt_policy,
+                #    self.opt_state_policy,
+                #    self.params_policy,
+                #    self.max_grad_norm,
+                #    state=state[idx],
+                #    target=target[idx],
+                #)
+                loss_critic,_= self._loss_critic(
+                        self.params_policy,
+                        state[idx],
+                        target[idx],
                 )
                 # Update actor.
-                self.opt_state_actor, self.params_actor, loss_actor, aux = optimize(
+                self.opt_state_policy, self.params_policy, loss_actor, aux = optimize(
                     self._loss_actor,
-                    self.opt_actor,
-                    self.opt_state_actor,
-                    self.params_actor,
+                    self.opt_policy,
+                    self.opt_state_policy,
+                    self.params_policy,
                     self.max_grad_norm,
                     state=state[idx],
                     action=action[idx],
@@ -146,7 +159,7 @@ class PPO(OnPolicyActorCritic):
                     vf_coef=self.vf_coef,
                     value_loss=loss_critic
                 )
-                print(self.opt_state_actor)
+                print(self.opt_state_policy)
                 #loss_critic= self._loss_critic(
                 #        self.params_critic,
                 #        state[idx],
@@ -181,16 +194,16 @@ class PPO(OnPolicyActorCritic):
     @partial(jax.jit, static_argnums=0)
     def _loss_critic(
         self,
-        params_critic: hk.Params,
+        params_policy: hk.Params,
         state: np.ndarray,
         target: np.ndarray,
     ) -> jnp.ndarray:
-        return jnp.square(target - self.critic.apply(params_critic, state)).mean(), None
+        return jnp.square(target - self.policy.apply(params_policy, state)[2]).mean(), None
 
     @partial(jax.jit, static_argnums=0)
     def _loss_actor(
         self,
-        params_actor: hk.Params,
+        params_policy: hk.Params,
         state: np.ndarray,
         action: np.ndarray,
         log_pi_old: np.ndarray,
@@ -201,21 +214,20 @@ class PPO(OnPolicyActorCritic):
         value_loss: jnp.ndarray
     ) -> jnp.ndarray:
         # Calculate log(\pi) at current policy.
-        mean, log_std = self.actor.apply(params_actor, state)
+        mean, _ ,log_std = self.policy.apply(params_policy, state)
         log_pi = evaluate_gaussian_and_tanh_log_prob(mean, log_std, action)
         # Calculate importance ratio.
         ratio = jnp.exp(log_pi - log_pi_old)
         loss_actor1 = ratio * gae
         loss_actor2 = jnp.clip(ratio, 1.0 - self.clip_eps, 1.0 + self.clip_eps) * gae
         loss_actor = -jnp.minimum(loss_actor1, loss_actor2).mean()
-        #loss = loss_actor + ent_coef*entropy_loss + vf_coef*value_loss 
-        loss = loss_actor +  0.5*vf_coef*value_loss 
+        loss = loss_actor + ent_coef*entropy_loss + vf_coef*value_loss 
         return loss,None#loss, (state)
 
     @partial(jax.jit, static_argnums=0)
     def calculate_gae(
         self,
-        params_critic: hk.Params,
+        params_policy: hk.Params,
         actors_states: np.ndarray,
         actors_rewards: np.ndarray,
         actors_dones: np.ndarray,
@@ -225,8 +237,8 @@ class PPO(OnPolicyActorCritic):
         actors_targets = []
         for state, reward, done, next_state in zip(actors_states,actors_rewards,actors_dones,actors_next_states): 
             # Current and next value estimates.
-            value = jax.lax.stop_gradient(self.critic.apply(params_critic, state))
-            next_value = jax.lax.stop_gradient(self.critic.apply(params_critic, next_state))
+            _,value,_ = jax.lax.stop_gradient(self.policy.apply(params_policy, state))
+            _,next_value,_ = jax.lax.stop_gradient(self.policy.apply(params_policy, next_state))
             # Calculate TD errors.
             delta = reward + self.gamma * next_value * (1.0 - done) - value
             # Calculate GAE recursively from behind.

@@ -33,24 +33,22 @@ class ActorCriticMixIn:
         return {"key": next(self.rng)} if self.use_key_actor else {}
 
     def select_action(self, state):
-        action = self._select_action(self.params_actor, state[None, ...])
+        action = self._select_action(self.params_policy, state[None, ...])
         return np.array(action)
 
     @abstractmethod
-    def _select_action(self, params_actor, state):
+    def _select_action(self, params_policy, state):
         pass
 
     @abstractmethod
-    def _explore(self, params_actor, state, key):
+    def _explore(self, params_policy, state, key):
         pass
 
     def save_params(self, save_dir):
-        save_params(self.params_critic, os.path.join(save_dir, "params_critic.npz"))
-        save_params(self.params_actor, os.path.join(save_dir, "params_actor.npz"))
+        save_params(self.params_policy, os.path.join(save_dir, "params_policy.npz"))
 
     def load_params(self, save_dir):
-        self.params_critic = load_params(os.path.join(save_dir, "params_critic.npz"))
-        self.params_actor = load_params(os.path.join(save_dir, "params_actor.npz"))
+        self.params_policy= load_params(os.path.join(save_dir, "params_policy.npz"))
 
 
 class OnPolicyActorCritic(ActorCriticMixIn, OnPolicyAlgorithm):
@@ -81,6 +79,9 @@ class OnPolicyActorCritic(ActorCriticMixIn, OnPolicyAlgorithm):
             buffer_size=buffer_size,
             batch_size=batch_size,
         )
+        # Define fake input for policy.
+        if not hasattr(self, "fake_args_policy"):
+            self.fake_args_policy= (fake_state(state_space),)
         # Define fake input for critic.
         if not hasattr(self, "fake_args_critic"):
             self.fake_args_critic = (fake_state(state_space),)
@@ -92,5 +93,5 @@ class OnPolicyActorCritic(ActorCriticMixIn, OnPolicyAlgorithm):
         return self.agent_step % self.buffer_size == 0
 
     def explore(self, state):
-        action, log_pi = self._explore(self.params_actor, state, next(self.rng))
+        action, log_pi = self._explore(self.params_policy, state, next(self.rng))
         return np.array(action), np.array(log_pi)

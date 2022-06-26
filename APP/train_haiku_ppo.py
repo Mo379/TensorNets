@@ -17,6 +17,7 @@ from src.trainer import trainer
 ent_coef=0.0905168
 vf_coef=0.042202
 #setting up model hyperparams
+lr_policy=0.0003211
 lr_actor=0.0002211
 lr_critic=0.0002211
 # setting up algorithm hyperparameters
@@ -62,9 +63,10 @@ if __name__ == "__main__":
     #algorithm setup
     algo = PPO_jax(
         # models and model hyper params
-        fn_feature_extractor=feature_extractor,
+        fn_policy=my_model,
         fn_actor=my_actor,
         fn_critic=my_critic,
+        lr_policy=lr_policy,
         lr_actor=lr_actor,
         lr_critic=lr_critic,
         #algorithm hyper params

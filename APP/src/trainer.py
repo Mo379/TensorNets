@@ -102,7 +102,7 @@ class trainer:
                     artifact.add_dir(params_path)
                     self.wandb_run.log_artifact(artifact)
                     print('loging model params as histograms')
-                    params = self.algo.params_actor.copy()
+                    params = self.algo.params_policy.copy()
                     log_std = params['log_std']['constant']
                     params.pop('log_std')
                     wandb.log({"params-log_std":wandb.Histogram(log_std)})

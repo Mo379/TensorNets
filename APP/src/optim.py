@@ -25,7 +25,6 @@ def optimize(
         *args,
         **kwargs,
     )
-    opt_state= jax.tree_map(lambda x: x*0,opt_state)
     if max_grad_norm is not None:
         grad = clip_gradient_norm(grad, max_grad_norm)
     update, opt_state = opt(grad, opt_state)
