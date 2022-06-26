@@ -13,11 +13,14 @@ from src.ppo import PPO as PPO_jax
 from src.env_setup import environment_setup,play_enviromnet_setup
 from src.trainer import trainer
 
+
+ent_coef=0.0905168
+vf_coef=0.042202
 #setting up model hyperparams
-lr_actor=0.00011
-lr_critic=0.00011
+lr_actor=0.0002211
+lr_critic=0.0002211
 # setting up algorithm hyperparameters
-max_grad_norm = 0.01
+max_grad_norm = 0.9
 gamma=0.95
 clip_eps=0.3
 lambd=0.99
@@ -27,11 +30,11 @@ action_repeat=1
 num_agent_steps=3000000
 buffer_size=2048
 epochs=5
-batch_size=128
+batch_size=256
 # testing scenario
 test = True
 if test:
-    num_agent_steps=10000
+    num_agent_steps=1000
     buffer_size=32
     epochs=5
     batch_size=128
@@ -59,6 +62,7 @@ if __name__ == "__main__":
     #algorithm setup
     algo = PPO_jax(
         # models and model hyper params
+        fn_feature_extractor=feature_extractor,
         fn_actor=my_actor,
         fn_critic=my_critic,
         lr_actor=lr_actor,
@@ -68,6 +72,8 @@ if __name__ == "__main__":
         gamma=gamma,
         clip_eps=clip_eps,
         lambd=lambd,
+        ent_coef=ent_coef,
+        vf_coef=vf_coef,
         #env hyperparams
         state_space=env.observation_space,
         action_space=env.action_space,

@@ -9,7 +9,7 @@ import optax as optix
 
 from .actor_critic import OnPolicyActorCritic
 from .distribution import evaluate_gaussian_and_tanh_log_prob, reparameterize_gaussian_and_tanh
-from .optim import optimize
+from .optim import optimize,my_policy_optimize
 import wandb
 
 
@@ -33,8 +33,10 @@ class PPO(OnPolicyActorCritic):
         epoch_ppo,
         clip_eps,
         lambd,
+        ent_coef,
+        vf_coef,
     ):
-        assert buffer_size % batch_size == 0
+        #assert buffer_size % batch_size == 0
         super(PPO, self).__init__(
             num_agent_steps=num_agent_steps,
             state_space=state_space,
@@ -61,6 +63,8 @@ class PPO(OnPolicyActorCritic):
         self.epoch_ppo = epoch_ppo
         self.clip_eps = clip_eps
         self.lambd = lambd
+        self.ent_coef=vf_coef
+        self.vf_coef=vf_coef
         self.max_grad_norm = max_grad_norm
         self.idxes = np.arange(buffer_size)
 
@@ -127,7 +131,7 @@ class PPO(OnPolicyActorCritic):
                     target=target[idx],
                 )
                 # Update actor.
-                self.opt_state_actor, self.params_actor, loss_actor, _ = optimize(
+                self.opt_state_actor, self.params_actor, loss_actor, aux = optimize(
                     self._loss_actor,
                     self.opt_actor,
                     self.opt_state_actor,
@@ -137,7 +141,39 @@ class PPO(OnPolicyActorCritic):
                     action=action[idx],
                     log_pi_old=log_pi_old[idx],
                     gae=gae[idx],
+                    ent_coef=self.ent_coef,
+                    entropy_loss=-jnp.mean(-log_pi_old[idx]),
+                    vf_coef=self.vf_coef,
+                    value_loss=loss_critic
                 )
+                print(self.opt_state_actor)
+                #loss_critic= self._loss_critic(
+                #        self.params_critic,
+                #        state[idx],
+                #        target[idx],
+                #)
+                ## Update policy.
+                #self.opt_state_actor, self.params_actor, \
+                #        self.opt_state_critic, self.params_critic , \
+                #        loss_actor,loss_critic, aux = my_policy_optimize(
+                #    self._loss_actor,
+                #    self.opt_actor,
+                #    self.opt_state_actor,
+                #    self.params_actor,
+                #    self.opt_critic,
+                #    self.opt_state_critic,
+                #    self.params_critic,
+                #    self.max_grad_norm,
+                #    #kwargs
+                #    state=state[idx],
+                #    action=action[idx],
+                #    log_pi_old=log_pi_old[idx],
+                #    gae=gae[idx],
+                #    ent_coef=self.ent_coef,
+                #    entropy_loss=-jnp.mean(-log_pi_old[idx]),
+                #    vf_coef=self.vf_coef,
+                #    value_loss=loss_critic
+                #)
             #log the losses
             wandb.log({"loss/critic": np.array(loss_critic)})
             wandb.log({"loss/actor": np.array(loss_actor)})
@@ -159,16 +195,22 @@ class PPO(OnPolicyActorCritic):
         action: np.ndarray,
         log_pi_old: np.ndarray,
         gae: jnp.ndarray,
+        ent_coef: jnp.ndarray,
+        entropy_loss: jnp.ndarray,
+        vf_coef: jnp.ndarray,
+        value_loss: jnp.ndarray
     ) -> jnp.ndarray:
         # Calculate log(\pi) at current policy.
         mean, log_std = self.actor.apply(params_actor, state)
         log_pi = evaluate_gaussian_and_tanh_log_prob(mean, log_std, action)
         # Calculate importance ratio.
         ratio = jnp.exp(log_pi - log_pi_old)
-        loss_actor1 = -ratio * gae
-        loss_actor2 = -jnp.clip(ratio, 1.0 - self.clip_eps, 1.0 + self.clip_eps) * gae
-        loss_actor = jnp.maximum(loss_actor1, loss_actor2).mean()
-        return loss_actor, None
+        loss_actor1 = ratio * gae
+        loss_actor2 = jnp.clip(ratio, 1.0 - self.clip_eps, 1.0 + self.clip_eps) * gae
+        loss_actor = -jnp.minimum(loss_actor1, loss_actor2).mean()
+        #loss = loss_actor + ent_coef*entropy_loss + vf_coef*value_loss 
+        loss = loss_actor +  0.5*vf_coef*value_loss 
+        return loss,None#loss, (state)
 
     @partial(jax.jit, static_argnums=0)
     def calculate_gae(

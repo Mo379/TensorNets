@@ -81,7 +81,6 @@ class trainer:
         done = np.array([0])
         for step in range(1, self.num_agent_steps + 1):
             #take a step and load the buffer
-            print(f"step {step}")
             state,done = self.algo.step(self.env, state,done)
             if self.algo.is_update() == True:
                 print('learning')
@@ -123,11 +122,11 @@ class trainer:
             state = self.env_eval.reset()
             done = np.array([0])
             #run until done
-            while done.any() == False: 
+            while done.all() == False: 
                 #get action
                 action = self.algo.select_action(state)
                 #get environemnt observables
-                state, reward, done, _ = self.env_eval.step(action) if not done.any() else None
+                state, reward, done, _ = self.env_eval.step(action) if not done.all() else None
                 total_return += np.mean(reward)
         # Log mean return and step.
         mean_return = total_return / self.num_eval_episodes
@@ -143,7 +142,10 @@ class trainer:
         for agent in self.env_test.agent_iter():
             # getting environment step vars
             obs, reward, done, info = self.env_test.last()
-            # model forward pass
+            # model forward passlog_pi_old
+            #act = self.algo.select_action(obs)[0] if not done else None
+            #obs = obs.reshape((1,) + obs.shape)
+            #act = self.algo.explore(obs)[0][0] if not done else None
             act = self.algo.select_action(obs)[0] if not done else None
             act = np.array(act)
             self.env_test.step(act)
@@ -154,7 +156,7 @@ class trainer:
         #
         imageio.mimsave(
                 os.path.join(self.log_dir,f"videos/{self.log_id}.gif"), 
-                [np.array(img) for i, img in enumerate(imgs) if i%10 == 0], 
+                [np.array(img) for i, img in enumerate(imgs) if i%20 == 0], 
                 fps=15
         )
         #saving video

@@ -115,7 +115,7 @@ class OnPolicyAlgorithm(BaseAlgorithm):
         self.agent_step += 1
         self.episode_step += 1
         #
-        if self.agent_step > 1 and done.any():
+        if self.agent_step > 1 and done.all():
             self.episode_step = 0
             state = env.reset()
         #
@@ -124,7 +124,6 @@ class OnPolicyAlgorithm(BaseAlgorithm):
         next_state, reward, done, _ = env.step(action)
         mask = self.get_mask(env, done)
         #
-        if done.any() == False:
-            self.buffer.append(state, action, reward, mask, log_pi, next_state)
+        self.buffer.append(state, action, reward, mask, log_pi, next_state)
         #
         return next_state, done

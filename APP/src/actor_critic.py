@@ -92,5 +92,5 @@ class OnPolicyActorCritic(ActorCriticMixIn, OnPolicyAlgorithm):
         return self.agent_step % self.buffer_size == 0
 
     def explore(self, state):
-        action, log_pi = self._explore(self.params_actor, state[None, ...], next(self.rng))
+        action, log_pi = self._explore(self.params_actor, state, next(self.rng))
         return np.array(action), np.array(log_pi)
