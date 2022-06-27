@@ -8,7 +8,6 @@ import numpy as np
 import optax as optix
 
 from .actor_critic import OnPolicyActorCritic
-from .distribution import evaluate_gaussian_and_tanh_log_prob, reparameterize_gaussian_and_tanh
 from .optim import optimize
 from src.network_components import *
 import wandb
@@ -84,7 +83,9 @@ class PPO(OnPolicyActorCritic):
     ) -> Tuple[jnp.ndarray, jnp.ndarray]:
         #no randomisation done by actor apply!!
         mean, _ ,log_std = self.policy.apply(params_policy, state)
-        return reparameterize_gaussian_and_tanh(mean, log_std, key, True)
+        action = self.fn_random_sample(mean=mean,sd=log_std, sample_maxima=False)
+        log_pi = self.fn_log_prob(action,mean=mean,sd=log_std)
+        return action,log_pi
 
     def update(self, wandb_run):
         #get buffer values
@@ -147,15 +148,6 @@ class PPO(OnPolicyActorCritic):
                     vf_coef=self.vf_coef,
                     value_loss=loss_critic
                 )
-                params = self.params_policy.copy()
-                log_std = params['log_std']['constant']
-                params.pop('log_std')
-                wandb.log({"params-log_std":wandb.Histogram(log_std)})
-                for layer in params:
-                    w = params[layer]['w']
-                    b = params[layer]['b']
-                    wandb.log({f"params-{layer}-weights":wandb.Histogram(w)})
-                    wandb.log({f"params-{layer}-bias":wandb.Histogram(b)})
 
             #log the losses
             wandb.log({"loss/critic": np.array(loss_critic)})
@@ -185,7 +177,6 @@ class PPO(OnPolicyActorCritic):
     ) -> jnp.ndarray:
         # Calculate log(\pi) at current policy.
         mean, _ ,log_std = self.policy.apply(params_policy, state)
-        #log_pi = evaluate_gaussian_and_tanh_log_prob(mean, log_std, action)
         log_pi = self.fn_log_prob(action,mean=mean,sd=log_std)
         # Calculate importance ratio.
         ratio = jnp.exp(log_pi - log_pi_old)
