@@ -112,7 +112,7 @@ def Normal(rng,mean, sd, sample_maxima):
     def random_sample(rng=rng,mean=mean,sd=sd, sample_maxima=sample_maxima):
         if sample_maxima:
             return mean
-        x = mean + sd * jax.random.normal(rng, (1,))
+        x = mean + sd * jax.random.normal(rng, (len(mean),))
         return x
     def log_prob(x,rng=rng,mean=mean,sd=sd):
         var = (sd ** 2)
