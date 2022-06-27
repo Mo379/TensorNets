@@ -70,7 +70,6 @@ class PPO(OnPolicyActorCritic):
         self.vf_coef=vf_coef
         self.max_grad_norm = max_grad_norm
         self.idxes = np.arange(buffer_size)
-        self.fn_random_sample,self.fn_log_prob = Normal(next(self.rng),0,1, sample_maxima=False)
 
     @partial(jax.jit, static_argnums=0)
     def _select_action(
@@ -90,8 +89,8 @@ class PPO(OnPolicyActorCritic):
     ) -> Tuple[jnp.ndarray, jnp.ndarray]:
         #no randomisation done by actor apply!!
         mean, _ ,log_std = self.policy.apply(params_policy, state)
-        action = self.fn_random_sample(mean=mean,sd=log_std, sample_maxima=False)
-        log_pi = self.fn_log_prob(action,mean=mean,sd=log_std)
+        #use distribution 
+
         return action,log_pi
 
     def update(self, wandb_run):
