@@ -9,7 +9,8 @@ import optax as optix
 
 from .actor_critic import OnPolicyActorCritic
 from .distribution import evaluate_gaussian_and_tanh_log_prob, reparameterize_gaussian_and_tanh
-from .optim import optimize,my_policy_optimize
+from .optim import optimize
+from src.network_components import *
 import wandb
 
 
@@ -52,21 +53,9 @@ class PPO(OnPolicyActorCritic):
         # Policy.
         self.policy= hk.without_apply_rng(hk.transform(fn_policy))
         self.params_policy = self.params_policy_target = self.policy.init(next(self.rng), *self.fake_args_policy)
+        #self.load_params('logs/pkls')
         opt_init, self.opt_policy= optix.adam(lr_policy)
         self.opt_state_policy= opt_init(self.params_policy)
-
-        # Critic.
-        #self.critic = hk.without_apply_rng(hk.transform(fn_critic))
-        #self.params_critic = self.params_critic_target = self.critic.init(next(self.rng), *self.fake_args_critic)
-        #opt_init, self.opt_critic = optix.adam(lr_critic)
-        #self.opt_state_critic = opt_init(self.params_critic)
-
-        ## Actor.
-        #self.actor = hk.without_apply_rng(hk.transform(fn_actor))
-        #self.params_actor = self.params_actor_target = self.actor.init(next(self.rng), *self.fake_args_actor)
-        #opt_init, self.opt_actor = optix.adam(lr_actor)
-        #self.opt_state_actor = opt_init(self.params_actor)
-
         # Other parameters.
         self.epoch_ppo = epoch_ppo
         self.clip_eps = clip_eps
@@ -75,6 +64,7 @@ class PPO(OnPolicyActorCritic):
         self.vf_coef=vf_coef
         self.max_grad_norm = max_grad_norm
         self.idxes = np.arange(buffer_size)
+        self.fn_random_sample,self.fn_log_prob = Normal(next(self.rng),0,1, sample_maxima=False)
 
     @partial(jax.jit, static_argnums=0)
     def _select_action(
@@ -83,7 +73,7 @@ class PPO(OnPolicyActorCritic):
         state: np.ndarray,
     ) -> jnp.ndarray:
         mean, _ , _ = self.policy.apply(params_policy, state)
-        return jnp.tanh(mean)
+        return jnp.clip(mean,-1,1)
 
     @partial(jax.jit, static_argnums=0)
     def _explore(
@@ -122,28 +112,29 @@ class PPO(OnPolicyActorCritic):
 
         #rearranged data
         state, action, reward, done, log_pi_old, next_state,gae,target = n_outputs
-        idxes = np.arange(len(state)) 
+        idxes = np.arange(len(state))
         for i_count in range(self.epoch_ppo):
             print(f"epoch {i_count}")
             for start in range(0, len(state), self.batch_size):
                 self.learning_step += 1
                 idx = idxes[start : start + self.batch_size]
-                # Update critic.
-                #self.opt_state_policy, self.params_policy, loss_critic, _ = optimize(
-                #    self._loss_critic,
-                #    self.opt_policy,
-                #    self.opt_state_policy,
-                #    self.params_policy,
-                #    self.max_grad_norm,
-                #    state=state[idx],
-                #    target=target[idx],
-                #)
+                # get critic loss.
                 loss_critic,_= self._loss_critic(
                         self.params_policy,
                         state[idx],
                         target[idx],
                 )
-                # Update actor.
+                                # Update critic.
+                self.opt_state_policy, self.params_policy, loss_critic, _ = optimize(
+                    self._loss_critic,
+                    self.opt_policy,
+                    self.opt_state_policy,
+                    self.params_policy,
+                    self.max_grad_norm,
+                    state=state[idx],
+                    target=target[idx],
+                )
+                # Update policy.
                 self.opt_state_policy, self.params_policy, loss_actor, aux = optimize(
                     self._loss_actor,
                     self.opt_policy,
@@ -159,34 +150,16 @@ class PPO(OnPolicyActorCritic):
                     vf_coef=self.vf_coef,
                     value_loss=loss_critic
                 )
-                print(self.opt_state_policy)
-                #loss_critic= self._loss_critic(
-                #        self.params_critic,
-                #        state[idx],
-                #        target[idx],
-                #)
-                ## Update policy.
-                #self.opt_state_actor, self.params_actor, \
-                #        self.opt_state_critic, self.params_critic , \
-                #        loss_actor,loss_critic, aux = my_policy_optimize(
-                #    self._loss_actor,
-                #    self.opt_actor,
-                #    self.opt_state_actor,
-                #    self.params_actor,
-                #    self.opt_critic,
-                #    self.opt_state_critic,
-                #    self.params_critic,
-                #    self.max_grad_norm,
-                #    #kwargs
-                #    state=state[idx],
-                #    action=action[idx],
-                #    log_pi_old=log_pi_old[idx],
-                #    gae=gae[idx],
-                #    ent_coef=self.ent_coef,
-                #    entropy_loss=-jnp.mean(-log_pi_old[idx]),
-                #    vf_coef=self.vf_coef,
-                #    value_loss=loss_critic
-                #)
+                params = self.params_policy.copy()
+                log_std = params['log_std']['constant']
+                params.pop('log_std')
+                wandb.log({"params-log_std":wandb.Histogram(log_std)})
+                for layer in params:
+                    w = params[layer]['w']
+                    b = params[layer]['b']
+                    wandb.log({f"params-{layer}-weights":wandb.Histogram(w)})
+                    wandb.log({f"params-{layer}-bias":wandb.Histogram(b)})
+
             #log the losses
             wandb.log({"loss/critic": np.array(loss_critic)})
             wandb.log({"loss/actor": np.array(loss_actor)})
@@ -198,7 +171,7 @@ class PPO(OnPolicyActorCritic):
         state: np.ndarray,
         target: np.ndarray,
     ) -> jnp.ndarray:
-        return jnp.square(target - self.policy.apply(params_policy, state)[2]).mean(), None
+        return jnp.square(target - self.policy.apply(params_policy, state)[1]).mean(), None
 
     @partial(jax.jit, static_argnums=0)
     def _loss_actor(
@@ -215,14 +188,16 @@ class PPO(OnPolicyActorCritic):
     ) -> jnp.ndarray:
         # Calculate log(\pi) at current policy.
         mean, _ ,log_std = self.policy.apply(params_policy, state)
-        log_pi = evaluate_gaussian_and_tanh_log_prob(mean, log_std, action)
+        #log_pi = evaluate_gaussian_and_tanh_log_prob(mean, log_std, action)
+        log_pi = self.fn_log_prob(action,mean=mean,sd=log_std)
         # Calculate importance ratio.
         ratio = jnp.exp(log_pi - log_pi_old)
         loss_actor1 = ratio * gae
         loss_actor2 = jnp.clip(ratio, 1.0 - self.clip_eps, 1.0 + self.clip_eps) * gae
         loss_actor = -jnp.minimum(loss_actor1, loss_actor2).mean()
+        #loss = loss_actor + ent_coef*entropy_loss + vf_coef*value_loss 
         loss = loss_actor + ent_coef*entropy_loss + vf_coef*value_loss 
-        return loss,None#loss, (state)
+        return loss, (log_pi)
 
     @partial(jax.jit, static_argnums=0)
     def calculate_gae(

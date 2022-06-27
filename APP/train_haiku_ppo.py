@@ -17,9 +17,9 @@ from src.trainer import trainer
 ent_coef=0.0905168
 vf_coef=0.042202
 #setting up model hyperparams
-lr_policy=0.0003211
-lr_actor=0.0002211
-lr_critic=0.0002211
+lr_policy=0.0006211
+lr_actor=0.0006211
+lr_critic=0.0006211
 # setting up algorithm hyperparameters
 max_grad_norm = 0.9
 gamma=0.95
@@ -38,7 +38,7 @@ if test:
     num_agent_steps=1000
     buffer_size=32
     epochs=5
-    batch_size=128
+    batch_size=320
 # evaluation hyperparams
 eval_interval=num_agent_steps//10
 num_eval_episodes = 3

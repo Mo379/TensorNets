@@ -144,9 +144,10 @@ class trainer:
             obs, reward, done, info = self.env_test.last()
             # model forward passlog_pi_old
             #act = self.algo.select_action(obs)[0] if not done else None
-            #obs = obs.reshape((1,) + obs.shape)
+            obs = obs.reshape((1,) + obs.shape)
             #act = self.algo.explore(obs)[0][0] if not done else None
-            act = self.algo.select_action(obs)[0] if not done else None
+            act = self.algo.explore(obs)[0][0] if not done else None
+            #act = self.algo.select_action(obs)[0] if not done else None
             act = np.array(act)
             self.env_test.step(act)
             # saving image and reward
