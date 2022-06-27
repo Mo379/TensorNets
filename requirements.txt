@@ -12,6 +12,8 @@ pygame
 pymunk
 wandb
 imageio
+rlax
+bsuite
 
 pyyaml
 tqdm

@@ -2,6 +2,8 @@ import haiku as hk
 import jax
 import jax.numpy as jnp 
 import numpy as np
+from numbers import Real
+
 
 
 
@@ -112,12 +114,17 @@ def Normal(rng,mean, sd, sample_maxima):
     def random_sample(rng=rng,mean=mean,sd=sd, sample_maxima=sample_maxima):
         if sample_maxima:
             return mean
-        x = mean + sd * jax.random.normal(rng, (len(mean),))
+        x = mean + sd * jax.random.normal(rng, mean.shape)
         return x
     def log_prob(x,rng=rng,mean=mean,sd=sd):
+        #
+        sd = jnp.ones_like(mean) * jnp.log(sd)
+        #
         var = (sd ** 2)
         log_sd = jnp.log(sd) 
-        return -((x - mean) ** 2) / (2 * var) - log_sd - jnp.log(jnp.sqrt(2 * jnp.pi))
+        log_sd = jnp.ones_like(mean) * jnp.log(sd) if isinstance(sd, Real) else jnp.log(sd)
+        non_sum = -((x - mean) ** 2) / (2 * var) - log_sd - jnp.log(jnp.sqrt(2 * jnp.pi))
+        return jnp.sum(non_sum)
     return random_sample, log_prob
 
 
