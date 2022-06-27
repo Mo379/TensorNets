@@ -1,31 +1,32 @@
+#system 
 import os
-from datetime import datetime
 import time
 from pathlib import Path
+#ML
 import haiku as hk
 import jax
 import jax.numpy as jnp 
 import numpy as np
+#log
 import wandb
-from src.util import *
-from src.network import *
-from src.ppo import PPO as PPO_jax
-from src.env_setup import environment_setup,play_enviromnet_setup
-from src.trainer import trainer
+#local
+from src.agent import *
+from src.ppo import PPO
+from src.util import trainer,environment_setup,play_enviromnet_setup
 
-
+#seed and root
+seed=0
+root= Path(__file__).resolve().parent
+#loss scales for entropy and value losses
 ent_coef=0.0905168
 vf_coef=0.042202
 #setting up model hyperparams
 lr_policy=0.0006211
-lr_actor=0.0006211
-lr_critic=0.0006211
 # setting up algorithm hyperparameters
 max_grad_norm = 0.9
 gamma=0.95
 clip_eps=0.3
 lambd=0.99
-seed=0
 action_repeat=1
 #setting training length hyperparams
 num_agent_steps=3000000
@@ -38,13 +39,11 @@ if test:
     num_agent_steps=1000
     buffer_size=32
     epochs=5
-    batch_size=320
+    batch_size=32
 # evaluation hyperparams
 eval_interval=num_agent_steps//10
 num_eval_episodes = 3
 save_params=True
-#root
-root= Path(__file__).resolve().parent
 
 
 #main
@@ -61,14 +60,13 @@ if __name__ == "__main__":
     env_eval = environment_setup(test=test)
     env_test = play_enviromnet_setup()
     #algorithm setup
-    algo = PPO_jax(
+    algo = PPO(
+        #seed and root
+        seed=seed,
+        root=root,
         # models and model hyper params
         fn_policy=my_model,
-        fn_actor=my_actor,
-        fn_critic=my_critic,
         lr_policy=lr_policy,
-        lr_actor=lr_actor,
-        lr_critic=lr_critic,
         #algorithm hyper params
         max_grad_norm=max_grad_norm,
         gamma=gamma,
@@ -79,30 +77,27 @@ if __name__ == "__main__":
         #env hyperparams
         state_space=env.observation_space,
         action_space=env.action_space,
-        seed=seed,
         #training length hyperparams 
         num_agent_steps=num_agent_steps,
         buffer_size=buffer_size,
         batch_size=batch_size,
         epoch_ppo=epochs,
     )
-    #setting up run logging directory
-    time = datetime.now().strftime("%Y%m%d-%H%M")
-    log_vars = [os.path.join(root,"logs/Haiku_nature/"), time]
     # setting up the trainer
     trainer = trainer(
+        #seed and root
+        seed=seed,
+        root=root,
         #envs
         env=env,
         env_eval=env_eval,
         env_test=env_test,
-        #algorith
+        #algorithm
         algo=algo,
         #algo hyperparams
         action_repeat=action_repeat,
         num_agent_steps=num_agent_steps,
-        seed=seed,
         #logging
-        log_vars=log_vars,
         eval_interval=eval_interval,
         num_eval_episodes=num_eval_episodes,
         save_params=save_params,

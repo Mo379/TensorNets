@@ -1,12 +1,17 @@
+#system
 import os
 from pathlib import Path
-import wandb
+#ML
 import numpy as np
 import jax
 import haiku as hk
+#env
 from pettingzoo.butterfly import pistonball_v6
 import supersuit as ss
+#logging
+import wandb
 import imageio
+#local
 from src.saving import load_params
 from src.network import *
 

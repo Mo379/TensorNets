@@ -1,3 +1,5 @@
+#system
+#ML
 import haiku as hk
 import jax
 import jax.numpy as jnp 
@@ -5,11 +7,11 @@ import numpy as np
 from numbers import Real
 
 
-
-
-# Feature extractonesor CNN 
+#model building blocks
+#initialisers
 initializer = hk.initializers.VarianceScaling(1.0, "fan_avg", "truncated_normal")
 initializer_bias = jnp.zeros
+#feature extractor
 def feature_extractor(x):
   x = jnp.array(x, dtype=jnp.float32)
   x = x/255.0
@@ -55,12 +57,7 @@ def feature_extractor(x):
   )(x)
   x = jax.nn.relu(x)
   return x
-
-
-
-
-
-
+#Policy network
 def policy_net(x):
   policy_out = hk.nets.MLP(
           [1], 
@@ -69,12 +66,7 @@ def policy_net(x):
           b_init=initializer_bias, 
           name='policy_net')(x)
   return policy_out
-
-
-
-
-
-
+#value network
 def value_net(x):
     value_out = hk.nets.MLP(
         [1], 
@@ -83,11 +75,7 @@ def value_net(x):
         b_init=initializer_bias, 
         name='value_net')(x)
     return value_out
-
-
-
-
-
+#distribution layer
 class log_std(hk.Module):
   def __init__(self, deterministic=True, name=None):
     super().__init__(name=name)
@@ -95,45 +83,56 @@ class log_std(hk.Module):
     self.rng = hk.PRNGSequence(0)
   def __call__(self, action_mean):
     log_std = hk.get_parameter("constant", shape=(1,), dtype=action_mean.dtype, init=jnp.ones)
-    #key = next(self.rng)
-    #get_actions, get_log_prob = Normal(key, action_mean, log_std, sample_maxima=self.deterministic)
-    ##
-    #actions = get_actions()
-    #log_prob = get_log_prob(actions)
-    #actions = jnp.clip(actions,-1,1)
-    return action_mean, log_std
-
-
-
-
-
-
-
-
-def Normal(rng,mean, sd, sample_maxima):
-    def random_sample(rng=rng,mean=mean,sd=sd, sample_maxima=sample_maxima):
-        if sample_maxima:
-            return mean
-        x = mean + sd * jax.random.normal(rng, mean.shape)
-        return x
-    def log_prob(x,rng=rng,mean=mean,sd=sd):
-        #
-        sd = jnp.ones_like(mean) * jnp.log(sd)
-        #
-        var = (sd ** 2)
-        log_sd = jnp.log(sd) 
-        log_sd = jnp.ones_like(mean) * jnp.log(sd) if isinstance(sd, Real) else jnp.log(sd)
-        non_sum = -((x - mean) ** 2) / (2 * var) - log_sd - jnp.log(jnp.sqrt(2 * jnp.pi))
-        return jnp.sum(non_sum)
-    return random_sample, log_prob
-
-
-
-
-
-
+    key = next(self.rng)
+    get_actions, get_log_prob = 0,1
+    #
+    actions = get_actions()
+    log_prob = get_log_prob(actions)
+    actions = jnp.clip(actions,-1,1)
+    return actions, log_std
+#Tensor network layer
 class TN_layer(hk.Module):
   def __init__(self, name=None):
     super().__init__(name=name)
   def __call__(self, x):
     return x
+
+
+
+
+
+
+
+
+
+#Models
+#actor critic model
+def my_model(x, deterministic=True):
+    features = feature_extractor(x)
+    #
+    values = value_net(features)
+    action_mean = policy_net(features)
+    #
+    actions, sd= log_std(name='log_std', deterministic=deterministic)(action_mean)
+    #
+    return actions,values,sd
+#actor model
+def my_actor(x, deterministic=True):
+    features = feature_extractor(x)
+    #
+    action_mean = policy_net(features)
+    #
+    actions, sd = log_std(name='log_std', deterministic=deterministic)(action_mean)
+    #
+    return actions,sd
+#critic model
+def my_critic(x):
+    features = feature_extractor(x)
+    #
+    values = value_net(features)
+    #
+    return values
+# tensornetwork actor critic model
+def my_TN_model(x):
+    features = feature_extractor(x)
+    pass

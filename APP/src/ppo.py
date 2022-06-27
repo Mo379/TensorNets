@@ -1,49 +1,56 @@
 from functools import partial
 from typing import Tuple
-
+#
 import haiku as hk
 import jax
 import jax.numpy as jnp
 import numpy as np
-import optax as optix
-
-from .actor_critic import OnPolicyActorCritic
-from .optim import optimize
-from src.network_components import *
+import optax
+#
+from .base_algorithm import OnPolicyActorCritic
+from .util import optimise
+from src.agent import *
 import wandb
 
 
 class PPO(OnPolicyActorCritic):
     name = "PPO"
-
+    #
     def __init__(
         self,
-        num_agent_steps,
-        state_space,
-        action_space,
+        #seed and root
         seed,
+        root,
+        #models and model hyperparams
+        fn_policy,
+        lr_policy,
+        #algorithm hyper params
         max_grad_norm,
         gamma,
-        buffer_size,
-        batch_size,
-        fn_policy,
-        fn_actor,
-        fn_critic,
-        lr_policy,
-        lr_actor,
-        lr_critic,
-        epoch_ppo,
         clip_eps,
         lambd,
         ent_coef,
         vf_coef,
+        #env hyperparams
+        state_space,
+        action_space,
+        #training length hyperparams
+        num_agent_steps,
+        buffer_size,
+        batch_size,
+        epoch_ppo,
     ):
-        #assert buffer_size % batch_size == 0
+        #assertion
+        assert buffer_size % batch_size == 0
+        #super
         super(PPO, self).__init__(
+            #seed and root
+            seed=seed,
+            root=root,
+            #hyper params
             num_agent_steps=num_agent_steps,
             state_space=state_space,
             action_space=action_space,
-            seed=seed,
             max_grad_norm=max_grad_norm,
             gamma=gamma,
             buffer_size=buffer_size,
@@ -51,9 +58,9 @@ class PPO(OnPolicyActorCritic):
         )
         # Policy.
         self.policy= hk.without_apply_rng(hk.transform(fn_policy))
-        self.params_policy = self.params_policy_target = self.policy.init(next(self.rng), *self.fake_args_policy)
+        self.params_policy = self.policy.init(next(self.rng), *self.fake_args_policy)
         #self.load_params('logs/pkls')
-        opt_init, self.opt_policy= optix.adam(lr_policy)
+        opt_init, self.opt_policy= optax.adam(lr_policy)
         self.opt_state_policy= opt_init(self.params_policy)
         # Other parameters.
         self.epoch_ppo = epoch_ppo
@@ -72,7 +79,7 @@ class PPO(OnPolicyActorCritic):
         state: np.ndarray,
     ) -> jnp.ndarray:
         mean, _ , _ = self.policy.apply(params_policy, state)
-        return jnp.clip(mean,-1,1)
+        return mean
 
     @partial(jax.jit, static_argnums=0)
     def _explore(
@@ -123,7 +130,7 @@ class PPO(OnPolicyActorCritic):
                         target[idx],
                 )
                                 # Update critic.
-                self.opt_state_policy, self.params_policy, loss_critic, _ = optimize(
+                self.opt_state_policy, self.params_policy, loss_critic, _ = optimise(
                     self._loss_critic,
                     self.opt_policy,
                     self.opt_state_policy,
@@ -133,7 +140,7 @@ class PPO(OnPolicyActorCritic):
                     target=target[idx],
                 )
                 # Update policy.
-                self.opt_state_policy, self.params_policy, loss_actor, aux = optimize(
+                self.opt_state_policy, self.params_policy, loss_actor, aux = optimise(
                     self._loss_actor,
                     self.opt_policy,
                     self.opt_state_policy,
@@ -148,67 +155,7 @@ class PPO(OnPolicyActorCritic):
                     vf_coef=self.vf_coef,
                     value_loss=loss_critic
                 )
-
             #log the losses
             wandb.log({"loss/critic": np.array(loss_critic)})
             wandb.log({"loss/actor": np.array(loss_actor)})
 
-    @partial(jax.jit, static_argnums=0)
-    def _loss_critic(
-        self,
-        params_policy: hk.Params,
-        state: np.ndarray,
-        target: np.ndarray,
-    ) -> jnp.ndarray:
-        return jnp.square(target - self.policy.apply(params_policy, state)[1]).mean(), None
-
-    @partial(jax.jit, static_argnums=0)
-    def _loss_actor(
-        self,
-        params_policy: hk.Params,
-        state: np.ndarray,
-        action: np.ndarray,
-        log_pi_old: np.ndarray,
-        gae: jnp.ndarray,
-        ent_coef: jnp.ndarray,
-        entropy_loss: jnp.ndarray,
-        vf_coef: jnp.ndarray,
-        value_loss: jnp.ndarray
-    ) -> jnp.ndarray:
-        # Calculate log(\pi) at current policy.
-        mean, _ ,log_std = self.policy.apply(params_policy, state)
-        log_pi = self.fn_log_prob(action,mean=mean,sd=log_std)
-        # Calculate importance ratio.
-        ratio = jnp.exp(log_pi - log_pi_old)
-        loss_actor1 = ratio * gae
-        loss_actor2 = jnp.clip(ratio, 1.0 - self.clip_eps, 1.0 + self.clip_eps) * gae
-        loss_actor = -jnp.minimum(loss_actor1, loss_actor2).mean()
-        #loss = loss_actor + ent_coef*entropy_loss + vf_coef*value_loss 
-        loss = loss_actor + ent_coef*entropy_loss + vf_coef*value_loss 
-        return loss, (log_pi)
-
-    @partial(jax.jit, static_argnums=0)
-    def calculate_gae(
-        self,
-        params_policy: hk.Params,
-        actors_states: np.ndarray,
-        actors_rewards: np.ndarray,
-        actors_dones: np.ndarray,
-        actors_next_states: np.ndarray,
-    ) -> Tuple[jnp.ndarray, jnp.ndarray]:
-        actors_gae = []
-        actors_targets = []
-        for state, reward, done, next_state in zip(actors_states,actors_rewards,actors_dones,actors_next_states): 
-            # Current and next value estimates.
-            _,value,_ = jax.lax.stop_gradient(self.policy.apply(params_policy, state))
-            _,next_value,_ = jax.lax.stop_gradient(self.policy.apply(params_policy, next_state))
-            # Calculate TD errors.
-            delta = reward + self.gamma * next_value * (1.0 - done) - value
-            # Calculate GAE recursively from behind.
-            gae = [delta[-1]]
-            for t in jnp.arange(len(state)- 2, -1, -1):
-                gae.insert(0, delta[t] + self.gamma * self.lambd * (1 - done[t]) * gae[0])
-            gae = jnp.array(gae)
-            actors_gae.append((gae - gae.mean()) / (gae.std() + 1e-8))
-            actors_targets.append(gae + value)
-        return jnp.array(actors_gae), jnp.array(actors_targets)
