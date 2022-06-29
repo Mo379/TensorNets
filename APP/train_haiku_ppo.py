@@ -21,11 +21,11 @@ root= Path(__file__).resolve().parent
 ent_coef=0.0905168
 vf_coef=0.042202
 #setting up model hyperparams
-lr_policy=0.0006211
+lr_policy=0.0003
 # setting up algorithm hyperparameters
 max_grad_norm = 0.9
 gamma=0.95
-clip_eps=0.3
+clip_eps=0.2
 lambd=0.99
 action_repeat=1
 #setting training length hyperparams
@@ -36,12 +36,12 @@ batch_size=256
 # testing scenario
 test = True
 if test:
-    num_agent_steps=1000
-    buffer_size=32
-    epochs=5
-    batch_size=32
+    num_agent_steps=10000
+    buffer_size=128
+    epochs=10
+    batch_size=256
 # evaluation hyperparams
-eval_interval=num_agent_steps//10
+eval_interval=num_agent_steps//5
 num_eval_episodes = 3
 save_params=True
 

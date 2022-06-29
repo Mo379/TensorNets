@@ -5,6 +5,7 @@ import jax
 import jax.numpy as jnp 
 import numpy as np
 from numbers import Real
+import distrax
 
 
 #model building blocks
@@ -77,19 +78,12 @@ def value_net(x):
     return value_out
 #distribution layer
 class log_std(hk.Module):
-  def __init__(self, deterministic=True, name=None):
+  def __init__(self, deterministic=False, name=None):
     super().__init__(name=name)
-    self.deterministic=deterministic
-    self.rng = hk.PRNGSequence(0)
-  def __call__(self, action_mean):
-    log_std = hk.get_parameter("constant", shape=(1,), dtype=action_mean.dtype, init=jnp.ones)
-    key = next(self.rng)
-    get_actions, get_log_prob = 0,1
+  def __call__(self, actions_means):
+    sd = hk.get_parameter("constant", shape=(1,), dtype=actions_means.dtype, init=jnp.ones)
     #
-    actions = get_actions()
-    log_prob = get_log_prob(actions)
-    actions = jnp.clip(actions,-1,1)
-    return actions, log_std
+    return actions_means, sd
 #Tensor network layer
 class TN_layer(hk.Module):
   def __init__(self, name=None):
@@ -107,24 +101,24 @@ class TN_layer(hk.Module):
 
 #Models
 #actor critic model
-def my_model(x, deterministic=True):
+def my_model(x, deterministic=False):
     features = feature_extractor(x)
     #
     values = value_net(features)
     action_mean = policy_net(features)
     #
-    actions, sd= log_std(name='log_std', deterministic=deterministic)(action_mean)
+    actions, log_prob= log_std(name='log_std', deterministic=deterministic)(action_mean)
     #
-    return actions,values,sd
+    return actions,values,log_prob
 #actor model
-def my_actor(x, deterministic=True):
+def my_actor(x, deterministic=False):
     features = feature_extractor(x)
     #
     action_mean = policy_net(features)
     #
-    actions, sd = log_std(name='log_std', deterministic=deterministic)(action_mean)
+    actions, log_prob= log_std(name='log_std', deterministic=deterministic)(action_mean)
     #
-    return actions,sd
+    return actions,log_prob
 #critic model
 def my_critic(x):
     features = feature_extractor(x)

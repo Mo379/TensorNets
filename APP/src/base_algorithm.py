@@ -10,11 +10,11 @@ import jax
 import jax.numpy as jnp
 import numpy as np
 from haiku import PRNGSequence
+import distrax
 #Env
 from gym.spaces import Box
 #local
-from .util import RolloutBuffer
-from .utils import load_params, save_params     
+from .util import load_params, save_params,RolloutBuffer, fake_state 
 
 
 #Base algorithm class
@@ -52,6 +52,7 @@ class BaseAlgorithm(ABC):
         self.discrete_action = False if type(action_space) == Box else True
     #
     def get_mask(self, env, done):
+        #env._max_episode_steps
         return done if self.episode_step != 125 or self.discrete_action else False
     #
     def get_key_list(self, num_keys):
@@ -141,15 +142,15 @@ class OnPolicyAlgorithm(BaseAlgorithm):
         self.agent_step += 1
         self.episode_step += 1
         #
-        if self.agent_step > 1 and done:
+        if self.agent_step > 1 and done.any():
             self.episode_step = 0
             state = env.reset()
         #
-        action, log_pi = self.explore(state)
+        action, log_prob = self.explore(state)
         next_state, reward, done, _ = env.step(action)
-        mask = self.get_mask(env, done)
+        done_mask = self.get_mask(env, done)
         #
-        self.buffer.append(state, action, reward, mask, log_pi, next_state)
+        self.buffer.append(state, action, reward, done_mask, log_prob, next_state)
         #
         return next_state, done
 
@@ -170,8 +171,8 @@ class ActorCriticMixIn:
             self.use_key_policy = False
     #advance by taking a deterministic action (exploitation)
     def select_action(self, state):
-        action = self._select_action(self.params_policy, state[None, ...])
-        return np.array(action)
+        action,log_prob = self._select_action(self.params_policy, state)
+        return np.array(action), np.array(log_prob)
     #advance by taking a deterministic action (exploitation)
     @abstractmethod
     def _select_action(self, params_policy, state):
@@ -240,5 +241,5 @@ class OnPolicyActorCritic(ActorCriticMixIn, OnPolicyAlgorithm):
         return self.agent_step % self.buffer_size == 0
     #
     def explore(self, state):
-        action, log_pi = self._explore(self.params_policy, state, next(self.rng))
-        return np.array(action), np.array(log_pi)
+        action, log_prob = self._explore(self.params_policy, state, next(self.rng))
+        return action, log_prob

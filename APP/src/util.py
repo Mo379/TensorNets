@@ -5,14 +5,13 @@ from functools import partial
 from typing import Any, Tuple
 from datetime import timedelta,datetime
 from time import time
-import argparse
 from pathlib import Path
 #ML
 import haiku as hk
 import numpy as np
 import optax 
+import jax 
 import jax.numpy as jnp
-from jax.tree_util import tree_flatten
 #Env
 from pettingzoo.butterfly import pistonball_v6
 import supersuit as ss
@@ -21,7 +20,6 @@ from gym.spaces import Box, Discrete
 import wandb
 import imageio
 #local
-from .ppo import PPO
 
 
 
@@ -130,7 +128,7 @@ class RolloutBuffer:
         self.state = np.empty((buffer_size, n_agents,*state_space.shape), dtype=np.float32)
         self.reward = np.empty((buffer_size,n_agents), dtype=np.float32)
         self.done = np.empty((buffer_size, n_agents), dtype=np.float32)
-        self.log_pi = np.empty((buffer_size, n_agents,1), dtype=np.float32)
+        self.log_pi = np.empty((buffer_size, n_agents), dtype=np.float32)
         self.next_state = np.empty((buffer_size, n_agents,*state_space.shape), dtype=np.float32)
 
         if type(action_space) == Box:
@@ -150,6 +148,13 @@ class RolloutBuffer:
 
         self._p = (self._p + 1) % self.buffer_size
         self._n = min(self._n + 1, self.buffer_size)
+
+    def clear(self):
+        self.state = np.empty((buffer_size, n_agents,*state_space.shape), dtype=np.float32)
+        self.reward = np.empty((buffer_size,n_agents), dtype=np.float32)
+        self.done = np.empty((buffer_size, n_agents), dtype=np.float32)
+        self.log_pi = np.empty((buffer_size, n_agents), dtype=np.float32)
+        self.next_state = np.empty((buffer_size, n_agents,*state_space.shape), dtype=np.float32)
 
     def get(self):
         return (
@@ -189,6 +194,21 @@ def optimise(
     update, opt_state = opt(grad, opt_state)
     params_to_update = optax.apply_updates(params_to_update, update)
     return opt_state, params_to_update, loss, aux
+@jax.jit
+def clip_gradient_norm(
+    grad: Any,
+    max_grad_norm: float,
+) -> Any:
+    """
+    Clip norms of gradients.
+    """
+
+    def _clip_gradient_norm(g):
+        clip_coef = max_grad_norm / (jax.lax.stop_gradient(jnp.linalg.norm(g)) + 1e-6)
+        clip_coef = jnp.clip(clip_coef, a_max=1.0)
+        return g * clip_coef
+
+    return jax.tree_map(lambda g: _clip_gradient_norm(g), grad)
 
 
 
@@ -307,7 +327,7 @@ class trainer:
             #run until done
             while done.all() == False: 
                 #get action
-                action = self.algo.select_action(state)
+                action,log_prob = self.algo.select_action(state)
                 #get environemnt observables
                 state, reward, done, _ = self.env_eval.step(action) if not done.all() else None
                 total_return += np.mean(reward)
