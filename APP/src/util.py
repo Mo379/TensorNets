@@ -145,10 +145,10 @@ class RolloutBuffer:
         self.done[self._p] = done
         self.log_pi[self._p] = log_pi
         self.next_state[self._p] = next_state
-
+        #
         self._p = (self._p + 1) % self.buffer_size
         self._n = min(self._n + 1, self.buffer_size)
-
+    #
     def clear(self):
         self.state = np.empty(self.state.shape, dtype=np.float32)
         self.reward = np.empty(self.reward.shape, dtype=np.float32)
@@ -156,7 +156,7 @@ class RolloutBuffer:
         self.log_pi = np.empty(self.log_pi.shape, dtype=np.float32)
         self.next_state = np.empty(self.next_state.shape, dtype=np.float32)
         self.action= np.empty(self.action.shape, dtype=self.action.dtype)
-
+    #
     def get(self):
         return (
             self.state,

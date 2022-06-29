@@ -121,22 +121,22 @@ class PPO(OnPolicyActorCritic):
         actor_first_output= []
         for output in outputs:
             actor_first_output.append(jnp.swapaxes(output, 0,1))
-        states, actions, rewards, dones, log_pi_olds, next_states = actor_first_output
+        A_states, A_actions, A_rewards, A_dones, A_log_pi_olds, A_next_states = actor_first_output
         #calculte multi agent state value
-        values_t= []
-        rewards_t= []
-        values_T= []
-        for state,reward,next_state in zip(states,rewards,next_states): 
-            values_t.append(self._get_value(self.params_policy,state))
-            values_T.append(self._get_value(self.params_policy,next_state))
-            rewards_t.append(reward)
-        values_t = jnp.array([values_t]).squeeze()
-        rewards_t = jnp.array([rewards_t]).squeeze()
-        discounts_t = jnp.array([values_T]).squeeze()*self.gamma
+        A_values_t= []
+        A_rewards_t= []
+        A_values_T= []
+        for state,reward,next_state in zip(A_states,A_rewards,A_next_states): 
+            A_values_t.append(self._get_value(self.params_policy,state))
+            A_values_T.append(self._get_value(self.params_policy,next_state))
+            A_rewards_t.append(reward)
+        A_values_t = jnp.array([A_values_t]).squeeze()
+        A_rewards_t = jnp.array([A_rewards_t]).squeeze()
+        A_discounts_t = jnp.array([A_values_T]).squeeze()*self.gamma
         # for each agent: Calculate gamma-retwandb_runurns and GAEs.
         print('Calculate gamma-returns and GAEs.')
-        gae_agents = []
-        for rewards,discounts,values in zip(rewards_t,discounts_t,values_t):
+        A_gae_agents = []
+        for rewards,discounts,values in zip(A_rewards_t,A_discounts_t,A_values_t):
             gaes = rlax.truncated_generalized_advantage_estimation(
                     rewards[1:], 
                     discounts[1:], 
@@ -144,30 +144,32 @@ class PPO(OnPolicyActorCritic):
                     values, 
                     True
                 )
-            gae_agents.append(gaes)
-        gae_agents = jnp.array(gae_agents)
-        targets = gae_agents + values_t[:][:,:-1]
+            #normalising Gaes
+            gaes= (gaes- gaes.mean()) / (gaes.std() + 1e-8)
+            A_gae_agents.append(gaes)
+        A_gae_agents = jnp.array(A_gae_agents)
+        A_targets = A_gae_agents + A_values_t[:][:,:-1]
         #
-        dataframe= (states[:][:,:-1], actions[:][:,:-1], rewards_t[:][:,:-1], dones[:][:,:-1], \
-                log_pi_olds[:][:,:-1], next_states[:][:,:-1],gae_agents,targets)
-        shuffler = np.random.permutation(states.shape[0]*states.shape[1])
-        n_outputs= []
-        for data in dataframe:
+        A_dataframe= (A_states[:][:,:-1], A_actions[:][:,:-1], A_rewards_t[:][:,:-1], A_dones[:][:,:-1], \
+                A_log_pi_olds[:][:,:-1], A_next_states[:][:,:-1],A_gae_agents,A_targets)
+        A_shuffler = np.random.permutation(A_states.shape[0]*A_states.shape[1])
+        A_n_outputs= []
+        for data in A_dataframe:
             reshaped = jnp.reshape(data,(-1,)+data.shape[2:])
-            reshaped = reshaped[shuffler]
-            n_outputs.append(reshaped)
+            reshaped = reshaped[A_shuffler]
+            A_n_outputs.append(reshaped)
         #rearranged data
-        state, action, reward, done, log_pi_old, next_state,gae,target = n_outputs
-        idxes = np.arange(len(state))
+        B_state, B_action, B_reward, B_done, B_log_pi_old, B_next_state,B_gae,B_target = A_n_outputs
+        idxes = np.arange(len(B_state))
         #main loop
         for i_count in range(self.epoch_ppo):
             print(f"epoch {i_count}")
-            for start in range(0, len(state), self.batch_size):
+            for start in range(0, len(B_state), self.batch_size):
                 #setup
                 self.learning_step += 1
                 idx = idxes[start : start + self.batch_size]
                 #zero updates
-                #self.opt_state_policy,_= self.optax_zero_apply(self.opt_state_policy,None)
+                self.opt_state_policy,_= self.optax_zero_apply(self.opt_state_policy,None)
                 # Update critic.
                 self.opt_state_policy, self.params_policy, loss_critic, aux = optimise(
                     self._loss_critic,
@@ -175,8 +177,8 @@ class PPO(OnPolicyActorCritic):
                     self.opt_state_policy,
                     self.params_policy,
                     self.max_grad_norm,
-                    state=state[idx],
-                    target=target[idx],
+                    state=B_state[idx],
+                    target=B_target[idx],
                 )
                 # Update policy.
                 self.opt_state_policy, self.params_policy, loss_actor, aux = optimise(
@@ -185,19 +187,20 @@ class PPO(OnPolicyActorCritic):
                     self.opt_state_policy,
                     self.params_policy,
                     self.max_grad_norm,
-                    state=state[idx],
-                    action=action[idx],
-                    log_prob_old=log_pi_old[idx],
-                    gae=gae[idx],
+                    state=B_state[idx],
+                    action=B_action[idx],
+                    log_prob_old=B_log_pi_old[idx],
+                    gae=B_gae[idx],
                     ent_coef=self.ent_coef,
-                    entropy_loss=-jnp.mean(-log_pi_old[idx]),
+                    entropy_loss=-jnp.mean(-B_log_pi_old[idx]),
                     vf_coef=self.vf_coef,
                     value_loss=loss_critic,
                     rng=next(self.rng),
                 )
-            #log the losses
-            wandb.log({"loss/critic": np.array(loss_critic)})
-            wandb.log({"loss/actor": np.array(loss_actor)})
+        #log the losses
+        wandb.log({"loss/critic": np.array(loss_critic)})
+        wandb.log({"loss/actor": np.array(loss_actor)})
+        #clear buffer
         self.buffer.clear()
     #loss functions
     @partial(jax.jit, static_argnums=0)

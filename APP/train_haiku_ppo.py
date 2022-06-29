@@ -21,7 +21,7 @@ root= Path(__file__).resolve().parent
 ent_coef=0.0905168
 vf_coef=0.042202
 #setting up model hyperparams
-lr_policy=0.0003
+lr_policy=0.0003221
 # setting up algorithm hyperparameters
 max_grad_norm = 0.9
 gamma=0.95
