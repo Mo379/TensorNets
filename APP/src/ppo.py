@@ -144,12 +144,12 @@ class PPO(OnPolicyActorCritic):
                     values, 
                     True
                 )
-            gaes = jnp.insert(gaes,0,0)
             gae_agents.append(gaes)
         gae_agents = jnp.array(gae_agents)
-        targets = gae_agents + values_t
+        targets = gae_agents + values_t[:][:,:-1]
         #
-        dataframe= (states, actions, rewards_t, dones, log_pi_olds, next_states,gae_agents,targets)
+        dataframe= (states[:][:,:-1], actions[:][:,:-1], rewards_t[:][:,:-1], dones[:][:,:-1], \
+                log_pi_olds[:][:,:-1], next_states[:][:,:-1],gae_agents,targets)
         shuffler = np.random.permutation(states.shape[0]*states.shape[1])
         n_outputs= []
         for data in dataframe:
@@ -167,7 +167,7 @@ class PPO(OnPolicyActorCritic):
                 self.learning_step += 1
                 idx = idxes[start : start + self.batch_size]
                 #zero updates
-                self.opt_state_policy,_= self.optax_zero_apply(self.opt_state_policy,None)
+                #self.opt_state_policy,_= self.optax_zero_apply(self.opt_state_policy,None)
                 # Update critic.
                 self.opt_state_policy, self.params_policy, loss_critic, aux = optimise(
                     self._loss_critic,
@@ -198,6 +198,7 @@ class PPO(OnPolicyActorCritic):
             #log the losses
             wandb.log({"loss/critic": np.array(loss_critic)})
             wandb.log({"loss/actor": np.array(loss_actor)})
+        self.buffer.clear()
     #loss functions
     @partial(jax.jit, static_argnums=0)
     def _loss_critic(
@@ -228,9 +229,7 @@ class PPO(OnPolicyActorCritic):
         actions, log_prob= self._explore(params_policy,state,rng)
         # Calculate importance ratio.
         ratio = jnp.exp(log_prob- log_prob_old)
-        loss_actor1 = ratio * gae
-        loss_actor2 = jnp.clip(ratio, 1.0 - self.clip_eps, 1.0 + self.clip_eps) * gae
-        loss_actor = -jnp.minimum(loss_actor1, loss_actor2).mean()
-        #loss = loss_actor + ent_coef*entropy_loss + vf_coef*value_loss 
+        loss_actor = rlax.clipped_surrogate_pg_loss(ratio, gae, self.clip_eps, use_stop_gradient=True)
+        #total loss
         loss = loss_actor + ent_coef*entropy_loss + vf_coef*value_loss 
         return loss, (log_prob)

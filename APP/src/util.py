@@ -73,8 +73,8 @@ def environment_setup(test=True):
         num_envs = 1
         num_cpus = 4
     else:
-        num_envs = 8
-        num_cpus = 12
+        num_envs = 10
+        num_cpus = 6
     env = pistonball_v6.parallel_env(
         n_pistons=20,
         time_penalty=-0.1,
@@ -150,11 +150,12 @@ class RolloutBuffer:
         self._n = min(self._n + 1, self.buffer_size)
 
     def clear(self):
-        self.state = np.empty((buffer_size, n_agents,*state_space.shape), dtype=np.float32)
-        self.reward = np.empty((buffer_size,n_agents), dtype=np.float32)
-        self.done = np.empty((buffer_size, n_agents), dtype=np.float32)
-        self.log_pi = np.empty((buffer_size, n_agents), dtype=np.float32)
-        self.next_state = np.empty((buffer_size, n_agents,*state_space.shape), dtype=np.float32)
+        self.state = np.empty(self.state.shape, dtype=np.float32)
+        self.reward = np.empty(self.reward.shape, dtype=np.float32)
+        self.done = np.empty(self.done.shape, dtype=np.float32)
+        self.log_pi = np.empty(self.log_pi.shape, dtype=np.float32)
+        self.next_state = np.empty(self.next_state.shape, dtype=np.float32)
+        self.action= np.empty(self.action.shape, dtype=self.action.dtype)
 
     def get(self):
         return (
