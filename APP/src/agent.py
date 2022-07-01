@@ -81,18 +81,9 @@ class log_std(hk.Module):
   def __init__(self, deterministic=False, name=None):
     super().__init__(name=name)
   def __call__(self, actions_means):
-    sd = hk.get_parameter("constant", shape=(1,), dtype=actions_means.dtype, init=jnp.ones)
+    sd = hk.get_parameter("constant", shape=(1,), dtype=actions_means.dtype, init=jnp.zeros)
     #
     return actions_means, sd
-#Tensor network layer
-class TN_layer(hk.Module):
-  def __init__(self, name=None):
-    super().__init__(name=name)
-  def __call__(self, x):
-    return x
-
-
-
 
 
 
@@ -101,32 +92,12 @@ class TN_layer(hk.Module):
 
 #Models
 #actor critic model
-def my_model(x, deterministic=False):
+def my_model(x):
     features = feature_extractor(x)
     #
     values = value_net(features)
     action_mean = policy_net(features)
     #
-    actions, log_prob= log_std(name='log_std', deterministic=deterministic)(action_mean)
+    actions, log_sd= log_std(name='log_std')(action_mean)
     #
-    return actions,values,log_prob
-#actor model
-def my_actor(x, deterministic=False):
-    features = feature_extractor(x)
-    #
-    action_mean = policy_net(features)
-    #
-    actions, log_prob= log_std(name='log_std', deterministic=deterministic)(action_mean)
-    #
-    return actions,log_prob
-#critic model
-def my_critic(x):
-    features = feature_extractor(x)
-    #
-    values = value_net(features)
-    #
-    return values
-# tensornetwork actor critic model
-def my_TN_model(x):
-    features = feature_extractor(x)
-    pass
+    return actions,values,log_sd

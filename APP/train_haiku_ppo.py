@@ -21,13 +21,12 @@ root= Path(__file__).resolve().parent
 ent_coef=0.0905168
 vf_coef=0.042202
 #setting up model hyperparams
-lr_policy=0.0003221
+lr_policy=0.0006
 # setting up algorithm hyperparameters
 max_grad_norm = 0.9
 gamma=0.95
-clip_eps=0.2
+clip_eps=0.3
 lambd=0.99
-action_repeat=1
 #setting training length hyperparams
 num_agent_steps=10000
 buffer_size=64
@@ -37,24 +36,29 @@ batch_size=256
 test = True
 if test:
     num_agent_steps=1000
-    buffer_size=33
+    buffer_size=32
     epochs=10
     batch_size=256
 # evaluation hyperparams
 eval_interval=num_agent_steps//10
 num_eval_episodes = 3
 save_params=True
+#
+track = False
 
 
 #main
 if __name__ == "__main__":
-    print('----Tracking----')
-    wandb_run= wandb.init(
-        dir= os.path.join(root,'logs/wandb'),
-        project="TensorNets",
-        name = "Train_haiku_ppo_nature",
-        entity="mo379",
-    )
+    if track:
+        print('----Tracking----')
+        wandb_run= wandb.init(
+            dir= os.path.join(root,'logs/wandb'),
+            project="TensorNets",
+            name = "Train_haiku_ppo_nature",
+            entity="mo379",
+        )
+    else:
+        wandb_run = False
     # setting up main and test environments
     env = environment_setup(test=test)
     env_eval = environment_setup(test=test)
@@ -95,7 +99,6 @@ if __name__ == "__main__":
         #algorithm
         algo=algo,
         #algo hyperparams
-        action_repeat=action_repeat,
         num_agent_steps=num_agent_steps,
         #logging
         eval_interval=eval_interval,
