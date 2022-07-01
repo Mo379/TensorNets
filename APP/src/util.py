@@ -87,7 +87,7 @@ def play_enviromnet_setup():
     env = pistonball_v6.env(n_pistons=20)
     env = ss.color_reduction_v0(env,mode='B')
     env = ss.resize_v1(env, x_size=84,y_size=84)
-    env = ss.frame_stack_v1(env, 4)
+    env = ss.frame_stack_v1(env, 3)
     return env
 
 
@@ -124,7 +124,7 @@ class RolloutBuffer:
         self.done = []
         self.next_state = []
     #
-    def append(self, state, action, reward, done, log_prob, next_state):
+    def append(self, state, action, log_prob ,reward, done, next_state):
         #appends
         self.state.append(state)
         self.action.append(action)

@@ -92,86 +92,50 @@ class PPO():
         return next_state, done
     #
     def update(self, wandb_run):
-
-
-
-
-
         #get buffer items and calculate state value
         print('getting_instance')
+        #get all data 
         outputs = self.buffer.get()
+        #
         actor_first_output= []
         for output in outputs:
             output = jnp.array(output)
             actor_first_output.append(jnp.swapaxes(output, 0,1))
+        #unpack data
         A_states, A_actions, A_log_pi_olds ,A_rewards, A_dones, A_next_states = actor_first_output
-
-
-
-
-        #calculte multi agent state value
-        A_values_t= []
-        A_values_T= []
-        A_rewards_t= []
-        for state,reward,next_state in zip(A_states,A_rewards,A_next_states): 
-            A_values_t.append(self._get_value(self.params_policy,state))
-            A_values_T.append(self._get_value(self.params_policy,next_state))
-            A_rewards_t.append(reward)
-        A_values_t = jnp.array([A_values_t]).squeeze()
-        A_rewards_t = jnp.array([A_rewards_t]).squeeze()
-        # for each agent: Calculate gamma-retwandb_runurns and GAEs.
-        print('Calculate gamma-returns and GAEs.')
-        A_gae_agents = []
+        #getting GAEs and targets
+        A_gaes = []
         A_targets = []
-        for rewards,last_values, next_values, done in zip(A_rewards_t,A_values_t,A_values_T,A_dones):
-            print(rewards.shape,last_values.shape,next_values.shape,done.shape)
-            gaes,norm_gaes ,targets, norm_targets= self.compute_returns_and_advantage(
-                    values=next_values, 
-                    rewards=rewards,
-                    gamma=self.gamma,
-                    lambd=self.lambd,
-                    last_values=last_values, 
-                    dones=done,
-                    buffer_size=self.buffer_size,
-                    episode_starts=done,
+        print('Calculating gaes')
+        for agent in range(len(A_states)):
+            print(f"for agent {agent}")
+            gaes, targets = self.calculate_gaes_and_targets_agent(
+                    self.params_policy,
+                    A_states[agent],
+                    A_rewards[agent],
+                    A_dones[agent]
                 )
-            #normalising Gaes
-            A_gae_agents.append(gaes)
+            A_gaes.append(gaes)
             A_targets.append(targets)
-        #
-        A_gae_agents = jnp.array(A_gae_agents)
+        A_gaes = jnp.array(A_gaes)
         A_targets = jnp.array(A_targets)
-        print(A_gae_agents.shape,A_targets.shape)
-
-        exit()
-
-
-
-
-
-
-
-        #
-        A_dataframe= (A_states[:][:,:-1], A_actions[:][:,:-1], A_log_pi_olds[:][:,:-1] ,A_rewards_t[:][:,:-1], A_dones[:][:,:-1], \
-                A_next_states[:][:,:-1],A_gae_agents,A_targets)
+        #align data
+        A_dataframe= (A_states, A_actions, A_log_pi_olds,A_rewards, A_dones, \
+                     A_next_states,A_gaes,A_targets)
         A_shuffler = np.random.permutation(A_states.shape[0]*A_states.shape[1])
+        #flatten data fuse first two dimentions (agent and play-timesetp)
         A_n_outputs= []
         for data in A_dataframe:
             reshaped = jnp.reshape(data,(-1,)+data.shape[2:])
             reshaped = reshaped[A_shuffler]
             A_n_outputs.append(reshaped)
-
-
-
-
-
-        #rearranged data
         B_state, B_action, B_log_pi_old ,B_reward, B_done, B_next_state,B_gae,B_target = A_n_outputs
         idxes = np.arange(len(B_state))
-        #main loop
         for i_count in range(self.epoch_ppo):
             print(f"epoch {i_count}")
+            #
             for start in range(0, len(B_state), self.batch_size):
+                #create batches
                 idx = idxes[start : start + self.batch_size]
                 #zero updates
                 #self.opt_state_policy,_= self.optax_zero_apply(self.opt_state_policy,None)
@@ -357,40 +321,42 @@ class PPO():
 
 
 
-    #returns and advantage calculation
-    def compute_returns_and_advantage(
-            self,
-            values, 
-            rewards,
-            gamma,
-            lambd,
-            last_values, 
-            dones,
-            buffer_size,
-            episode_starts,
-        ) -> Tuple[jnp.ndarray, jnp.ndarray]:
+    @partial(jax.jit, static_argnums=0)
+    def calculate_gaes_and_targets_agent(self,params,states,rewards,dones):
+        values = self._get_value(params,states).squeeze()
         #
-        last_gae_lam = 0
-        advantages = []
-        for step in reversed(range(buffer_size)):
-            if step == buffer_size - 1:
-                next_non_terminal = 1.0 - dones
-                next_values = last_values
-            else:
-                next_non_terminal = 1.0 - episode_starts[step + 1]
-                next_values = values[step + 1]
-            delta = rewards[step] + gamma * next_values * next_non_terminal \
-                    - values[step]
-            last_gae_lam = delta + gamma * lambd * next_non_terminal * \
-                    last_gae_lam
-            advantages.append(last_gae_lam)
-        print(f"advantages_beform: {len(advantages)}")
-        advantages = jnp.array(advantages)
-        print(f"advantages_after: {advantages.shape}")
-        gaes= (advantages- advantages.mean()) / (advantages.std() + 1e-8)
-        returns = advantages + values
-        print(f"returns: {returns.shape}")
-        gaes= (advantages- advantages.mean()) / (advantages.std() + 1e-8)
-        norm_returns = gaes + values
-        print(f"norm_returns: {norm_returns.shape}")
-        return advantages,gaes, returns, norm_returns
+        gaes = []
+        for t in range(len(rewards)-1):
+            discount = 1
+            a_t = 0
+            for k in range(t, len(rewards)-1):
+                a_t += discount*(rewards[k] + self.gamma*values[k+1]*\
+                        (1-jnp.array(dones[k],int)) - values[k])
+                discount *= self.gamma*self.lambd
+            gaes.append(a_t)
+        gaes.append(0)
+        gaes = jnp.array(gaes, jnp.float32)
+        targets = gaes*values
+        #gaes = (gaes - gaes.mean()) / (gaes.std() + 1e-8)
+        return gaes,targets
+    #
+    @partial(jax.jit, static_argnums=0)
+    def calculate_gae(
+        self,
+        params: hk.Params,
+        state: np.ndarray,
+        reward: np.ndarray,
+        done: np.ndarray,
+        next_state: np.ndarray,
+    ) -> Tuple[jnp.ndarray, jnp.ndarray]:
+        # Current and next value estimates.
+        value = jax.lax.stop_gradient(self._get_value(params, state))
+        next_value = jax.lax.stop_gradient(self._get_value(params, next_state))
+        # Calculate TD errors.
+        delta = reward + self.gamma * next_value * (1.0 - done) - value
+        # Calculate GAE recursively from behind.
+        gae = [delta[-1]]
+        for t in jnp.arange(self.buffer_size - 2, -1, -1):
+            gae.insert(0, delta[t] + self.gamma * self.lambd * (1 - done[t]) * gae[0])
+        gae = jnp.array(gae)
+        return (gae - gae.mean()) / (gae.std() + 1e-8), gae + value
