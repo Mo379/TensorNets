@@ -304,6 +304,7 @@ class trainer:
                 for output in self.algo.buffer.get():
                     output = np.array(output)
                 self.algo.update(self.wandb_run)
+                self.algo.buffer.clear()
             #if we are at a step where evaluation is wanted then evaluate
             print(f"step-{step}, interval {self.eval_interval}: evaluation modulus {step % self.eval_interval}")
             if step % self.eval_interval == 0:
@@ -311,8 +312,6 @@ class trainer:
                 self.evaluate(step)
                 # save current model and log
                 self.save_params_logging(step)
-                #clear buffer
-                self.algo.buffer.clear()
 
 
 
@@ -364,7 +363,7 @@ class trainer:
                 action,log_prob = self.algo.explore(state)
                 #get environemnt observables
                 state, reward, done, _ = self.env_eval.step(action) if not done.all() else None
-                total_return += np.mean(reward)
+                total_return += reward[0]
         # Log mean return and step.
         mean_return = total_return / self.num_eval_episodes
         if self.wandb_run:

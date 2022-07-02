@@ -84,6 +84,8 @@ class PPO():
         #
         #rng = next()
         #action, log_prob = self._explore(self.params_policy,state,next(self.rng))
+        if done.any():
+            state = env.reset()
         action, log_prob = self._select_action(self.params_policy,state)
         next_state, reward, done, _ = env.step(action)
         #
@@ -115,6 +117,14 @@ class PPO():
                     A_rewards[agent],
                     A_dones[agent]
                 )
+            
+           # gaes,targets = self.calculate_gae(
+           #     self.params_policy,
+           #     A_states[agent],
+           #     A_rewards[agent],
+           #     A_dones[agent],
+           #     A_next_states[agent]
+           # ) 
             A_gaes.append(gaes)
             A_targets.append(targets)
         A_gaes = jnp.array(A_gaes)
@@ -137,8 +147,6 @@ class PPO():
             for start in range(0, len(B_state), self.batch_size):
                 #create batches
                 idx = idxes[start : start + self.batch_size]
-                #zero updates
-                #self.opt_state_policy,_= self.optax_zero_apply(self.opt_state_policy,None)
                 # Update critic.
                 self.opt_state_policy, self.params_policy, loss_critic, aux = optimise(
                     self._loss_critic,
@@ -149,6 +157,8 @@ class PPO():
                     state=B_state[idx],
                     target=B_target[idx],
                 )
+                #zero updates
+                self.opt_state_policy,_= self.optax_zero_apply(self.opt_state_policy,None)
                 # Update policy.
                 self.opt_state_policy, self.params_policy, loss_actor, aux = optimise(
                     self._loss_actor,
@@ -169,6 +179,7 @@ class PPO():
             #log the losses
             wandb.log({"loss/critic": np.array(loss_critic)})
             wandb.log({"loss/actor": np.array(loss_actor)})
+        self.buffer.clear()
 
 
 
@@ -350,8 +361,8 @@ class PPO():
         next_state: np.ndarray,
     ) -> Tuple[jnp.ndarray, jnp.ndarray]:
         # Current and next value estimates.
-        value = jax.lax.stop_gradient(self._get_value(params, state))
-        next_value = jax.lax.stop_gradient(self._get_value(params, next_state))
+        value = jax.lax.stop_gradient(self._get_value(params, state).squeeze())
+        next_value = jax.lax.stop_gradient(self._get_value(params, next_state).squeeze())
         # Calculate TD errors.
         delta = reward + self.gamma * next_value * (1.0 - done) - value
         # Calculate GAE recursively from behind.
