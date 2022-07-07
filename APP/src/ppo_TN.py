@@ -53,7 +53,7 @@ class PPO():
         self.root = root
         # Policy.
         self.policy= hk.without_apply_rng(hk.transform(fn_policy))
-        self.params_policy = self.policy.init(next(self.rng), np.random.normal(size = (1,84,84,3)))
+        self.params_policy = self.policy.init(next(self.rng), np.random.normal(size = (40,84,84,3)))
         # Other parameters.
         self.max_grad_norm = max_grad_norm
         self.gamma = gamma

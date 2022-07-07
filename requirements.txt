@@ -11,12 +11,12 @@ distrax
 dm-tree
 bsuite
 graphviz
+optax
 
 torch 
 torchvision
 stable_baselines3
 
-pettingzoo
 pygame
 pymunk
 
@@ -25,3 +25,4 @@ imageio
 
 #gym==0.24
 #supersuit==3.4.0
+#pettingzoo==1.18.1
