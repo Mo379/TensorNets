@@ -1,3 +1,6 @@
+dm-acme[jax,tensorflow]
+dm-acme[envs]
+
 numpy
 pyyaml
 tqdm
@@ -23,6 +26,8 @@ pymunk
 wandb
 imageio
 
-#gym==0.24
-#supersuit==3.4.0
-#pettingzoo==1.18.1
+gym==0.24
+supersuit==3.4.0
+pettingzoo==1.18.1
+
+

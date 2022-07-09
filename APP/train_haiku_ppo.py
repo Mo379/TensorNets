@@ -69,7 +69,7 @@ if __name__ == "__main__":
         seed=seed,
         root=root,
         # models and model hyper params
-        fn_policy=my_model_tensornet,
+        fn_policy=my_model,
         lr_policy=lr_policy,
         #algorithm hyper params
         max_grad_norm=max_grad_norm,
