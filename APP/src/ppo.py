@@ -82,11 +82,10 @@ class PPO():
     #
     def step(self, env, state, done):
         #
-        #rng = next()
-        #action, log_prob = self._explore(self.params_policy,state,next(self.rng))
         if done.any():
             state = env.reset()
-        action, log_prob = self._select_action(self.params_policy,state)
+        action, log_prob = self._explore(self.params_policy,state,next(self.rng))
+        #action, log_prob = self._select_action(self.params_policy,state)
         next_state, reward, done, _ = env.step(action)
         #
         self.buffer.append(state, action, log_prob , reward, done, next_state)
@@ -111,20 +110,19 @@ class PPO():
         print('Calculating gaes')
         for agent in range(len(A_states)):
             print(f"for agent {agent}")
-            gaes, targets = self.calculate_gaes_and_targets_agent(
-                    self.params_policy,
-                    A_states[agent],
-                    A_rewards[agent],
-                    A_dones[agent]
-                )
-            
-           # gaes,targets = self.calculate_gae(
-           #     self.params_policy,
-           #     A_states[agent],
-           #     A_rewards[agent],
-           #     A_dones[agent],
-           #     A_next_states[agent]
-           # ) 
+            #gaes, targets = self.calculate_gaes_and_targets_agent(
+            #        self.params_policy,
+            #        A_states[agent],
+            #        A_rewards[agent],
+            #        A_dones[agent]
+            #    )
+            gaes,targets = self.calculate_gae(
+                self.params_policy,
+                A_states[agent],
+                A_rewards[agent],
+                A_dones[agent],
+                A_next_states[agent]
+            ) 
             A_gaes.append(gaes)
             A_targets.append(targets)
         A_gaes = jnp.array(A_gaes)
@@ -327,29 +325,6 @@ class PPO():
         file = open(path, 'rb')
         params = pickle.load(file)
         return params
-
-
-
-
-
-    @partial(jax.jit, static_argnums=0)
-    def calculate_gaes_and_targets_agent(self,params,states,rewards,dones):
-        values = self._get_value(params,states).squeeze()
-        #
-        gaes = []
-        for t in range(len(rewards)-1):
-            discount = 1
-            a_t = 0
-            for k in range(t, len(rewards)-1):
-                a_t += discount*(rewards[k] + self.gamma*values[k+1]*\
-                        (1-jnp.array(dones[k],int)) - values[k])
-                discount *= self.gamma*self.lambd
-            gaes.append(a_t)
-        gaes.append(0)
-        gaes = jnp.array(gaes, jnp.float32)
-        targets = gaes*values
-        gaes = (gaes - gaes.mean()) / (gaes.std() + 1e-8)
-        return gaes,targets
     #
     @partial(jax.jit, static_argnums=0)
     def calculate_gae(
@@ -371,3 +346,21 @@ class PPO():
             gae.insert(0, delta[t] + self.gamma * self.lambd * (1 - done[t]) * gae[0])
         gae = jnp.array(gae)
         return (gae - gae.mean()) / (gae.std() + 1e-8), gae + value
+    #
+    @partial(jax.jit, static_argnums=0)
+    def gae_advantages(rewards: jnp.array, discounts: jnp.array,
+           values: jnp.array) -> Tuple[jnp.ndarray, jnp.array]:
+        """Uses truncated GAE to compute advantages."""
+
+        # Apply reward clipping.
+        rewards = jnp.clip(rewards, -max_abs_reward, max_abs_reward)
+
+        advantages = rlax.truncated_generalized_advantage_estimation(
+        rewards[:-1], discounts[:-1], gae_lambda, values)
+        advantages = jax.lax.stop_gradient(advantages)
+
+        # Exclude the bootstrap value
+        target_values = values[:-1] + advantages
+        target_values = jax.lax.stop_gradient(target_values)
+
+        return advantages, target_values
