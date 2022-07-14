@@ -1,4 +1,2 @@
-venv/*
-APP/logs/*
-lib/*
-acme/*
+APP/logs
+extras/lib/*.tar.xz

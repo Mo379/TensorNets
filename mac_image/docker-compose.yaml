@@ -1,0 +1,10 @@
+version: "3.8"
+services: 
+  deepmind_jaxstk:
+    build: .
+    container_name: dm-jaxstk
+    tty: true
+    command: /bin/bash
+    volumes:
+            - ./APP:/workspace/APP
+            - ./extras/lib/acme:/usr/local/lib/python3.8/site-packages/acme
