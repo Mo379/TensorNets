@@ -79,6 +79,7 @@ class PPO():
         self.idxes = np.arange(buffer_size)
         self.buffer = RolloutBuffer()
         self.optax_zero_init,self.optax_zero_apply = optax.set_to_zero()
+        self.max_abs_reward = jnp.inf
     #
     def step(self, env, state, done):
         #
@@ -104,30 +105,30 @@ class PPO():
             actor_first_output.append(jnp.swapaxes(output, 0,1))
         #unpack data
         A_states, A_actions, A_log_pi_olds ,A_rewards, A_dones, A_next_states = actor_first_output
+        A_discounts = (1.0-A_dones)*self.lambd
+        def get_play_values(params,obs):
+            o = jax.tree_map(lambda x: jnp.reshape(x, [-1] + list(x.shape[2:])),obs)
+            behavior_values = self._get_value(self.params_policy,o)
+            behavior_values = jnp.reshape(behavior_values, A_rewards.shape[0:2])
+            return behavior_values
+        A_values = get_play_values(self.params_policy,A_states)
         #getting GAEs and targets
-        A_gaes = []
-        A_targets = []
-        print('Calculating gaes')
-        for agent in range(len(A_states)):
-            print(f"for agent {agent}")
-            #gaes, targets = self.calculate_gaes_and_targets_agent(
-            #        self.params_policy,
-            #        A_states[agent],
-            #        A_rewards[agent],
-            #        A_dones[agent]
-            #    )
-            gaes,targets = self.calculate_gae(
-                self.params_policy,
-                A_states[agent],
-                A_rewards[agent],
-                A_dones[agent],
-                A_next_states[agent]
-            ) 
-            A_gaes.append(gaes)
-            A_targets.append(targets)
+        print('Calculating gaes for all agents')
+        agent_wise_gae = jax.vmap(self.gae_advantages,in_axes=0)
+        A_gaes,A_targets = agent_wise_gae(
+            A_rewards,
+            A_discounts,
+            A_values,
+        ) 
         A_gaes = jnp.array(A_gaes)
         A_targets = jnp.array(A_targets)
-        #align data
+        #align data discarding last step
+        A_states, A_actions, A_log_pi_olds,A_rewards, A_dones, A_next_states = \
+                jax.tree_map(
+                        lambda x: x[:,:-1],
+                        (A_states, A_actions, A_log_pi_olds,A_rewards, A_dones, A_next_states)
+                )
+        #
         A_dataframe= (A_states, A_actions, A_log_pi_olds,A_rewards, A_dones, \
                      A_next_states,A_gaes,A_targets)
         A_shuffler = np.random.permutation(A_states.shape[0]*A_states.shape[1])
@@ -327,36 +328,15 @@ class PPO():
         return params
     #
     @partial(jax.jit, static_argnums=0)
-    def calculate_gae(
-        self,
-        params: hk.Params,
-        state: np.ndarray,
-        reward: np.ndarray,
-        done: np.ndarray,
-        next_state: np.ndarray,
-    ) -> Tuple[jnp.ndarray, jnp.ndarray]:
-        # Current and next value estimates.
-        value = jax.lax.stop_gradient(self._get_value(params, state).squeeze())
-        next_value = jax.lax.stop_gradient(self._get_value(params, next_state).squeeze())
-        # Calculate TD errors.
-        delta = reward + self.gamma * next_value * (1.0 - done) - value
-        # Calculate GAE recursively from behind.
-        gae = [delta[-1]]
-        for t in jnp.arange(self.buffer_size - 2, -1, -1):
-            gae.insert(0, delta[t] + self.gamma * self.lambd * (1 - done[t]) * gae[0])
-        gae = jnp.array(gae)
-        return (gae - gae.mean()) / (gae.std() + 1e-8), gae + value
-    #
-    @partial(jax.jit, static_argnums=0)
-    def gae_advantages(rewards: jnp.array, discounts: jnp.array,
+    def gae_advantages(self,rewards: jnp.array, discounts: jnp.array,
            values: jnp.array) -> Tuple[jnp.ndarray, jnp.array]:
         """Uses truncated GAE to compute advantages."""
 
         # Apply reward clipping.
-        rewards = jnp.clip(rewards, -max_abs_reward, max_abs_reward)
+        rewards = jnp.clip(rewards, -self.max_abs_reward, self.max_abs_reward)
 
         advantages = rlax.truncated_generalized_advantage_estimation(
-        rewards[:-1], discounts[:-1], gae_lambda, values)
+        rewards[:-1], discounts[:-1], self.lambd, values)
         advantages = jax.lax.stop_gradient(advantages)
 
         # Exclude the bootstrap value

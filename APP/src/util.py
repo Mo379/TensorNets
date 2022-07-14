@@ -64,7 +64,7 @@ def environment_setup():
         ball_mass=0.75,
         ball_friction=0.3,
         ball_elasticity=1.5,
-        max_cycles=32
+        max_cycles=10
     )
     env = ss.color_reduction_v0(env, mode='B')
     env = ss.resize_v1(env, x_size=84,y_size=84)
@@ -283,7 +283,8 @@ class trainer:
         done = np.array([0])
         #
         for step in range(1, self.num_agent_steps + 1):
-            print(f'step: {step}')
+            #verbose
+            print(f"step-{step}, interval {self.eval_interval}: evaluation modulus {step % self.eval_interval}")
             #take a step and load the buffer
             state,done = self.algo.step(self.env, state,done)
             #
@@ -294,7 +295,6 @@ class trainer:
                 self.algo.update(self.wandb_run)
                 self.algo.buffer.clear()
             #if we are at a step where evaluation is wanted then evaluate
-            print(f"step-{step}, interval {self.eval_interval}: evaluation modulus {step % self.eval_interval}")
             if step % self.eval_interval == 0:
                 #evaluate current model
                 self.evaluate(step)

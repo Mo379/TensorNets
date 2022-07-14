@@ -28,17 +28,17 @@ gamma=0.95
 clip_eps=0.2
 lambd=0.99
 #setting training length hyperparams
-num_agent_steps=10000
-buffer_size=64
-epochs=10
+num_agent_steps=50000
+buffer_size=2048
+epochs=7
 batch_size=256
 # testing scenario
 test = True
 if test:
     num_agent_steps=1000
-    buffer_size=64
+    buffer_size=17
     epochs=5
-    batch_size=8
+    batch_size=32
 # evaluation hyperparams
 eval_interval=num_agent_steps//10
 num_eval_episodes = 5
