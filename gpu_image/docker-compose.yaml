@@ -8,7 +8,6 @@ services:
     command: /bin/bash
     volumes:
             - ./APP:/workspace/APP
-            - ./extras/lib/acme:/usr/local/lib/python3.8/dist-packages/acme
     deploy:
       resources:
         reservations:

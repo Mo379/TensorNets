@@ -21,7 +21,7 @@ root= Path(__file__).resolve().parent
 ent_coef=0.0905168
 vf_coef=0.042202
 #setting up model hyperparams
-lr_policy=0.0001
+lr_policy=0.0003
 # setting up algorithm hyperparameters
 max_grad_norm = 0.9
 gamma=0.95
@@ -38,7 +38,7 @@ if test:
     num_agent_steps=1000
     buffer_size=64
     epochs=5
-    batch_size=128
+    batch_size=8
 # evaluation hyperparams
 eval_interval=num_agent_steps//10
 num_eval_episodes = 5
@@ -60,8 +60,8 @@ if __name__ == "__main__":
     else:
         wandb_run = False
     # setting up main and test environments
-    env = environment_setup(test=test)
-    env_eval = environment_setup(test=test)
+    env = environment_setup()
+    env_eval = environment_setup()
     env_test = play_enviromnet_setup()
     #algorithm setup
     algo = PPO(

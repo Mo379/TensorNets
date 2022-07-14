@@ -53,14 +53,8 @@ import imageio
 
 
 #environment setup
-def environment_setup(test=True):
+def environment_setup():
     #setting up the testing and live cases
-    if test:
-        num_envs = 2
-        num_cpus = 4
-    else:
-        num_envs = 10
-        num_cpus = 6
     env = pistonball_v6.parallel_env(
         n_pistons=20,
         time_penalty=-0.1,
@@ -76,12 +70,6 @@ def environment_setup(test=True):
     env = ss.resize_v1(env, x_size=84,y_size=84)
     env = ss.frame_stack_v1(env, stack_size=3)
     env = ss.pettingzoo_env_to_vec_env_v1(env)
-    env = ss.concat_vec_envs_v1(
-        env, 
-        num_envs, 
-        num_cpus=num_cpus, 
-        base_class='stable_baselines3'
-    )
     return env
 def play_enviromnet_setup():
     env = pistonball_v6.env(n_pistons=20)
