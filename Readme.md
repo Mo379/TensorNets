@@ -1,4 +1,4 @@
-# TensorNets
+# TensorNets/ Dockerised
 1) Delete dockerfile and docker compose
 2) copy dockerfile and compose in either mac image for testing on a non gpu machine (not just mac), or gpu image to train on a gpu machine
 3) only if using gpu download cudnn 8.4.x and place it in extras/lib 
