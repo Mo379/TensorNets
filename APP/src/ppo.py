@@ -12,7 +12,7 @@ import optax
 import rlax
 import distrax
 #
-from .util import optimise, RolloutBuffer
+from .util import RolloutBuffer
 from src.agent import *
 import wandb
 
@@ -80,6 +80,7 @@ class PPO():
         self.buffer = RolloutBuffer()
         self.optax_zero_init,self.optax_zero_apply = optax.set_to_zero()
         self.max_abs_reward = jnp.inf
+        self.clip_value=True
     #
     def step(self, env, state, done):
         #
@@ -130,7 +131,7 @@ class PPO():
                 )
         #
         A_dataframe= (A_states, A_actions, A_log_pi_olds,A_rewards, A_dones, \
-                     A_next_states,A_gaes,A_targets)
+                     A_next_states,A_gaes,A_targets,A_values)
         A_shuffler = np.random.permutation(A_states.shape[0]*A_states.shape[1])
         #flatten data fuse first two dimentions (agent and play-timesetp)
         A_n_outputs= []
@@ -138,46 +139,41 @@ class PPO():
             reshaped = jnp.reshape(data,(-1,)+data.shape[2:])
             reshaped = reshaped[A_shuffler]
             A_n_outputs.append(reshaped)
-        B_state, B_action, B_log_pi_old ,B_reward, B_done, B_next_state,B_gae,B_target = A_n_outputs
-        idxes = np.arange(len(B_state))
-        for i_count in range(self.epoch_ppo):
-            print(f"epoch {i_count}")
-            #
-            for start in range(0, len(B_state), self.batch_size):
-                #create batches
-                idx = idxes[start : start + self.batch_size]
-                # Update critic.
-                self.opt_state_policy, self.params_policy, loss_critic, aux = optimise(
-                    self._loss_critic,
-                    self.opt_policy,
-                    self.opt_state_policy,
-                    self.params_policy,
-                    self.max_grad_norm,
-                    state=B_state[idx],
-                    target=B_target[idx],
-                )
-                #zero updates
-                self.opt_state_policy,_= self.optax_zero_apply(self.opt_state_policy,None)
-                # Update policy.
-                self.opt_state_policy, self.params_policy, loss_actor, aux = optimise(
-                    self._loss_actor,
-                    self.opt_policy,
-                    self.opt_state_policy,
-                    self.params_policy,
-                    self.max_grad_norm,
-                    state=B_state[idx],
-                    action=B_action[idx],
-                    log_prob_old=B_log_pi_old[idx],
-                    gae=B_gae[idx],
-                    ent_coef=self.ent_coef,
-                    vf_coef=self.vf_coef,
-                    value_loss=loss_critic,
-                    rng=next(self.rng),
-                )
+        #create n batches matching batch size
+        idxes = np.arange(len(A_n_outputs[1]))
+        assert len(idxes) % self.batch_size == 0 
+        A_n_outputs= jax.tree_map(lambda x: x.reshape((-1,self.batch_size,) + x.shape[1:]),
+                           A_n_outputs)
+        #
+        self.grad_fn = jax.grad(self.loss, has_aux=True)
+        # Repeat training for the given number of epoch, taking a random
+        # permutation for every epoch.
+        print('updating params')
+        (key, self.params_policy, self.opt_state_policy, _), metrics = jax.lax.scan(
+            self._model_update_epoch, 
+            (
+                next(self.rng), 
+                self.params_policy, 
+                self.opt_state_policy, 
+                A_n_outputs
+            ), 
+            (),
+            length=self.epoch_ppo)
+        #
+        metrics = jax.tree_map(jnp.mean, metrics)
+        metrics['norm_params'] = optax.global_norm(self.params_policy)
+        metrics['rewards_mean'] = jnp.mean(
+            jnp.abs(jnp.mean(A_rewards, axis=(0, 1))))
+        metrics['rewards_std'] = jnp.std(A_rewards, axis=(0, 1))
+        #
         if wandb_run:
             #log the losses
-            wandb.log({"loss/critic": np.array(loss_critic)})
-            wandb.log({"loss/actor": np.array(loss_actor)})
+            wandb.log({"loss/critic": np.array(metrics['loss_value'])})
+            wandb.log({"loss/actor": np.array(metrics['loss_policy'])})
+            wandb.log({"loss/entropy": np.array(metrics['loss_entropy'])})
+            wandb.log({"loss/ppo_total_loss": np.array(metrics['loss_total'])})
+            wandb.log({"reward/mean": np.array(metrics['rewards_mean'])})
+            wandb.log({"reward/std": np.array(metrics['rewards_std'])})
         self.buffer.clear()
 
 
@@ -194,6 +190,33 @@ class PPO():
     def select_action(self, state):
         action,log_prob = self._select_action(self.params_policy, state)
         return np.array(action), np.array(log_prob)
+    #save and load params 
+    def fn_save_params(self,path):
+        """
+        Save parameters.
+        """
+        path = os.path.join(path, "params_policy.pkl")
+        if not os.path.exists(os.path.dirname(path)):
+            os.makedirs(os.path.dirname(path))
+        with open(path, 'wb') as f:  # Python 3: open(..., 'wb')
+            pickle.dump(self.params_policy, f)
+    #
+    def fn_load_params(self,path):
+        """
+        Load parameters.
+        """
+        path = os.path.join(path, "haiku_transfer.pkl")
+        file = open(path, 'rb')
+        params = pickle.load(file)
+        return params
+    #
+
+
+
+
+
+
+
 
 
 
@@ -242,15 +265,6 @@ class PPO():
         log_prob = dist.log_prob(actions)
         return actions,log_prob
     #
-    @partial(jax.jit, static_argnums=0)
-    def _get_entropy(
-        self,
-        params_policy: hk.Params,
-        state: np.ndarray,
-    ) -> jnp.ndarray:
-        action, _ , log_std = self.policy.apply(params_policy, state)
-        dist = distrax.MultivariateNormalDiag(action,jnp.ones_like(action)*jnp.exp(log_std))
-        return dist.entropy()
 
 
 
@@ -263,41 +277,6 @@ class PPO():
 
 
 
-    #loss functions
-    @partial(jax.jit, static_argnums=0)
-    def _loss_critic(
-        self,
-        params_critic: hk.Params,
-        state: np.ndarray,
-        target: np.ndarray,
-    ) -> jnp.ndarray:
-        #the input is double batched thus
-        MSE = jnp.square(target - self._get_value(params_critic,state)).mean()
-        return MSE , None
-    #loss actor
-    @partial(jax.jit, static_argnums=0)
-    def _loss_actor(
-        self,
-        params_policy: hk.Params,
-        state: np.ndarray,
-        action: np.ndarray,
-        log_prob_old: np.ndarray,
-        gae: jnp.ndarray,
-        ent_coef: jnp.ndarray,
-        vf_coef: jnp.ndarray,
-        value_loss: jnp.ndarray,
-        rng:jnp.ndarray,
-    ) -> jnp.ndarray:
-        # Calculate log(\pi) at current policy.
-        actions, log_prob= self._explore(params_policy,state,rng)
-        #entropy_loss = self._get_entropy(params_policy,state)
-        entropy_loss = 0
-        # Calculate importance ratio.
-        ratio = jnp.exp(log_prob- log_prob_old)
-        loss_actor = rlax.clipped_surrogate_pg_loss(ratio, gae, self.clip_eps, use_stop_gradient=True)
-        #total loss
-        loss = loss_actor + ent_coef*entropy_loss + vf_coef*value_loss 
-        return loss, (log_prob)
 
 
 
@@ -307,25 +286,9 @@ class PPO():
 
 
 
-    #save and load params 
-    def fn_save_params(self,path):
-        """
-        Save parameters.
-        """
-        path = os.path.join(path, "params_policy.pkl")
-        if not os.path.exists(os.path.dirname(path)):
-            os.makedirs(os.path.dirname(path))
-        with open(path, 'wb') as f:  # Python 3: open(..., 'wb')
-            pickle.dump(self.params_policy, f)
-    #
-    def fn_load_params(self,path):
-        """
-        Load parameters.
-        """
-        path = os.path.join(path, "haiku_transfer.pkl")
-        file = open(path, 'rb')
-        params = pickle.load(file)
-        return params
+
+
+
     #
     @partial(jax.jit, static_argnums=0)
     def gae_advantages(self,rewards: jnp.array, discounts: jnp.array,
@@ -344,3 +307,135 @@ class PPO():
         target_values = jax.lax.stop_gradient(target_values)
 
         return advantages, target_values
+    @partial(jax.jit,static_argnums=0)
+    def loss(
+        self,
+        params, 
+        observations,
+        actions, 
+        behaviour_log_probs,
+        target_values, 
+        advantages,
+        behavior_values
+    ):
+      """Surrogate loss using clipped probability ratios."""
+
+      means, values,sd = self.policy.apply(params,observations)
+      dist = distrax.MultivariateNormalDiag(actions,jnp.ones_like(actions)*jnp.exp(sd))
+      log_probs = dist.log_prob(actions)
+      entropy = dist.entropy()
+
+      # Compute importance sampling weights: current policy / behavior policy.
+      rhos = jnp.exp(log_probs - behaviour_log_probs)
+
+      policy_loss = rlax.clipped_surrogate_pg_loss(rhos, advantages,
+                                                   self.clip_eps)
+
+      # Value function loss. Exclude the bootstrap value
+      unclipped_value_error = target_values - values
+      unclipped_value_loss = unclipped_value_error ** 2
+
+      if self.clip_value:
+        # Clip values to reduce variablility during critic training.
+        clipped_values = behavior_values + jnp.clip(
+            values - behavior_values, -self.clip_eps,
+            self.clip_eps)
+        clipped_value_error = target_values - clipped_values
+        clipped_value_loss = clipped_value_error ** 2
+        value_loss = jnp.mean(jnp.fmax(unclipped_value_loss,
+                                       clipped_value_loss))
+      else:
+        # For Mujoco envs clipping hurts a lot. Evidenced by Figure 43 in
+        # https://arxiv.org/pdf/2006.05990.pdf
+        value_loss = jnp.mean(unclipped_value_loss)
+
+      # Entropy regulariser.
+      entropy_loss = -jnp.mean(entropy)
+
+      total_loss = (
+          policy_loss + value_loss * self.vf_coef+ entropy_loss * self.ent_coef)
+      return total_loss, {
+          'loss_total': total_loss,
+          'loss_policy': policy_loss,
+          'loss_value': value_loss,
+          'loss_entropy': entropy_loss,
+      }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    #update functions
+    def _model_update_minibatch(
+            self,
+            carry,
+            minibatch,
+        ):
+        """Performs model update for a single minibatch."""
+        params, opt_state = carry
+        b_states, b_actions, b_log_pi_olds,_, _, \
+                     _,b_gaes,b_targets,b_values= minibatch
+        # Normalize advantages at the minibatch level before using them.
+        advantages = ((b_gaes -
+                       jnp.mean(b_gaes, axis=0)) /
+                      (jnp.std(b_gaes, axis=0) + 1e-8))
+        gradients, metrics = self.grad_fn(params,
+                                     b_states,
+                                     b_actions,
+                                     b_log_pi_olds,
+                                     b_targets,
+                                     advantages,
+                                     b_values)
+        # Apply updates
+        updates, opt_state = self.opt_policy(gradients, opt_state)
+        params = optax.apply_updates(params, updates)
+
+        metrics['norm_grad'] = optax.global_norm(gradients)
+        metrics['norm_updates'] = optax.global_norm(updates)
+        return (params, opt_state), metrics
+
+    def _model_update_epoch(
+            self,
+            carry,
+            unused_t,
+        ):
+        """Performs model updates based on one epoch of data."""
+        key, params, opt_state, batch = carry
+        key, subkey = jax.random.split(key)
+        permutation = jax.random.permutation(subkey, self.batch_size)
+        #
+        (params, opt_state), metrics = jax.lax.scan(
+            self._model_update_minibatch, (params, opt_state), batch,
+            length=batch[0].shape[0])
+
+        return (key, params, opt_state, batch), metrics
+
