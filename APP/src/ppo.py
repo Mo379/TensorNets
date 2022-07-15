@@ -115,12 +115,27 @@ class PPO():
         A_values = get_play_values(self.params_policy,A_states)
         #getting GAEs and targets
         print('Calculating gaes for all agents')
-        agent_wise_gae = jax.vmap(self.gae_advantages,in_axes=0)
-        A_gaes,A_targets = agent_wise_gae(
-            A_rewards,
-            A_discounts,
-            A_values,
-        ) 
+        A_gaes = []
+        A_targets = []
+        print('Calculating gaes')
+        for agent in range(len(A_states)):
+            print(f"for agent {agent}")
+            gaes,targets = self.calculate_gae(
+                self.params_policy,
+                A_states[agent],
+                A_rewards[agent],
+                A_dones[agent],
+                A_next_states[agent]
+            ) 
+            A_gaes.append(gaes)
+            A_targets.append(targets)
+        #
+        #agent_wise_gae = jax.vmap(self.gae_advantages,in_axes=0)
+        #A_gaes,A_targets = agent_wise_gae(
+        #    A_rewards,
+        #    A_discounts,
+        #    A_values,
+        #) 
         A_gaes = jnp.array(A_gaes)
         A_targets = jnp.array(A_targets)
         #align data discarding last step
@@ -307,6 +322,26 @@ class PPO():
         target_values = jax.lax.stop_gradient(target_values)
 
         return advantages, target_values
+    @partial(jax.jit, static_argnums=0)
+    def calculate_gae(
+        self,
+        params: hk.Params,
+        state: np.ndarray,
+        reward: np.ndarray,
+        done: np.ndarray,
+        next_state: np.ndarray,
+    ) -> Tuple[jnp.ndarray, jnp.ndarray]:
+        # Current and next value estimates.
+        value = jax.lax.stop_gradient(self._get_value(params, state).squeeze())
+        next_value = jax.lax.stop_gradient(self._get_value(params, next_state).squeeze())
+        # Calculate TD errors.
+        delta = reward + self.gamma * next_value * (1.0 - done) - value
+        # Calculate GAE recursively from behind.
+        gae = [delta[-1]]
+        for t in jnp.arange(self.buffer_size - 2, -1, -1):
+            gae.insert(0, delta[t] + self.gamma * self.lambd * (1 - done[t]) * gae[0])
+        gae = jnp.array(gae)
+        return (gae - gae.mean()) / (gae.std() + 1e-8), gae + value
     @partial(jax.jit,static_argnums=0)
     def loss(
         self,
