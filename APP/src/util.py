@@ -64,7 +64,7 @@ def environment_setup():
         ball_mass=0.75,
         ball_friction=0.3,
         ball_elasticity=1.5,
-        max_cycles=10
+        max_cycles=125
     )
     env = ss.color_reduction_v0(env, mode='B')
     env = ss.resize_v1(env, x_size=84,y_size=84)
