@@ -13,23 +13,23 @@ stylesheet = <
   .node text {
     font-size: 12px;
   }
-%23node1400516437696480:hover { stroke-width: 0.2em; }
-%23node1400516437696480:hover ~ %23node1400516437696481 { stroke-width: 0.2em; }
-%23node1400516437696481:hover ~ %23node1400516437696480 { stroke-width: 0.2em; }
-%23node1400516437696481:hover { stroke-width: 0.2em; }
-%23node1400516437723360:hover { stroke-width: 0.2em; }
-%23node1400516437723360:hover ~ %23node1400516437723361 { stroke-width: 0.2em; }
-%23node1400516437723361:hover ~ %23node1400516437723360 { stroke-width: 0.2em; }
-%23node1400516437723361:hover { stroke-width: 0.2em; }
+%23node1397800542625760:hover { stroke-width: 0.2em; }
+%23node1397800542625760:hover ~ %23node1397800542625761 { stroke-width: 0.2em; }
+%23node1397800542625761:hover ~ %23node1397800542625760 { stroke-width: 0.2em; }
+%23node1397800542625761:hover { stroke-width: 0.2em; }
+%23node1397800542652640:hover { stroke-width: 0.2em; }
+%23node1397800542652640:hover ~ %23node1397800542652641 { stroke-width: 0.2em; }
+%23node1397800542652641:hover ~ %23node1397800542652640 { stroke-width: 0.2em; }
+%23node1397800542652641:hover { stroke-width: 0.2em; }
 >
-140051643770800 [label=<<b>copy</b><br/>f64[20,84,84,3]>,  id="node140051643770800", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-140051643771184 [label=<<b>convert_element_type</b><br/>f32[20,84,84,3]>,  id="node140051643771184", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-140051643770416 [label=<<b>convert_element_type</b><br/>f32[]>,  id="node140051643770416", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-140051643771568 [label=<<b>div</b><br/>f32[20,84,84,3]>,  id="node140051643771568", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-140051642250032 [label=<<b>integer_pow</b><br/>f32[]>,  id="node140051642250032", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-140051642251184 [label=<<b>log</b><br/>f32[]>,  id="node140051642251184", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-140051641721648 [label=<<b>output[1]</b><br/><b>reshape</b><br/>f32[1,1]>,  id="node140051641721648", shape=rect, style="filled,bold", tooltip=" ", fontcolor="black", color="#0053D6", fillcolor="#AABFFF"];
-subgraph cluster_140051642554544 {
+139780054263728 [label=<<b>copy</b><br/>f64[20,84,84,3]>,  id="node139780054263728", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+139780054264112 [label=<<b>convert_element_type</b><br/>f32[20,84,84,3]>,  id="node139780054264112", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+139780054263344 [label=<<b>convert_element_type</b><br/>f32[]>,  id="node139780054263344", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+139780054264496 [label=<<b>div</b><br/>f32[20,84,84,3]>,  id="node139780054264496", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+139780052759344 [label=<<b>integer_pow</b><br/>f32[]>,  id="node139780052759344", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+139780052760496 [label=<<b>log</b><br/>f32[]>,  id="node139780052760496", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+139780052222768 [label=<<b>output[1]</b><br/><b>reshape</b><br/>f32[1,1]>,  id="node139780052222768", shape=rect, style="filled,bold", tooltip=" ", fontcolor="black", color="#0053D6", fillcolor="#AABFFF"];
+subgraph cluster_139780053064576 {
   style="rounded,filled";
   fillcolor="#F0F5F5";
   color="#14234B;";
@@ -37,8 +37,8 @@ subgraph cluster_140051642554544 {
   fontsize=53;
   label = <<b>NatureCNN_l1 (__init__)</b>>;
   labelloc = t;
-}  // subgraph cluster_140051642554544
-subgraph cluster_140051642554384 {
+}  // subgraph cluster_139780053064576
+subgraph cluster_139780053314272 {
   style="rounded,filled";
   fillcolor="#F0F5F5";
   color="#14234B;";
@@ -46,16 +46,16 @@ subgraph cluster_140051642554384 {
   fontsize=53;
   label = <<b>NatureCNN_l1</b>>;
   labelloc = t;
-140051642593328 [label=<<b>conv_general_dilated</b><br/>f32[20,20,20,32]>,  id="node140051642593328", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-140051643769264 [label=<<b>broadcast_in_dim</b><br/>f32[20,20,20,32]>,  id="node140051643769264", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-140051642594096 [label=<<b>add</b><br/>f32[20,20,20,32]>,  id="node140051642594096", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-}  // subgraph cluster_140051642554384
-140051643771568 -> 140051642593328;
-1400519071949280 -> 140051642593328;
-1400519071964640 -> 140051643769264;
-140051642593328 -> 140051642594096;
-140051643769264 -> 140051642594096;
-subgraph cluster_140051642586672 {
+139780053106736 [label=<<b>conv_general_dilated</b><br/>f32[20,20,20,32]>,  id="node139780053106736", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+139780054262192 [label=<<b>broadcast_in_dim</b><br/>f32[20,20,20,32]>,  id="node139780054262192", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+139780053107504 [label=<<b>add</b><br/>f32[20,20,20,32]>,  id="node139780053107504", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+}  // subgraph cluster_139780053314272
+139780054264496 -> 139780053106736;
+1397801838141920 -> 139780053106736;
+1397801838157280 -> 139780054262192;
+139780053106736 -> 139780053107504;
+139780054262192 -> 139780053107504;
+subgraph cluster_139780053100160 {
   style="rounded,filled";
   fillcolor="#F0F5F5";
   color="#14234B;";
@@ -63,13 +63,13 @@ subgraph cluster_140051642586672 {
   fontsize=53;
   label = <<b>xla_call (relu)</b>>;
   labelloc = t;
-140051642593712 [label=<<b>convert_element_type</b><br/>f32[]>,  id="node140051642593712", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-140051642594864 [label=<<b>max</b><br/>f32[20,20,20,32]>,  id="node140051642594864", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-}  // subgraph cluster_140051642586672
-140052665721056 -> 140051642593712;
-140051642594096 -> 140051642594864;
-140051642593712 -> 140051642594864;
-subgraph cluster_140051642585632 {
+139780053107120 [label=<<b>convert_element_type</b><br/>f32[]>,  id="node139780053107120", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+139780053108272 [label=<<b>max</b><br/>f32[20,20,20,32]>,  id="node139780053108272", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+}  // subgraph cluster_139780053100160
+139780917162208 -> 139780053107120;
+139780053107504 -> 139780053108272;
+139780053107120 -> 139780053108272;
+subgraph cluster_139780053100240 {
   style="rounded,filled";
   fillcolor="#F0F5F5";
   color="#14234B;";
@@ -77,8 +77,8 @@ subgraph cluster_140051642585632 {
   fontsize=53;
   label = <<b>NatureCNN_l2 (__init__)</b>>;
   labelloc = t;
-}  // subgraph cluster_140051642585632
-subgraph cluster_140051642553424 {
+}  // subgraph cluster_139780053100240
+subgraph cluster_139780053102080 {
   style="rounded,filled";
   fillcolor="#F0F5F5";
   color="#14234B;";
@@ -86,16 +86,16 @@ subgraph cluster_140051642553424 {
   fontsize=53;
   label = <<b>NatureCNN_l2</b>>;
   labelloc = t;
-140051642595248 [label=<<b>conv_general_dilated</b><br/>f32[20,9,9,64]>,  id="node140051642595248", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-140051642594480 [label=<<b>broadcast_in_dim</b><br/>f32[20,9,9,64]>,  id="node140051642594480", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-140051642596016 [label=<<b>add</b><br/>f32[20,9,9,64]>,  id="node140051642596016", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-}  // subgraph cluster_140051642553424
-140051642594864 -> 140051642595248;
-1400519071953120 -> 140051642595248;
-1400519071956960 -> 140051642594480;
-140051642595248 -> 140051642596016;
-140051642594480 -> 140051642596016;
-subgraph cluster_140051642604416 {
+139780053108656 [label=<<b>conv_general_dilated</b><br/>f32[20,9,9,64]>,  id="node139780053108656", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+139780053107888 [label=<<b>broadcast_in_dim</b><br/>f32[20,9,9,64]>,  id="node139780053107888", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+139780053109424 [label=<<b>add</b><br/>f32[20,9,9,64]>,  id="node139780053109424", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+}  // subgraph cluster_139780053102080
+139780053108272 -> 139780053108656;
+1397801838145760 -> 139780053108656;
+1397801838149600 -> 139780053107888;
+139780053108656 -> 139780053109424;
+139780053107888 -> 139780053109424;
+subgraph cluster_139780053129952 {
   style="rounded,filled";
   fillcolor="#F0F5F5";
   color="#14234B;";
@@ -103,13 +103,13 @@ subgraph cluster_140051642604416 {
   fontsize=53;
   label = <<b>xla_call (relu)</b>>;
   labelloc = t;
-140051642595632 [label=<<b>convert_element_type</b><br/>f32[]>,  id="node140051642595632", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-140051642596784 [label=<<b>max</b><br/>f32[20,9,9,64]>,  id="node140051642596784", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-}  // subgraph cluster_140051642604416
-140052665721056 -> 140051642595632;
-140051642596016 -> 140051642596784;
-140051642595632 -> 140051642596784;
-subgraph cluster_140051642601696 {
+139780053109040 [label=<<b>convert_element_type</b><br/>f32[]>,  id="node139780053109040", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+139780053110192 [label=<<b>max</b><br/>f32[20,9,9,64]>,  id="node139780053110192", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+}  // subgraph cluster_139780053129952
+139780917162208 -> 139780053109040;
+139780053109424 -> 139780053110192;
+139780053109040 -> 139780053110192;
+subgraph cluster_139780053128112 {
   style="rounded,filled";
   fillcolor="#F0F5F5";
   color="#14234B;";
@@ -117,8 +117,8 @@ subgraph cluster_140051642601696 {
   fontsize=53;
   label = <<b>NatureCNN_l3 (__init__)</b>>;
   labelloc = t;
-}  // subgraph cluster_140051642601696
-subgraph cluster_140051907367776 {
+}  // subgraph cluster_139780053128112
+subgraph cluster_139780053099920 {
   style="rounded,filled";
   fillcolor="#F0F5F5";
   color="#14234B;";
@@ -126,16 +126,16 @@ subgraph cluster_140051907367776 {
   fontsize=53;
   label = <<b>NatureCNN_l3</b>>;
   labelloc = t;
-140051642654768 [label=<<b>conv_general_dilated</b><br/>f32[20,7,7,64]>,  id="node140051642654768", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-140051907198384 [label=<<b>broadcast_in_dim</b><br/>f32[20,7,7,64]>,  id="node140051907198384", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-140051642655536 [label=<<b>add</b><br/>f32[20,7,7,64]>,  id="node140051642655536", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-}  // subgraph cluster_140051907367776
-140051642596784 -> 140051642654768;
-1400519071960800 -> 140051642654768;
-1400519071968480 -> 140051907198384;
-140051642654768 -> 140051642655536;
-140051907198384 -> 140051642655536;
-subgraph cluster_140051642621760 {
+139780053164080 [label=<<b>conv_general_dilated</b><br/>f32[20,7,7,64]>,  id="node139780053164080", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+139780183817648 [label=<<b>broadcast_in_dim</b><br/>f32[20,7,7,64]>,  id="node139780183817648", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+139780053164848 [label=<<b>add</b><br/>f32[20,7,7,64]>,  id="node139780053164848", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+}  // subgraph cluster_139780053099920
+139780053110192 -> 139780053164080;
+1397801838153440 -> 139780053164080;
+1397801838161120 -> 139780183817648;
+139780053164080 -> 139780053164848;
+139780183817648 -> 139780053164848;
+subgraph cluster_139780053118624 {
   style="rounded,filled";
   fillcolor="#F0F5F5";
   color="#14234B;";
@@ -143,13 +143,13 @@ subgraph cluster_140051642621760 {
   fontsize=53;
   label = <<b>xla_call (relu)</b>>;
   labelloc = t;
-140051642655152 [label=<<b>convert_element_type</b><br/>f32[]>,  id="node140051642655152", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-140051642656304 [label=<<b>max</b><br/>f32[20,7,7,64]>,  id="node140051642656304", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-}  // subgraph cluster_140051642621760
-140052665721056 -> 140051642655152;
-140051642655536 -> 140051642656304;
-140051642655152 -> 140051642656304;
-subgraph cluster_140051642620720 {
+139780053164464 [label=<<b>convert_element_type</b><br/>f32[]>,  id="node139780053164464", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+139780053165616 [label=<<b>max</b><br/>f32[20,7,7,64]>,  id="node139780053165616", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+}  // subgraph cluster_139780053118624
+139780917162208 -> 139780053164464;
+139780053164848 -> 139780053165616;
+139780053164464 -> 139780053165616;
+subgraph cluster_139780053118304 {
   style="rounded,filled";
   fillcolor="#F0F5F5";
   color="#14234B;";
@@ -157,8 +157,8 @@ subgraph cluster_140051642620720 {
   fontsize=53;
   label = <<b>flatten (__init__)</b>>;
   labelloc = t;
-}  // subgraph cluster_140051642620720
-subgraph cluster_140051642640560 {
+}  // subgraph cluster_139780053118304
+subgraph cluster_139780053169472 {
   style="rounded,filled";
   fillcolor="#F0F5F5";
   color="#14234B;";
@@ -166,10 +166,10 @@ subgraph cluster_140051642640560 {
   fontsize=53;
   label = <<b>flatten</b>>;
   labelloc = t;
-140051642655920 [label=<<b>reshape</b><br/>f32[20,3136]>,  id="node140051642655920", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-}  // subgraph cluster_140051642640560
-140051642656304 -> 140051642655920;
-subgraph cluster_140051642640800 {
+139780053165232 [label=<<b>reshape</b><br/>f32[20,3136]>,  id="node139780053165232", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+}  // subgraph cluster_139780053169472
+139780053165616 -> 139780053165232;
+subgraph cluster_139780053169632 {
   style="rounded,filled";
   fillcolor="#F0F5F5";
   color="#14234B;";
@@ -177,8 +177,8 @@ subgraph cluster_140051642640800 {
   fontsize=53;
   label = <<b>NatureCNN_l4 (__init__)</b>>;
   labelloc = t;
-}  // subgraph cluster_140051642640800
-subgraph cluster_140051642640880 {
+}  // subgraph cluster_139780053169632
+subgraph cluster_139780053169792 {
   style="rounded,filled";
   fillcolor="#F0F5F5";
   color="#14234B;";
@@ -186,16 +186,16 @@ subgraph cluster_140051642640880 {
   fontsize=53;
   label = <<b>NatureCNN_l4</b>>;
   labelloc = t;
-140051642657072 [label=<<b>dot_general</b><br/>f32[20,512]>,  id="node140051642657072", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-140051642656688 [label=<<b>broadcast_in_dim</b><br/>f32[20,512]>,  id="node140051642656688", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-140051642657840 [label=<<b>add</b><br/>f32[20,512]>,  id="node140051642657840", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-}  // subgraph cluster_140051642640880
-140051642655920 -> 140051642657072;
-1400519071976160 -> 140051642657072;
-1400519535885280 -> 140051642656688;
-140051642657072 -> 140051642657840;
-140051642656688 -> 140051642657840;
-subgraph cluster_140051642601616 {
+139780053166384 [label=<<b>dot_general</b><br/>f32[20,512]>,  id="node139780053166384", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+139780053166000 [label=<<b>broadcast_in_dim</b><br/>f32[20,512]>,  id="node139780053166000", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+139780053167152 [label=<<b>add</b><br/>f32[20,512]>,  id="node139780053167152", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+}  // subgraph cluster_139780053169792
+139780053165232 -> 139780053166384;
+1397801838168800 -> 139780053166384;
+1397802050296800 -> 139780053166000;
+139780053166384 -> 139780053167152;
+139780053166000 -> 139780053167152;
+subgraph cluster_139780053172112 {
   style="rounded,filled";
   fillcolor="#F0F5F5";
   color="#14234B;";
@@ -203,13 +203,13 @@ subgraph cluster_140051642601616 {
   fontsize=53;
   label = <<b>xla_call (relu)</b>>;
   labelloc = t;
-140051642657456 [label=<<b>convert_element_type</b><br/>f32[]>,  id="node140051642657456", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-140051642687536 [label=<<b>max</b><br/>f32[20,512]>,  id="node140051642687536", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-}  // subgraph cluster_140051642601616
-140052665721056 -> 140051642657456;
-140051642657840 -> 140051642687536;
-140051642657456 -> 140051642687536;
-subgraph cluster_140051642641920 {
+139780053166768 [label=<<b>convert_element_type</b><br/>f32[]>,  id="node139780053166768", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+139780053192752 [label=<<b>max</b><br/>f32[20,512]>,  id="node139780053192752", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+}  // subgraph cluster_139780053172112
+139780917162208 -> 139780053166768;
+139780053167152 -> 139780053192752;
+139780053166768 -> 139780053192752;
+subgraph cluster_139780053118144 {
   style="rounded,filled";
   fillcolor="#F0F5F5";
   color="#14234B;";
@@ -217,8 +217,8 @@ subgraph cluster_140051642641920 {
   fontsize=53;
   label = <<b>Tensornet_dim_reduction (__init__)</b>>;
   labelloc = t;
-}  // subgraph cluster_140051642641920
-subgraph cluster_140051642642160 {
+}  // subgraph cluster_139780053118144
+subgraph cluster_139780053171712 {
   style="rounded,filled";
   fillcolor="#F0F5F5";
   color="#14234B;";
@@ -226,16 +226,16 @@ subgraph cluster_140051642642160 {
   fontsize=53;
   label = <<b>Tensornet_dim_reduction</b>>;
   labelloc = t;
-140051642687920 [label=<<b>dot_general</b><br/>f32[20,32]>,  id="node140051642687920", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-140051642596400 [label=<<b>broadcast_in_dim</b><br/>f32[20,32]>,  id="node140051642596400", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-140051642688688 [label=<<b>add</b><br/>f32[20,32]>,  id="node140051642688688", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-}  // subgraph cluster_140051642642160
-140051642687536 -> 140051642687920;
-1400516437688800 -> 140051642687920;
-1400519535862240 -> 140051642596400;
-140051642687920 -> 140051642688688;
-140051642596400 -> 140051642688688;
-subgraph cluster_140051644009184 {
+139780053193136 [label=<<b>dot_general</b><br/>f32[20,32]>,  id="node139780053193136", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+139780053109808 [label=<<b>broadcast_in_dim</b><br/>f32[20,32]>,  id="node139780053109808", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+139780053193904 [label=<<b>add</b><br/>f32[20,32]>,  id="node139780053193904", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+}  // subgraph cluster_139780053171712
+139780053192752 -> 139780053193136;
+1397800542618080 -> 139780053193136;
+1397802050273760 -> 139780053109808;
+139780053193136 -> 139780053193904;
+139780053109808 -> 139780053193904;
+subgraph cluster_139780053181360 {
   style="rounded,filled";
   fillcolor="#F0F5F5";
   color="#14234B;";
@@ -243,13 +243,13 @@ subgraph cluster_140051644009184 {
   fontsize=53;
   label = <<b>xla_call (relu)</b>>;
   labelloc = t;
-140051642688304 [label=<<b>convert_element_type</b><br/>f32[]>,  id="node140051642688304", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-140051642689456 [label=<<b>max</b><br/>f32[20,32]>,  id="node140051642689456", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-}  // subgraph cluster_140051644009184
-140052665721056 -> 140051642688304;
-140051642688688 -> 140051642689456;
-140051642688304 -> 140051642689456;
-subgraph cluster_140051642586432 {
+139780053193520 [label=<<b>convert_element_type</b><br/>f32[]>,  id="node139780053193520", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+139780053194672 [label=<<b>max</b><br/>f32[20,32]>,  id="node139780053194672", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+}  // subgraph cluster_139780053181360
+139780917162208 -> 139780053193520;
+139780053193904 -> 139780053194672;
+139780053193520 -> 139780053194672;
+subgraph cluster_139780053170432 {
   style="rounded,filled";
   fillcolor="#F0F5F5";
   color="#14234B;";
@@ -257,8 +257,8 @@ subgraph cluster_140051642586432 {
   fontsize=53;
   label = <<b>value_network_1 (__init__)</b>>;
   labelloc = t;
-}  // subgraph cluster_140051642586432
-subgraph cluster_140051910618944 {
+}  // subgraph cluster_139780053170432
+subgraph cluster_139780053171792 {
   style="rounded,filled";
   fillcolor="#F0F5F5";
   color="#14234B;";
@@ -266,7 +266,7 @@ subgraph cluster_140051910618944 {
   fontsize=53;
   label = <<b>value_network_1</b>>;
   labelloc = t;
-subgraph cluster_140051642665776 {
+subgraph cluster_139780187305920 {
   style="rounded,filled";
   fillcolor="#F0F5F5";
   color="#14234B;";
@@ -274,13 +274,13 @@ subgraph cluster_140051642665776 {
   fontsize=38;
   label = <<b>value_network_1 (tensor_scan)</b>>;
   labelloc = t;
-140051642690224 [label=<<b>gather</b><br/>f32[32]>,  id="node140051642690224", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-140051642690224 [label=<<b>broadcast_in_dim</b><br/>f32[32]>,  id="node140051642690224", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-140051642690608 [label=<<b>dot_general</b><br/>f32[20,1,32,32]>,  id="node140051642690608", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-140051642222128 [label=<<b>scan</b><br/>s64[]<br/>f32[20,1,32,32]<br/>f32[20,32]<br/>f32[32,20,1,32,32]>,  id="node140051642222128", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-140051642689840 [label=<<b>transpose</b><br/>f32[32,32,1,20]>,  id="node140051642689840", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-140051642220976 [label=<<b>transpose</b><br/>f32[20,1]>,  id="node140051642220976", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-subgraph cluster_140051642716944 {
+139780053195440 [label=<<b>gather</b><br/>f32[32]>,  id="node139780053195440", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+139780053195440 [label=<<b>broadcast_in_dim</b><br/>f32[32]>,  id="node139780053195440", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+139780053195824 [label=<<b>dot_general</b><br/>f32[20,1,32,32]>,  id="node139780053195824", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+139780052735536 [label=<<b>scan</b><br/>s64[]<br/>f32[20,1,32,32]<br/>f32[20,32]<br/>f32[32,20,1,32,32]>,  id="node139780052735536", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+139780053195056 [label=<<b>transpose</b><br/>f32[32,32,1,20]>,  id="node139780053195056", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+139780052734384 [label=<<b>transpose</b><br/>f32[20,1]>,  id="node139780052734384", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+subgraph cluster_139780053226256 {
   style="rounded,filled";
   fillcolor="#F0F5F5";
   color="#14234B;";
@@ -288,8 +288,8 @@ subgraph cluster_140051642716944 {
   fontsize=27;
   label = <<b>value_network_1 (_tensor_step)</b>>;
   labelloc = t;
-}  // subgraph cluster_140051642716944
-subgraph cluster_140051642143504 {
+}  // subgraph cluster_139780053226256
+subgraph cluster_139780052662608 {
   style="rounded,filled";
   fillcolor="#F0F5F5";
   color="#14234B;";
@@ -297,9 +297,9 @@ subgraph cluster_140051642143504 {
   fontsize=27;
   label = <<b>xla_call (trace)</b>>;
   labelloc = t;
-140051642689072 [label=<<b>transpose</b><br/>f32[1,20,32,32]>,  id="node140051642689072", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-140051642223664 [label=<<b>reduce_sum</b><br/>f32[1,20]>,  id="node140051642223664", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-subgraph cluster_140051642229520 {
+139780053194288 [label=<<b>transpose</b><br/>f32[1,20,32,32]>,  id="node139780053194288", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+139780052737072 [label=<<b>reduce_sum</b><br/>f32[1,20]>,  id="node139780052737072", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+subgraph cluster_139780052738992 {
   style="rounded,filled";
   fillcolor="#F0F5F5";
   color="#14234B;";
@@ -307,30 +307,30 @@ subgraph cluster_140051642229520 {
   fontsize=19;
   label = <<b>xla_call (_where)</b>>;
   labelloc = t;
-140051642221360 [label=<<b>broadcast_in_dim</b><br/>bool[1,20,32,32]>,  id="node140051642221360", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-140051642224048 [label=<<b>select_n</b><br/>f32[1,20,32,32]>,  id="node140051642224048", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-}  // subgraph cluster_140051642229520
-140051642221744 -> 140051642221360;
-140051642221360 -> 140051642224048;
-140051642220592 -> 140051642224048;
-140051642689072 -> 140051642224048;
-}  // subgraph cluster_140051642143504
-140051642689840 -> 140051642689072;
-140051642224048 -> 140051642223664;
-}  // subgraph cluster_140051642665776
-140051642689456 -> 140051642690224;
-140051642690992 -> 140051642690224;
-140051642690224 -> 140051642690224;
-140051642690224 -> 140051642690608;
-1400516437696480 -> 140051642690608;
-140052665721088 -> 140051642222128;
-140051642690608 -> 140051642222128;
-140051642689456 -> 140051642222128;
-1400516437696481 -> 140051642222128;
-140051642222512 -> 140051642689840;
-140051642223664 -> 140051642220976;
-}  // subgraph cluster_140051910618944
-subgraph cluster_140051642663696 {
+139780052734768 [label=<<b>broadcast_in_dim</b><br/>bool[1,20,32,32]>,  id="node139780052734768", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+139780052737456 [label=<<b>select_n</b><br/>f32[1,20,32,32]>,  id="node139780052737456", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+}  // subgraph cluster_139780052738992
+139780052735152 -> 139780052734768;
+139780052734768 -> 139780052737456;
+139780052734000 -> 139780052737456;
+139780053194288 -> 139780052737456;
+}  // subgraph cluster_139780052662608
+139780053195056 -> 139780053194288;
+139780052737456 -> 139780052737072;
+}  // subgraph cluster_139780187305920
+139780053194672 -> 139780053195440;
+139780053196208 -> 139780053195440;
+139780053195440 -> 139780053195440;
+139780053195440 -> 139780053195824;
+1397800542625760 -> 139780053195824;
+139780917162240 -> 139780052735536;
+139780053195824 -> 139780052735536;
+139780053194672 -> 139780052735536;
+1397800542625761 -> 139780052735536;
+139780052735920 -> 139780053195056;
+139780052737072 -> 139780052734384;
+}  // subgraph cluster_139780053171792
+subgraph cluster_139780053793984 {
   style="rounded,filled";
   fillcolor="#F0F5F5";
   color="#14234B;";
@@ -338,8 +338,8 @@ subgraph cluster_140051642663696 {
   fontsize=53;
   label = <<b>xla_call (trace)</b>>;
   labelloc = t;
-140051642249648 [label=<<b>reduce_sum</b><br/>f32[]>,  id="node140051642249648", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-subgraph cluster_140051642246944 {
+139780052758960 [label=<<b>reduce_sum</b><br/>f32[]>,  id="node139780052758960", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+subgraph cluster_139780052751840 {
   style="rounded,filled";
   fillcolor="#F0F5F5";
   color="#14234B;";
@@ -347,14 +347,14 @@ subgraph cluster_140051642246944 {
   fontsize=38;
   label = <<b>xla_call (_where)</b>>;
   labelloc = t;
-140051642250800 [label=<<b>select_n</b><br/>f32[20,1]>,  id="node140051642250800", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-}  // subgraph cluster_140051642246944
-140051642250416 -> 140051642250800;
-140051642249264 -> 140051642250800;
-140051642220976 -> 140051642250800;
-}  // subgraph cluster_140051642663696
-140051642250800 -> 140051642249648;
-subgraph cluster_140051642209280 {
+139780052760112 [label=<<b>select_n</b><br/>f32[20,1]>,  id="node139780052760112", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+}  // subgraph cluster_139780052751840
+139780052759728 -> 139780052760112;
+139780052758576 -> 139780052760112;
+139780052734384 -> 139780052760112;
+}  // subgraph cluster_139780053793984
+139780052760112 -> 139780052758960;
+subgraph cluster_139780052660368 {
   style="rounded,filled";
   fillcolor="#F0F5F5";
   color="#14234B;";
@@ -362,8 +362,8 @@ subgraph cluster_140051642209280 {
   fontsize=53;
   label = <<b>policy_network_1 (__init__)</b>>;
   labelloc = t;
-}  // subgraph cluster_140051642209280
-subgraph cluster_140051644009904 {
+}  // subgraph cluster_139780052660368
+subgraph cluster_139780053117024 {
   style="rounded,filled";
   fillcolor="#F0F5F5";
   color="#14234B;";
@@ -371,7 +371,7 @@ subgraph cluster_140051644009904 {
   fontsize=53;
   label = <<b>policy_network_1</b>>;
   labelloc = t;
-subgraph cluster_140051642320112 {
+subgraph cluster_139780052827168 {
   style="rounded,filled";
   fillcolor="#F0F5F5";
   color="#14234B;";
@@ -379,13 +379,13 @@ subgraph cluster_140051642320112 {
   fontsize=38;
   label = <<b>policy_network_1 (tensor_scan)</b>>;
   labelloc = t;
-140051642252720 [label=<<b>gather</b><br/>f32[32]>,  id="node140051642252720", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-140051642252720 [label=<<b>broadcast_in_dim</b><br/>f32[32]>,  id="node140051642252720", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-140051642251568 [label=<<b>dot_general</b><br/>f32[20,1,32,32]>,  id="node140051642251568", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-140051641706800 [label=<<b>scan</b><br/>s64[]<br/>f32[20,1,32,32]<br/>f32[20,32]<br/>f32[32,20,1,32,32]>,  id="node140051641706800", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-140051641705264 [label=<<b>transpose</b><br/>f32[32,32,1,20]>,  id="node140051641705264", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-140051641720880 [label=<<b>output[0]</b><br/><b>transpose</b><br/>f32[20,1]>,  id="node140051641720880", shape=rect, style="filled,bold", tooltip=" ", fontcolor="black", color="#0053D6", fillcolor="#AABFFF"];
-subgraph cluster_140051642271360 {
+139780052762032 [label=<<b>gather</b><br/>f32[32]>,  id="node139780052762032", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+139780052762032 [label=<<b>broadcast_in_dim</b><br/>f32[32]>,  id="node139780052762032", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+139780052760880 [label=<<b>dot_general</b><br/>f32[20,1,32,32]>,  id="node139780052760880", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+139780052216112 [label=<<b>scan</b><br/>s64[]<br/>f32[20,1,32,32]<br/>f32[20,32]<br/>f32[32,20,1,32,32]>,  id="node139780052216112", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+139780052214576 [label=<<b>transpose</b><br/>f32[32,32,1,20]>,  id="node139780052214576", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+139780052222000 [label=<<b>output[0]</b><br/><b>transpose</b><br/>f32[20,1]>,  id="node139780052222000", shape=rect, style="filled,bold", tooltip=" ", fontcolor="black", color="#0053D6", fillcolor="#AABFFF"];
+subgraph cluster_139780052784688 {
   style="rounded,filled";
   fillcolor="#F0F5F5";
   color="#14234B;";
@@ -393,8 +393,8 @@ subgraph cluster_140051642271360 {
   fontsize=27;
   label = <<b>policy_network_1 (_tensor_step)</b>>;
   labelloc = t;
-}  // subgraph cluster_140051642271360
-subgraph cluster_140051642585232 {
+}  // subgraph cluster_139780052784688
+subgraph cluster_139780052783568 {
   style="rounded,filled";
   fillcolor="#F0F5F5";
   color="#14234B;";
@@ -402,9 +402,9 @@ subgraph cluster_140051642585232 {
   fontsize=27;
   label = <<b>xla_call (trace)</b>>;
   labelloc = t;
-140051641705648 [label=<<b>transpose</b><br/>f32[1,20,32,32]>,  id="node140051641705648", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-140051641706416 [label=<<b>reduce_sum</b><br/>f32[1,20]>,  id="node140051641706416", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-subgraph cluster_140051642367488 {
+139780052214960 [label=<<b>transpose</b><br/>f32[1,20,32,32]>,  id="node139780052214960", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+139780052215728 [label=<<b>reduce_sum</b><br/>f32[1,20]>,  id="node139780052215728", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+subgraph cluster_139780052876960 {
   style="rounded,filled";
   fillcolor="#F0F5F5";
   color="#14234B;";
@@ -412,29 +412,29 @@ subgraph cluster_140051642367488 {
   fontsize=19;
   label = <<b>xla_call (_where)</b>>;
   labelloc = t;
-140051641704496 [label=<<b>broadcast_in_dim</b><br/>bool[1,20,32,32]>,  id="node140051641704496", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-140051641721264 [label=<<b>select_n</b><br/>f32[1,20,32,32]>,  id="node140051641721264", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
-}  // subgraph cluster_140051642367488
-140051641704880 -> 140051641704496;
-140051641704496 -> 140051641721264;
-140051641706032 -> 140051641721264;
-140051641705648 -> 140051641721264;
-}  // subgraph cluster_140051642585232
-140051641705264 -> 140051641705648;
-140051641721264 -> 140051641706416;
-}  // subgraph cluster_140051642320112
-140051642689456 -> 140051642252720;
-140051642252336 -> 140051642252720;
-140051642252720 -> 140051642252720;
-140051642252720 -> 140051642251568;
-1400516437723360 -> 140051642251568;
-140052665721088 -> 140051641706800;
-140051642251568 -> 140051641706800;
-140051642689456 -> 140051641706800;
-1400516437723361 -> 140051641706800;
-140051641707184 -> 140051641705264;
-140051641706416 -> 140051641720880;
-subgraph cluster_140051642621280 {
+139780052213808 [label=<<b>broadcast_in_dim</b><br/>bool[1,20,32,32]>,  id="node139780052213808", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+139780052222384 [label=<<b>select_n</b><br/>f32[1,20,32,32]>,  id="node139780052222384", shape=rect, style="filled", tooltip=" ", fontcolor="black", color="#FFDB13", fillcolor="#FFF26E"];
+}  // subgraph cluster_139780052876960
+139780052214192 -> 139780052213808;
+139780052213808 -> 139780052222384;
+139780052215344 -> 139780052222384;
+139780052214960 -> 139780052222384;
+}  // subgraph cluster_139780052783568
+139780052214576 -> 139780052214960;
+139780052222384 -> 139780052215728;
+}  // subgraph cluster_139780052827168
+139780053194672 -> 139780052762032;
+139780052761648 -> 139780052762032;
+139780052762032 -> 139780052762032;
+139780052762032 -> 139780052760880;
+1397800542652640 -> 139780052760880;
+139780917162240 -> 139780052216112;
+139780052760880 -> 139780052216112;
+139780053194672 -> 139780052216112;
+1397800542652641 -> 139780052216112;
+139780052216496 -> 139780052214576;
+139780052215728 -> 139780052222000;
+subgraph cluster_139780052784528 {
   style="rounded,filled";
   fillcolor="#F0F5F5";
   color="#14234B;";
@@ -442,9 +442,9 @@ subgraph cluster_140051642621280 {
   fontsize=38;
   label = <<b>policy_network_1 (_normalise)</b>>;
   labelloc = t;
-}  // subgraph cluster_140051642621280
-}  // subgraph cluster_140051644009904
-subgraph cluster_140051642245984 {
+}  // subgraph cluster_139780052784528
+}  // subgraph cluster_139780053117024
+subgraph cluster_139780052740192 {
   style="rounded,filled";
   fillcolor="#F0F5F5";
   color="#14234B;";
@@ -452,8 +452,8 @@ subgraph cluster_140051642245984 {
   fontsize=53;
   label = <<b>log_std (__init__)</b>>;
   labelloc = t;
-}  // subgraph cluster_140051642245984
-subgraph cluster_140051642271200 {
+}  // subgraph cluster_139780052740192
+subgraph cluster_139780052784288 {
   style="rounded,filled";
   fillcolor="#F0F5F5";
   color="#14234B;";
@@ -461,44 +461,44 @@ subgraph cluster_140051642271200 {
   fontsize=53;
   label = <<b>log_std</b>>;
   labelloc = t;
-}  // subgraph cluster_140051642271200
-1400519071972320 -> 140051643770800;
-140051643770800 -> 140051643771184;
-140051977210704 -> 140051643770416;
-140051643771184 -> 140051643771568;
-140051643770416 -> 140051643771568;
-140051642249648 -> 140051642250032;
-140051642250032 -> 140051642251184;
-140051642251184 -> 140051641721648;
-1400519071964640 [label=<<b>args[0]: NatureCNN_l1/b</b><br/>f32[32]> id="node1400519071964640", shape=rect, style="filled", fontcolor="black", color="#FF8A4F", fillcolor="#FFDEAF"];
-1400519071949280 [label=<<b>args[0]: NatureCNN_l1/w</b><br/>f32[8,8,3,32]> id="node1400519071949280", shape=rect, style="filled", fontcolor="black", color="#FF8A4F", fillcolor="#FFDEAF"];
-1400519071956960 [label=<<b>args[0]: NatureCNN_l2/b</b><br/>f32[64]> id="node1400519071956960", shape=rect, style="filled", fontcolor="black", color="#FF8A4F", fillcolor="#FFDEAF"];
-1400519071953120 [label=<<b>args[0]: NatureCNN_l2/w</b><br/>f32[4,4,32,64]> id="node1400519071953120", shape=rect, style="filled", fontcolor="black", color="#FF8A4F", fillcolor="#FFDEAF"];
-1400519071968480 [label=<<b>args[0]: NatureCNN_l3/b</b><br/>f32[64]> id="node1400519071968480", shape=rect, style="filled", fontcolor="black", color="#FF8A4F", fillcolor="#FFDEAF"];
-1400519071960800 [label=<<b>args[0]: NatureCNN_l3/w</b><br/>f32[3,3,64,64]> id="node1400519071960800", shape=rect, style="filled", fontcolor="black", color="#FF8A4F", fillcolor="#FFDEAF"];
-1400519535885280 [label=<<b>args[0]: NatureCNN_l4/b</b><br/>f32[512]> id="node1400519535885280", shape=rect, style="filled", fontcolor="black", color="#FF8A4F", fillcolor="#FFDEAF"];
-1400519071976160 [label=<<b>args[0]: NatureCNN_l4/w</b><br/>f32[3136,512]> id="node1400519071976160", shape=rect, style="filled", fontcolor="black", color="#FF8A4F", fillcolor="#FFDEAF"];
-1400519535862240 [label=<<b>args[0]: Tensornet_dim_reduction/b</b><br/>f32[32]> id="node1400519535862240", shape=rect, style="filled", fontcolor="black", color="#FF8A4F", fillcolor="#FFDEAF"];
-1400516437688800 [label=<<b>args[0]: Tensornet_dim_reduction/w</b><br/>f32[512,32]> id="node1400516437688800", shape=rect, style="filled", fontcolor="black", color="#FF8A4F", fillcolor="#FFDEAF"];
-1400516437723360 [label=<<b>args[0]: policy_network_1/mps</b><br/>f32[32,20,1,32,32]> id="node1400516437723360", shape=rect, style="filled", fontcolor="black", color="#FF8A4F", fillcolor="#FFDEAF"];
-1400516437723361 [label=<<b>(reuse)</b><br/><b>args[0]: policy_network_1/mps</b><br/>f32[32,20,1,32,32]> id="node1400516437723361", shape=rect, style="filled", fontcolor="#565858", color="#FF8A4F", fillcolor="#FFEACC"];
-1400516437696480 [label=<<b>args[0]: value_network_1/mps</b><br/>f32[32,20,1,32,32]> id="node1400516437696480", shape=rect, style="filled", fontcolor="black", color="#FF8A4F", fillcolor="#FFDEAF"];
-1400516437696481 [label=<<b>(reuse)</b><br/><b>args[0]: value_network_1/mps</b><br/>f32[32,20,1,32,32]> id="node1400516437696481", shape=rect, style="filled", fontcolor="#565858", color="#FF8A4F", fillcolor="#FFEACC"];
-1400519071972320 [label=<<b>args[1]</b><br/>f64[20,84,84,3]> id="node1400519071972320", shape=rect, style="filled", fontcolor="black", color="#FF8A4F", fillcolor="#FFDEAF"];
-140052665721056 [label=<<b>0</b>> shape=rect, style="filled", fontcolor="black", color="#A261FF", fillcolor="#E6D6FF"];
-140052665721056 [label=<<b>0</b>> shape=rect, style="filled", fontcolor="black", color="#A261FF", fillcolor="#E6D6FF"];
-140052665721056 [label=<<b>0</b>> shape=rect, style="filled", fontcolor="black", color="#A261FF", fillcolor="#E6D6FF"];
-140052665721056 [label=<<b>0</b>> shape=rect, style="filled", fontcolor="black", color="#A261FF", fillcolor="#E6D6FF"];
-140052665721056 [label=<<b>0</b>> shape=rect, style="filled", fontcolor="black", color="#A261FF", fillcolor="#E6D6FF"];
-140051642221744 [label=<<b>bool[32,32]</b>> shape=rect, style="filled", fontcolor="black", color="#A261FF", fillcolor="#E6D6FF"];
-140051642220592 [label=<<b>f32[1,20,32,32]</b>> shape=rect, style="filled", fontcolor="black", color="#A261FF", fillcolor="#E6D6FF"];
-140051642690992 [label=<<b>s32[1]</b>> shape=rect, style="filled", fontcolor="black", color="#A261FF", fillcolor="#E6D6FF"];
-140052665721088 [label=<<b>1</b>> shape=rect, style="filled", fontcolor="black", color="#A261FF", fillcolor="#E6D6FF"];
-140051642250416 [label=<<b>bool[20,1]</b>> shape=rect, style="filled", fontcolor="black", color="#A261FF", fillcolor="#E6D6FF"];
-140051642249264 [label=<<b>f32[20,1]</b>> shape=rect, style="filled", fontcolor="black", color="#A261FF", fillcolor="#E6D6FF"];
-140051641704880 [label=<<b>bool[32,32]</b>> shape=rect, style="filled", fontcolor="black", color="#A261FF", fillcolor="#E6D6FF"];
-140051641706032 [label=<<b>f32[1,20,32,32]</b>> shape=rect, style="filled", fontcolor="black", color="#A261FF", fillcolor="#E6D6FF"];
-140051642252336 [label=<<b>s32[1]</b>> shape=rect, style="filled", fontcolor="black", color="#A261FF", fillcolor="#E6D6FF"];
-140052665721088 [label=<<b>1</b>> shape=rect, style="filled", fontcolor="black", color="#A261FF", fillcolor="#E6D6FF"];
-140051977210704 [label=<<b>255.0</b>> shape=rect, style="filled", fontcolor="black", color="#A261FF", fillcolor="#E6D6FF"];
+}  // subgraph cluster_139780052784288
+1397801838164960 -> 139780054263728;
+139780054263728 -> 139780054264112;
+139780228655952 -> 139780054263344;
+139780054264112 -> 139780054264496;
+139780054263344 -> 139780054264496;
+139780052758960 -> 139780052759344;
+139780052759344 -> 139780052760496;
+139780052760496 -> 139780052222768;
+1397801838157280 [label=<<b>args[0]: NatureCNN_l1/b</b><br/>f32[32]> id="node1397801838157280", shape=rect, style="filled", fontcolor="black", color="#FF8A4F", fillcolor="#FFDEAF"];
+1397801838141920 [label=<<b>args[0]: NatureCNN_l1/w</b><br/>f32[8,8,3,32]> id="node1397801838141920", shape=rect, style="filled", fontcolor="black", color="#FF8A4F", fillcolor="#FFDEAF"];
+1397801838149600 [label=<<b>args[0]: NatureCNN_l2/b</b><br/>f32[64]> id="node1397801838149600", shape=rect, style="filled", fontcolor="black", color="#FF8A4F", fillcolor="#FFDEAF"];
+1397801838145760 [label=<<b>args[0]: NatureCNN_l2/w</b><br/>f32[4,4,32,64]> id="node1397801838145760", shape=rect, style="filled", fontcolor="black", color="#FF8A4F", fillcolor="#FFDEAF"];
+1397801838161120 [label=<<b>args[0]: NatureCNN_l3/b</b><br/>f32[64]> id="node1397801838161120", shape=rect, style="filled", fontcolor="black", color="#FF8A4F", fillcolor="#FFDEAF"];
+1397801838153440 [label=<<b>args[0]: NatureCNN_l3/w</b><br/>f32[3,3,64,64]> id="node1397801838153440", shape=rect, style="filled", fontcolor="black", color="#FF8A4F", fillcolor="#FFDEAF"];
+1397802050296800 [label=<<b>args[0]: NatureCNN_l4/b</b><br/>f32[512]> id="node1397802050296800", shape=rect, style="filled", fontcolor="black", color="#FF8A4F", fillcolor="#FFDEAF"];
+1397801838168800 [label=<<b>args[0]: NatureCNN_l4/w</b><br/>f32[3136,512]> id="node1397801838168800", shape=rect, style="filled", fontcolor="black", color="#FF8A4F", fillcolor="#FFDEAF"];
+1397802050273760 [label=<<b>args[0]: Tensornet_dim_reduction/b</b><br/>f32[32]> id="node1397802050273760", shape=rect, style="filled", fontcolor="black", color="#FF8A4F", fillcolor="#FFDEAF"];
+1397800542618080 [label=<<b>args[0]: Tensornet_dim_reduction/w</b><br/>f32[512,32]> id="node1397800542618080", shape=rect, style="filled", fontcolor="black", color="#FF8A4F", fillcolor="#FFDEAF"];
+1397800542652640 [label=<<b>args[0]: policy_network_1/mps</b><br/>f32[32,20,1,32,32]> id="node1397800542652640", shape=rect, style="filled", fontcolor="black", color="#FF8A4F", fillcolor="#FFDEAF"];
+1397800542652641 [label=<<b>(reuse)</b><br/><b>args[0]: policy_network_1/mps</b><br/>f32[32,20,1,32,32]> id="node1397800542652641", shape=rect, style="filled", fontcolor="#565858", color="#FF8A4F", fillcolor="#FFEACC"];
+1397800542625760 [label=<<b>args[0]: value_network_1/mps</b><br/>f32[32,20,1,32,32]> id="node1397800542625760", shape=rect, style="filled", fontcolor="black", color="#FF8A4F", fillcolor="#FFDEAF"];
+1397800542625761 [label=<<b>(reuse)</b><br/><b>args[0]: value_network_1/mps</b><br/>f32[32,20,1,32,32]> id="node1397800542625761", shape=rect, style="filled", fontcolor="#565858", color="#FF8A4F", fillcolor="#FFEACC"];
+1397801838164960 [label=<<b>args[1]</b><br/>f64[20,84,84,3]> id="node1397801838164960", shape=rect, style="filled", fontcolor="black", color="#FF8A4F", fillcolor="#FFDEAF"];
+139780917162208 [label=<<b>0</b>> shape=rect, style="filled", fontcolor="black", color="#A261FF", fillcolor="#E6D6FF"];
+139780917162208 [label=<<b>0</b>> shape=rect, style="filled", fontcolor="black", color="#A261FF", fillcolor="#E6D6FF"];
+139780917162208 [label=<<b>0</b>> shape=rect, style="filled", fontcolor="black", color="#A261FF", fillcolor="#E6D6FF"];
+139780917162208 [label=<<b>0</b>> shape=rect, style="filled", fontcolor="black", color="#A261FF", fillcolor="#E6D6FF"];
+139780917162208 [label=<<b>0</b>> shape=rect, style="filled", fontcolor="black", color="#A261FF", fillcolor="#E6D6FF"];
+139780052735152 [label=<<b>bool[32,32]</b>> shape=rect, style="filled", fontcolor="black", color="#A261FF", fillcolor="#E6D6FF"];
+139780052734000 [label=<<b>f32[1,20,32,32]</b>> shape=rect, style="filled", fontcolor="black", color="#A261FF", fillcolor="#E6D6FF"];
+139780053196208 [label=<<b>s32[1]</b>> shape=rect, style="filled", fontcolor="black", color="#A261FF", fillcolor="#E6D6FF"];
+139780917162240 [label=<<b>1</b>> shape=rect, style="filled", fontcolor="black", color="#A261FF", fillcolor="#E6D6FF"];
+139780052759728 [label=<<b>bool[20,1]</b>> shape=rect, style="filled", fontcolor="black", color="#A261FF", fillcolor="#E6D6FF"];
+139780052758576 [label=<<b>f32[20,1]</b>> shape=rect, style="filled", fontcolor="black", color="#A261FF", fillcolor="#E6D6FF"];
+139780052214192 [label=<<b>bool[32,32]</b>> shape=rect, style="filled", fontcolor="black", color="#A261FF", fillcolor="#E6D6FF"];
+139780052215344 [label=<<b>f32[1,20,32,32]</b>> shape=rect, style="filled", fontcolor="black", color="#A261FF", fillcolor="#E6D6FF"];
+139780052761648 [label=<<b>s32[1]</b>> shape=rect, style="filled", fontcolor="black", color="#A261FF", fillcolor="#E6D6FF"];
+139780917162240 [label=<<b>1</b>> shape=rect, style="filled", fontcolor="black", color="#A261FF", fillcolor="#E6D6FF"];
+139780228655952 [label=<<b>255.0</b>> shape=rect, style="filled", fontcolor="black", color="#A261FF", fillcolor="#E6D6FF"];
 } // digraph G

@@ -35,16 +35,16 @@ batch_size=256
 # testing scenario
 test = True
 if test:
-    num_agent_steps=10000
-    buffer_size=129
+    num_agent_steps=1000
+    buffer_size=33
     epochs=5
-    batch_size=256
+    batch_size=8
 # evaluation hyperparams
 eval_interval=num_agent_steps//10
-num_eval_episodes = 5
+num_eval_episodes = 1
 save_params=True
 #
-track = True
+track = False
 
 
 #main
@@ -69,7 +69,7 @@ if __name__ == "__main__":
         seed=seed,
         root=root,
         # models and model hyper params
-        fn_policy=my_model,
+        fn_policy=my_model_tensornet,
         lr_policy=lr_policy,
         #algorithm hyper params
         max_grad_norm=max_grad_norm,

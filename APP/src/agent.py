@@ -89,6 +89,7 @@ def tn_policy_net(x):
             name='policy_network_1'
             )(x)
     #normilsation and sigmoid activation
+    x = jax.nn.sigmoid(x)
     return x
 #value network
 def tn_value_net(x):
@@ -96,7 +97,9 @@ def tn_value_net(x):
             32,1,
             name='value_network_1'
             )(x)
-    x = jnp.log(jnp.trace(x)**2)
+    #x = jnp.log(jnp.trace(x)**2)
+    x = jnp.log(x**2)
+    x = jax.nn.sigmoid(x)
     return x
 #defining the tensor network layer
 class TensorNet(hk.Module):

@@ -7,6 +7,7 @@ config.update("jax_enable_x64", True)
 from agent import *
 
 
+
 #value net generalised
 def tensor_scan(embedding_vectors, mps_params):
     env = jnp.tensordot(embedding_vectors[0], mps_params, axes=((0),(0)))
@@ -48,11 +49,7 @@ def test_model_visualisation():
     batch_input = jax.random.normal(key,(20,84,84,3))
     dot = hk.experimental.to_dot(model_apply)(
             model_params,batch_input)
-    try:
-        graphviz.Source(dot).render('output/model_graph')
-        status =1
-    except:
-        status =0
+    graphviz.Source(dot).render('/workdir/APP/src/output/model_graph')
 
 x = test_model_visualisation()
 print(x)

@@ -53,7 +53,7 @@ class PPO():
         self.root = root
         # Policy.
         self.policy= hk.without_apply_rng(hk.transform(fn_policy))
-        self.params_policy = self.policy.init(next(self.rng), np.random.normal(size = (1,84,84,3)))
+        self.params_policy = self.policy.init(next(self.rng), np.random.normal(size = (20,84,84,3)))
         # Other parameters.
         self.max_grad_norm = max_grad_norm
         self.gamma = gamma
@@ -108,51 +108,39 @@ class PPO():
         A_states, A_actions, A_log_pi_olds ,A_rewards, A_dones, A_next_states = actor_first_output
         A_discounts = (1.0-A_dones)*self.lambd
         def get_play_values(params,obs):
-            o = jax.tree_map(lambda x: jnp.reshape(x, [-1] + list(x.shape[2:])),obs)
-            behavior_values = self._get_value(self.params_policy,o)
-            behavior_values = jnp.reshape(behavior_values, A_rewards.shape[0:2])
+            o = jnp.swapaxes(obs,0,1)
+            behavior_values = [self._get_value(self.params_policy,os) for os in o]
+            behavior_values = jnp.array(behavior_values)
+            behavior_values = jnp.swapaxes(behavior_values ,0,1)
+            behavior_values = jnp.squeeze(behavior_values)
             return behavior_values
         A_values = get_play_values(self.params_policy,A_states)
         #getting GAEs and targets
         print('Calculating gaes for all agents')
-        A_gaes = []
-        A_targets = []
-        print('Calculating gaes')
-        for agent in range(len(A_states)):
-            print(f"for agent {agent}")
-            gaes,targets = self.calculate_gae(
-                self.params_policy,
-                A_states[agent],
-                A_rewards[agent],
-                A_dones[agent],
-                A_next_states[agent]
-            ) 
-            A_gaes.append(gaes)
-            A_targets.append(targets)
-        #
-        #agent_wise_gae = jax.vmap(self.gae_advantages,in_axes=0)
-        #A_gaes,A_targets = agent_wise_gae(
-        #    A_rewards,
-        #    A_discounts,
-        #    A_values,
-        #) 
+        agent_wise_gae = jax.vmap(self.gae_advantages,in_axes=0)
+        A_gaes,A_targets = agent_wise_gae(
+            A_rewards,
+            A_discounts,
+            A_values,
+        ) 
         A_gaes = jnp.array(A_gaes)
         A_targets = jnp.array(A_targets)
         #align data discarding last step
-        A_states, A_actions, A_log_pi_olds,A_rewards, A_dones, A_next_states = \
+        A_states, A_actions, A_log_pi_olds,A_rewards, A_dones, A_next_states, A_values= \
                 jax.tree_map(
                         lambda x: x[:,:-1],
-                        (A_states, A_actions, A_log_pi_olds,A_rewards, A_dones, A_next_states)
+                        (A_states, A_actions, A_log_pi_olds,A_rewards, A_dones, A_next_states,A_values)
                 )
         #
         A_dataframe= (A_states, A_actions, A_log_pi_olds,A_rewards, A_dones, \
                      A_next_states,A_gaes,A_targets,A_values)
-        A_shuffler = np.random.permutation(A_states.shape[0]*A_states.shape[1])
+        A_shuffler = np.random.permutation(A_states.shape[1])
         #flatten data fuse first two dimentions (agent and play-timesetp)
         A_n_outputs= []
         for data in A_dataframe:
-            reshaped = jnp.reshape(data,(-1,)+data.shape[2:])
-            reshaped = reshaped[A_shuffler]
+            #reshaped = jnp.reshape(data,(-1,)+data.shape[2:])
+            data = jnp.swapaxes(data,0,1)
+            reshaped = data[A_shuffler]
             A_n_outputs.append(reshaped)
         #create n batches matching batch size
         idxes = np.arange(len(A_n_outputs[1]))
@@ -262,7 +250,7 @@ class PPO():
         log_prob = dist.log_prob(action)
         return action, log_prob
 
-    @partial(jax.jit, static_argnums=0)
+    #@partial(jax.jit, static_argnums=0)
     def _explore(
         self,
         params_policy: hk.Params,
@@ -270,7 +258,7 @@ class PPO():
         key: jnp.ndarray,
     ) -> Tuple[jnp.ndarray, jnp.ndarray]:
         #randomisation done by policy apply!!
-        action, _ ,sd= self.policy.apply(params_policy, state)
+        action, v ,sd= self.policy.apply(params_policy, state)
         #
         dist = distrax.MultivariateNormalDiag(action,jnp.ones_like(action)*jnp.exp(sd))
         #
@@ -355,10 +343,26 @@ class PPO():
     ):
       """Surrogate loss using clipped probability ratios."""
 
-      means, values,sd = self.policy.apply(params,observations)
-      dist = distrax.MultivariateNormalDiag(actions,jnp.ones_like(actions)*jnp.exp(sd))
-      log_probs = dist.log_prob(actions)
-      entropy = dist.entropy()
+      batch_outputs= [self.policy.apply(params,o) for o in observations]
+      means = jnp.array([b[0] for b in batch_outputs])
+      values= jnp.array([b[1] for b in batch_outputs])
+      sd= jnp.array([b[2] for b in batch_outputs])
+      actions = actions
+      #
+      dists = [distrax.MultivariateNormalDiag(m,jnp.ones_like(m)*jnp.exp(s)) for m,s in zip(means,sd)]
+      log_probs = jnp.array([dist.log_prob(a) for dist,a in zip(dists,actions)])
+      entropy = jnp.array([dist.entropy() for dist in dists])
+      #reshaping
+
+      #
+      values = values.reshape((-1,1))
+      behavior_values= behavior_values.reshape((-1,1))
+      actions = actions.reshape((-1,1))
+      target_values = target_values.reshape((-1,))
+      behaviour_log_probs= behaviour_log_probs.reshape((-1,))
+      log_probs = log_probs.reshape((-1,))
+      entropy= entropy.reshape((-1,))
+      advantages = advantages.reshape([-1])
 
       # Compute importance sampling weights: current policy / behavior policy.
       rhos = jnp.exp(log_probs - behaviour_log_probs)

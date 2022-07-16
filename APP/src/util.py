@@ -217,7 +217,7 @@ class trainer:
                 self.algo.update(self.wandb_run)
                 self.algo.buffer.clear()
             #if we are at a step where evaluation is wanted then evaluate
-            if step % self.eval_interval == 0:
+            if step % self.eval_interval == 1:
                 #evaluate current model
                 self.evaluate(step)
                 # save current model and log
@@ -306,24 +306,37 @@ class trainer:
         #setting up logging lists
         imgs = []
         # main playing loop (per agent)
-        for agent in self.env_test.agent_iter():
-            # getting environment step vars
-            obs, reward, done, info = self.env_test.last()
-            # model forward passlog_pi_old
-            obs = obs.reshape((1,) + obs.shape)
-            #
-            act = self.algo.explore(obs)[0][0] if not done else None
-            act = np.array(act)
-            self.env_test.step(act)
-            # saving image and reward
-            img = self.env_test.render(mode='rgb_array')
+        #for agent in self.env_test.agent_iter():
+        #    # getting environment step vars
+        #    obs, reward, done, info = self.env_test.last()
+        #    # model forward passlog_pi_old
+        #    obs = obs.reshape((1,) + obs.shape)
+        #    #
+        #    print(obs.shape)
+        #    exit()
+        #    act = self.algo.explore(obs)[0][0] if not done else None
+        #    act = np.array(act)
+        #    self.env_test.step(act)
+        #    # saving image and reward
+        #    img = self.env_test.render(mode='rgb_array')
+        #    imgs.append(img)
+        #reset state
+        state = self.env_eval.reset()
+        done = np.array([0])
+        #run until done
+        while done.all() == False: 
+            #get action
+            action,log_prob = self.algo.explore(state)
+            #get environemnt observables
+            state, reward, done, _ = self.env_eval.step(action) if not done.all() else None
+            img = self.env_eval.render(mode='rgb_array')
             imgs.append(img)
         return imgs
     #
     def _save_videos(self,imgs):
         imageio.mimsave(
                 os.path.join(self.log_dir,f"videos/{self.log_id}.gif"), 
-                [np.array(img) for i, img in enumerate(imgs) if i%20 == 0], 
+                [np.array(img) for i, img in enumerate(imgs) if i%1 == 0], 
                 fps=15
         )
         if self.wandb_run:
