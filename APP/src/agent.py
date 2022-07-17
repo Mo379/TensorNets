@@ -89,6 +89,7 @@ def tn_policy_net(x):
             name='policy_network_1'
             )(x)
     #normilsation and sigmoid activation
+    x = jnp.log(x**2)
     x = jax.nn.sigmoid(x)
     return x
 #value network

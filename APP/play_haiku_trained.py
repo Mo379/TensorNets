@@ -1,17 +1,17 @@
 #system
 import os
 from pathlib import Path
-#ML
+# ML
 import numpy as np
 import jax
 import haiku as hk
-#env
+# env
 from pettingzoo.butterfly import pistonball_v6
 import supersuit as ss
-#logging
+# logging
 import wandb
 import imageio
-#local
+# local
 from src.saving import load_params
 from src.network import *
 
@@ -27,7 +27,7 @@ params = load_params(_path)
 # tracking variable
 track =1
 
-#main#
+# main
 if __name__ == '__main__':
     # setting up tracking run
     if track == 1:
