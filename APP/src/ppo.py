@@ -19,6 +19,7 @@ import wandb
 class PPO():
     name = "PPO"
 
+    # Init function
     def __init__(
         self,
         # seed and root
@@ -80,23 +81,25 @@ class PPO():
         self.max_abs_reward = jnp.inf
         self.clip_value = True
 
+    # Step function
     def step(self, env, state, done):
-        #
-        if done.any():
+        # reset env if done playing
+        if done.all():
             state = env.reset()
-        #
+        # explore the environment
         action, log_prob = self._explore(
                 self.params_policy,
                 state,
                 next(self.rng)
             )
-        # action, log_prob = self._select_action(self.params_policy,state)
+        # move the environment forwards
         next_state, reward, done, _ = env.step(action)
-        #
+        # save the relevant information into the buffer
         self.buffer.append(state, action, log_prob, reward, done, next_state)
-        #
+        # retrun state and done
         return next_state, done
 
+    # Update function
     def update(self, wandb_run):
         # get buffer items and calculate state value
         print('getting_instance')
@@ -106,12 +109,14 @@ class PPO():
         actor_first_output = []
         for output in outputs:
             output = jnp.array(output)
-            actor_first_output.append(jnp.swapaxes(output, 0, 1))
+            output = jnp.swapaxes(output, 0, 1)
+            actor_first_output.append(output)
         # unpack data
         A_states, A_actions, A_log_pi_olds, A_rewards, A_dones, A_next_states \
             = actor_first_output
-        A_discounts = (1.0-A_dones)*self.lambd
+        A_discounts = A_dones*self.lambd
 
+        # calculate values after swapping axes
         def get_play_values(params, obs):
             o = jnp.swapaxes(obs, 0, 1)
             behavior_values = [
