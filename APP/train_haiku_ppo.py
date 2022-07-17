@@ -12,7 +12,7 @@ from src.util import trainer, environment_setup, play_enviromnet_setup
 # seed and root
 seed = 0
 root = Path(__file__).resolve().parent
-# loss scales for entropy and value losses
+# Loss scales for entropy and value losses
 ent_coef = 0.0905168
 vf_coef = 0.042202
 # setting up model hyperparams
@@ -31,9 +31,9 @@ batch_size = 256
 test = True
 if test:
     num_agent_steps = 1000
-    buffer_size = 33
+    buffer_size = 7
     epochs = 5
-    batch_size = 8
+    batch_size = 2
 # evaluation hyperparams
 eval_interval = num_agent_steps//10
 num_eval_episodes = 1
