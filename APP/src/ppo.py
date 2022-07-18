@@ -443,6 +443,10 @@ class PPO():
                 b_values
             )
         # Apply updates
+        opt_state, _ = self.optax_zero_apply(
+                opt_state,
+                None
+            )
         updates, opt_state = self.opt_policy(gradients, opt_state)
         params = optax.apply_updates(params, updates)
 

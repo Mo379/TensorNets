@@ -15,8 +15,8 @@ os.environ['XLA_PYTHON_CLIENT_ALLOCATOR'] = 'platform'
 seed = 0
 root = Path(__file__).resolve().parent
 # Loss scales for entropy and value losses
-ent_coef = 1.0  # 0.0905168
-vf_coef = 1.0  # 0.042202
+ent_coef = 0.0905168
+vf_coef = 0.042202
 # setting up model hyperparams
 lr_policy = 0.0006
 # setting up algorithm hyperparameters
@@ -26,9 +26,9 @@ clip_eps = 0.2
 lambd = 0.99
 # setting training length hyperparams
 num_agent_steps = 50000
-buffer_size = 2048
+buffer_size = 1025
 epochs = 7
-batch_size = 256
+batch_size = 128
 # testing scenario
 test = True
 if test:
