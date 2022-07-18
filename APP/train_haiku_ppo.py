@@ -13,8 +13,8 @@ from src.util import trainer, environment_setup, play_enviromnet_setup
 seed = 0
 root = Path(__file__).resolve().parent
 # Loss scales for entropy and value losses
-ent_coef = 0.0905168
-vf_coef = 0.042202
+ent_coef = 1.0  # 0.0905168
+vf_coef = 1.0  # 0.042202
 # setting up model hyperparams
 lr_policy = 0.0006
 # setting up algorithm hyperparameters

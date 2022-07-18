@@ -185,11 +185,10 @@ class PPO():
         # Repeat training for the given number of epoch, taking a random
         # permutation for every epoch.
         print('updating params')
-        (key, self.params_policy, self.opt_state_policy, _), metrics = \
+        (self.params_policy, self.opt_state_policy, _), (metrics, test) = \
             jax.lax.scan(
                 self._model_update_epoch,
                 (
-                    next(self.rng),
                     self.params_policy,
                     self.opt_state_policy,
                     A_n_outputs
@@ -411,16 +410,14 @@ class PPO():
         unused_t,
     ):
         """Performs model updates based on one epoch of data."""
-        key, params, opt_state, batch = carry
-        key, subkey = jax.random.split(key)
-        permutation = jax.random.permutation(subkey, self.batch_size)
+        params, opt_state, batch = carry
         #
-        (params, opt_state), metrics = jax.lax.scan(
+        (params, opt_state), (metrics, test) = jax.lax.scan(
                 self._model_update_minibatch,
                 (params, opt_state),
                 batch
             )
-        return (key, params, opt_state, batch), metrics
+        return (params, opt_state, batch), (metrics, test)
 
     # update functions
     def _model_update_minibatch(
@@ -451,4 +448,5 @@ class PPO():
 
         metrics['norm_grad'] = optax.global_norm(gradients)
         metrics['norm_updates'] = optax.global_norm(updates)
-        return (params, opt_state), metrics
+        test = gradients
+        return (params, opt_state), (metrics, test)

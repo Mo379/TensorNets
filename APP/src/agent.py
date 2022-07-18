@@ -19,8 +19,6 @@ initializer_bias = jnp.zeros
 def feature_extractor(x):
     x = jnp.array(x, dtype=jnp.float32)
     x = x/255.0
-    if len(x.shape) == 5:
-        x = jnp.squeeze(x)
     x = hk.Conv2D(
         32, (8, 8),
         stride=(4, 4),
@@ -155,6 +153,17 @@ class TensorNet(hk.Module):
     # Action normalisation function
     def _normalise(self, x):
         return x
+
+    # normilisation step
+    def _norm_step(step, val):
+        env, state, mps_params = val
+        env = jnp.tensordot(
+                env, mps_params[:, state[step], :, :], axis=((0), (1))
+            )
+        env = jnp.tensordot(
+                env, mps_params[:, state[step], :, :], axis=((0, 1), (1, 0))
+            )
+        return env, state, mps_params
 
     # tensor scan function
     def tensor_scan(
