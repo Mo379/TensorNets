@@ -226,7 +226,7 @@ class trainer:
             state = self.env_eval.reset()
             done = np.array([0])
             # run until done
-            while done.all() is False:
+            while done.all() == False:
                 # get action
                 action, log_prob = self.algo.explore(state)
                 # get environemnt observables
@@ -264,7 +264,7 @@ class trainer:
         state = self.env_eval.reset()
         done = np.array([0])
         # run until done
-        while done.all() is False:
+        while done.all() == False:
             # get action
             action, log_prob = self.algo.explore(state)
             # get environemnt observables
