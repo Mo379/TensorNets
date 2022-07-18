@@ -8,6 +8,8 @@ import wandb
 from src.agent import my_model, my_model_tensornet
 from src.ppo import PPO
 from src.util import trainer, environment_setup, play_enviromnet_setup
+os.environ['XLA_PYTHON_CLIENT_PREALLOCATE'] = 'false'
+os.environ['XLA_PYTHON_CLIENT_ALLOCATOR'] = 'platform'
 
 # seed and root
 seed = 0
