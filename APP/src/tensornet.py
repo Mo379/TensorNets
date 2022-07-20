@@ -1,3 +1,4 @@
+# %%
 # System
 # ML
 from agent import my_model_tensornet
@@ -53,7 +54,7 @@ def test_model_visualisation():
         result = False
     return result
 
-
+# %%
 # keys
 key = random.PRNGKey(0)
 key2 = random.PRNGKey(2)
@@ -92,3 +93,5 @@ print(x)
 
 
 
+
+# %%
