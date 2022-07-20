@@ -17,7 +17,7 @@ tqdm
 pandas
 bsuite
 graphviz
-torch 
+torch
 torchvision
 stable_baselines3
 pygame
@@ -27,13 +27,4 @@ imageio
 gym==0.24
 supersuit==3.4.0
 pettingzoo==1.18.1
-
-
-
-
-
-
-
-
-
-
+ipykernel
