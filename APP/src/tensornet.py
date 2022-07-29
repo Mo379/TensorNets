@@ -1,8 +1,7 @@
 # %%
 # System
 # ML
-from turtle import right
-from agent import my_model_tensornet
+from src.agent import my_model_tensornet
 import jax
 import jax.numpy as jnp
 from jax import random
