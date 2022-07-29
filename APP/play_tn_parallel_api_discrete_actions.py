@@ -14,7 +14,7 @@ config.update("jax_enable_x64", True)
 
 import matplotlib.pyplot as plt
 
-from src.tensornet import policy_head, value_function_head
+from src.tensor_net_heads import policy_head, value_function_head
 
 #%%
 # env = pistonball_v6.env(n_pistons=20)
@@ -39,6 +39,7 @@ init_fun, conv_net = stax.serial(Conv(32, (5, 5), (2, 2), padding="SAME"),
                                  Dense(num_classes),
                                  LogSoftmax)
 _, params = init_fun(key, (batch_size, 1, observations['piston_0'].shape[0], observations['piston_0'].shape[1]))
+# %%
 
  # %%
 obs = [jnp.array(observation).astype(jnp.float64) for observation in list(observations.values())]
@@ -74,7 +75,7 @@ for step in range(max_cycles):
     values = value_function_head(vf_weights, cnn_output)
     log_prob, (actions, key) = policy_head(cnn_output, key, policy_weights)
 
-    actions = {agent: int(actions[idx]) for idx, agent in zip(list(range(len(values))),env.agents)}
+    actions = {agent: int(actions[idx]) for idx, agent in zip(list(range(len(actions))),env.agents)}
     observations, rewards, dones, infos = env.step(actions)#
     avg_rewards.append(np.mean(list(rewards.values())))
 # %%
