@@ -54,19 +54,30 @@ def value_function_head(mps_params, embedding_vectors):
 
 def _tensor_step_right_policy(carry, input):
     """Contracts the left-environment onto the mpo_params corresponding
-        to the policy weights with shape (#agents, d_embedding, d_actions, chi_policy, chi_policy)"""
+        to the policy weights with shape:
+        (#agents, d_embedding, d_actions, chi_policy, chi_policy)
+    """
 
     weights, mat, environments, embedding_vectors = carry
     site_idx = input
-
-    tmp = jnp.tensordot(embedding_vectors[site_idx], weights[site_idx], axes = ((0), (0))) #attached the embedding vector for the state
-    tmp = jnp.tensordot(tmp, tmp, axes=((0), (0))) #sum over actions
-    tmp = jnp.transpose(tmp, (0,2,1,3)) #reorder into matrix ordering (top-left, bottom-left, top-right, bottom-right)
-    tmp = jnp.reshape(tmp, (tmp.shape[0]*tmp.shape[1], tmp.shape[2]*tmp.shape[3]))
-
-    mat = jnp.matmul(mat, tmp) #multiply on the result stored in "mat". This now stores the left-environment including the current site
-
-    environments = environments.at[site_idx+1,:,:].set(mat) #this is the left_environment inclusive of the current site for the next site
+    # attached the embedding vector for the state
+    tmp = jnp.tensordot(
+            embedding_vectors[site_idx], weights[site_idx], axes=((0), (0))
+        )
+    # sum over actions
+    tmp = jnp.tensordot(tmp, tmp, axes=((0), (0)))
+    # reorder into matrix ordering
+    # (top-left, bottom-left, top-right, bottom-right)
+    tmp = jnp.transpose(tmp, (0, 2, 1, 3))
+    tmp = jnp.reshape(
+            tmp, (tmp.shape[0]*tmp.shape[1], tmp.shape[2]*tmp.shape[3])
+        )
+    # multiply on the result stored in "mat".
+    # This now stores the left-environment including the current site
+    mat = jnp.matmul(mat, tmp)
+    # This is the left_environment inclusive of the
+    # current site for the next site
+    environments = environments.at[site_idx+1, :, :].set(mat)
 
     carry = (weights, mat, environments, embedding_vectors)
 
@@ -74,28 +85,36 @@ def _tensor_step_right_policy(carry, input):
 
     return carry, output
 
+
 def calculate_left_environments(weights, embedding_vectors):
-    """ applies the step right across the mpo via a scan function to get the left environments"""
+    """ applies the step right across the mpo via a scan
+        function to get the left environments
+    """
+    # Initate the current left-environment as identity. This is for site_idx=0.
+    mat = jnp.identity(weights.shape[3]**2)
 
-
-    mat = jnp.identity(weights.shape[3]**2) #Initate the current left-environment as identity. This is for site_idx=0.
-
-    environments = jnp.zeros((len(embedding_vectors)+1,weights.shape[3]**2,weights.shape[3]**2)) #initiate environments = number of sites + 1. trace of last one is just the norm.
-    environments = environments.at[0,:,:].set(mat) #this is the left_environment for site_idx=0 (just identity)
-
-
-    carry = (weights, mat, environments, embedding_vectors) #carried through the scan
-    inputs = jnp.array(range(len(embedding_vectors))) #inputs are the site indices
-
+    environments = jnp.zeros(
+        # initiate environments = number of sites + 1.
+        # trace of last one is just the norm.
+        (len(embedding_vectors)+1, weights.shape[3]**2, weights.shape[3]**2)
+        )
+    # this is the left_environment for site_idx=0 (just identity)
+    environments = environments.at[0, :, :].set(mat)
+    # carried through the scan
+    carry = (weights, mat, environments, embedding_vectors)
+    # inputs are the site indices
+    inputs = jnp.array(range(len(embedding_vectors)))
     carry, outputs = scan(_tensor_step_right_policy, carry, inputs)
-
-    weights, mat, environments, embedding_vectors = carry #Tr[environments[-1]] is the normalisation factor.
-
+    # Tr[environments[-1]] is the normalisation factor.
+    weights, mat, environments, embedding_vectors = carry
     return environments
 
+
 def _get_prob_vector(site_idx, weights, left_environments, right_environment):
-    """Calculates the probability vector for actions at the site where the sites to the left are
-        marginalised (left_environments contains sums over actions) and right_environment has conditioning (actions have been selected)
+    """
+    Calculates the probability vector for actions at the site where the sites
+    to the left are marginalised (left_environments contains sums over actions)
+    and right_environment has conditioning (actions have been selected)
 
     Args:
         site_idx (_type_): _description_
@@ -107,54 +126,81 @@ def _get_prob_vector(site_idx, weights, left_environments, right_environment):
         _type_: _description_
     """
 
-    tmp = jnp.tensordot(embedding_vectors[site_idx], weights[site_idx], axes = ((0), (0))) #attached the embedding vector for the state
-    environment = jnp.reshape(left_environments[site_idx],(left_environments.shape[1], weights.shape[3], weights.shape[3])) #split the right environment index
-    environment = jnp.tensordot(environment, tmp, axes=((1),(1)))
+    # attached the embedding vector for the state
+    tmp = jnp.tensordot(
+            embedding_vectors[site_idx], weights[site_idx], axes=((0), (0))
+        )
+    # split the right environment index
+    environment = jnp.reshape(
+            left_environments[site_idx],
+            (left_environments.shape[1], weights.shape[3], weights.shape[3])
+        )
+    environment = jnp.tensordot(environment, tmp, axes=((1), (1)))
     tmp = jnp.tensordot(environment, tmp, axes=((1), (1)))
-    right_environment = jnp.reshape(right_environment, (weights.shape[3], weights.shape[3], right_environment.shape[1])) #split the left-index
-    tmp = jnp.tensordot(tmp, right_environment, axes=((2,4),(0,1)))
+    # split the left-index
+    right_environment = jnp.reshape(
+            right_environment,
+            (weights.shape[3], weights.shape[3], right_environment.shape[1])
+        )
+    tmp = jnp.tensordot(tmp, right_environment, axes=((2, 4), (0, 1)))
     density_matrix = jnp.trace(tmp, axis1=0, axis2=3)
     probs_unnormed = jnp.diagonal(density_matrix)
-
     return probs_unnormed
 
+
 def _tensor_step_left_policy(carry, input):
-    """Steps to the left in a leftward sweep. This samples an action and then constructs the next right-environment conditioned on the result"""
+    """
+    Steps to the left in a leftward sweep. This samples an action and then
+    constructs the next right-environment conditioned on the result
+    """
 
     weights, mat, environments, embedding_vectors, key = carry
     site_idx = input
 
-    #sample an action
+    # sample an action
     probs_unnormed = _get_prob_vector(site_idx, weights, environments, mat)
     norm = jnp.sum(probs_unnormed)
     probs = probs_unnormed/norm
     key, subkey = random.split(key)
-    action = random.choice(subkey, jnp.array(list(range(len(probs)))), p = probs) #choose the action
+    # choose the action
+    action = random.choice(subkey, jnp.array(list(range(len(probs)))), p=probs) 
     prob = probs[action]
 
-    #condition on action for next step
-    tmp = jnp.tensordot(embedding_vectors[site_idx], weights[site_idx,:,action,:,:], axes = ((0), (0))) #select action and attached the embedding vector for the state
-    right_environment = jnp.reshape(mat, (weights.shape[3], weights.shape[3], mat.shape[1])) #split the left-index
-    right_environment = jnp.tensordot(tmp, right_environment, axes=((1),(0)))
-    right_environment = jnp.tensordot(tmp, right_environment, axes=((1),(1)))
-    right_environment = jnp.transpose(right_environment,(0,1,2))
-    mat = jnp.reshape(right_environment, (mat.shape[0], mat.shape[1])) #now includes the present site with conditioned action
-
+    # condition on action for next step
+    # select action and attached the embedding vector for the state
+    tmp = jnp.tensordot(
+            embedding_vectors[site_idx],
+            weights[site_idx, :, action, :, :], axes=((0), (0))
+        )
+    # split the left-index
+    right_environment = jnp.reshape(
+            mat,
+            (weights.shape[3], weights.shape[3], mat.shape[1])
+        )
+    right_environment = jnp.tensordot(tmp, right_environment, axes=((1), (0)))
+    right_environment = jnp.tensordot(tmp, right_environment, axes=((1), (1)))
+    right_environment = jnp.transpose(right_environment, (0, 1, 2))
+    # now includes the present site with conditioned action
+    mat = jnp.reshape(right_environment, (mat.shape[0], mat.shape[1])) 
     carry = (weights, mat, environments, embedding_vectors, key)
     output = (action, prob, norm, probs_unnormed)
 
     return carry, output
 
+
 def sweep_to_left_policy(weights, embedding_vectors, left_environments, key):
     """Full sweep to the left to sample an action and return its log prob"""
 
-    mat = jnp.identity(weights.shape[3]**2) #initiate the right environment
-    carry = (weights, mat, left_environments, embedding_vectors, key) #carried through the scan
-
-    inputs = jnp.array(range(len(embedding_vectors)-1,-1,-1)) #inputs are the site indices from last to 0
+    # initiate the right environment
+    mat = jnp.identity(weights.shape[3]**2)
+    # carried through the scan
+    carry = (weights, mat, left_environments, embedding_vectors, key)
+    # inputs are the site indices from last to 0
+    inputs = jnp.array(range(len(embedding_vectors)-1, -1, -1))
     carry, outputs = scan(_tensor_step_left_policy, carry, inputs)
 
     return carry, outputs
+
 
 def policy_head(embedding_vectors, key, policy_weights):
     """Takes in embedding vectors and samples an action
@@ -165,14 +211,18 @@ def policy_head(embedding_vectors, key, policy_weights):
         policy_weights (_type_): _description_
 
     Returns:
-        pyTree (tuple): log_probability of the sampled action, along with the action and key
+        pyTree (tuple): log_probability of the sampled action,
+        along with the action and key
     """
-    carry_leftwards, outputs_leftwards = sweep_to_left_policy(policy_weights, embedding_vectors, left_environments, key)
+    carry_leftwards, outputs_leftwards = sweep_to_left_policy(
+            policy_weights, embedding_vectors, left_environments, key
+        )
     _, _, _, _, key = carry_leftwards
     action = outputs_leftwards[0]
     chain_rule_probs = outputs_leftwards[1]
     log_prob_of_action = jnp.sum(jnp.log(chain_rule_probs))
     return log_prob_of_action, (action, key)
+
 
 # Normilisation step
 def _norm_step(step, val):
@@ -184,6 +234,7 @@ def _norm_step(step, val):
             env, mps_params[:, state[step], :, :], axis=((0, 1), (1, 0))
         )
     return env, state, mps_params
+
 
 # Visualise the model
 def test_model_visualisation():
@@ -231,18 +282,21 @@ print(x)
 
 # %%
 key, subkey = random.split(key)
-policy_weights = random.normal(subkey, (NUM_AGENTS, EMBEDDING_DIM, NUM_ACTIONS, BOND_DIM, BOND_DIM))
-
-left_environments = calculate_left_environments(policy_weights, embedding_vectors)
-norm = jnp.trace(left_environments[-1])
-
+policy_weights = random.normal(
+        subkey, (NUM_AGENTS, EMBEDDING_DIM, NUM_ACTIONS, BOND_DIM, BOND_DIM)
+    )
 # %%
-
+left_environments = calculate_left_environments(
+        policy_weights, embedding_vectors
+    )
+norm = jnp.trace(left_environments[-1])
+# %%
 SITE_IDX = 19
-right_environment = jnp.identity(policy_weights.shape[3]**2) #Initate the current left-environment as identity. Not stored.
-
-probs_unnormed = _get_prob_vector(SITE_IDX, policy_weights, left_environments, right_environment)
-
+# Initate the current left-environment as identity. Not stored.
+right_environment = jnp.identity(policy_weights.shape[3]**2)
+probs_unnormed = _get_prob_vector(
+        SITE_IDX, policy_weights, left_environments, right_environment
+    )
 log_prob, (action, key) = policy_head(embedding_vectors, key, policy_weights)
 # %%
 # policy_grad = value_and_grad(policy, argnums=2, has_aux=True)
