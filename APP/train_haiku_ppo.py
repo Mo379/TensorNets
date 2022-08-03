@@ -6,7 +6,7 @@ from pathlib import Path
 import wandb
 # local
 from src.agent import my_model, my_model_tensornet
-from src.ppo import PPO
+from src.ppo_ import PPO_
 from src.util import trainer, environment_setup, play_enviromnet_setup
 os.environ['XLA_PYTHON_CLIENT_PREALLOCATE'] = 'false'
 os.environ['XLA_PYTHON_CLIENT_ALLOCATOR'] = 'platform'
@@ -15,15 +15,15 @@ os.environ['XLA_PYTHON_CLIENT_ALLOCATOR'] = 'platform'
 seed = 0
 root = Path(__file__).resolve().parent
 # Loss scales for entropy and value losses
-ent_coef = 0.0905168
-vf_coef = 0.042202
+ent_coef = 0.01
+vf_coef = 1
 # setting up model hyperparams
-lr_policy = 0.0006
+lr_policy = 0.0001
 # setting up algorithm hyperparameters
 max_grad_norm = 0.9
-gamma = 0.95
+discount = 0.99
 clip_eps = 0.2
-lambd = 0.99
+gae_param = 0.95
 # setting training length hyperparams
 num_agent_steps = 50000
 buffer_size = 1025
@@ -32,16 +32,16 @@ batch_size = 128
 # testing scenario
 test = True
 if test:
-    num_agent_steps = 1000
-    buffer_size = 7
-    epochs = 5
-    batch_size = 2
+    num_agent_steps = 4000
+    buffer_size = 33
+    epochs = 10
+    batch_size = 8
 # evaluation hyperparams
 eval_interval = num_agent_steps//10
-num_eval_episodes = 1
+num_eval_episodes = 10
 save_params = True
 #
-track = False
+track = True
 
 
 # main
@@ -61,18 +61,18 @@ if __name__ == "__main__":
     env_eval = environment_setup()
     env_test = play_enviromnet_setup()
     # algorithm setup
-    algo = PPO(
+    algo = PPO_(
         # seed and root
         seed=seed,
         root=root,
         # models and model hyper params
-        fn_policy=my_model_tensornet,
+        fn_policy=my_model,
         lr_policy=lr_policy,
         # algorithm hyper params
         max_grad_norm=max_grad_norm,
-        gamma=gamma,
+        discount=discount,
         clip_eps=clip_eps,
-        lambd=lambd,
+        gae_param=gae_param,
         ent_coef=ent_coef,
         vf_coef=vf_coef,
         # env hyperparams

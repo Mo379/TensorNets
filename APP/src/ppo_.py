@@ -16,7 +16,7 @@ from .util import RolloutBuffer
 import wandb
 
 
-class PPO():
+class PPO_():
     name = "PPO"
 
     # Init function
@@ -30,9 +30,9 @@ class PPO():
         lr_policy,
         # algorithm hyper params
         max_grad_norm,
-        gamma,
+        discount,
         clip_eps,
-        lambd,
+        gae_param,
         ent_coef,
         vf_coef,
         # env hyperparams
@@ -58,9 +58,9 @@ class PPO():
             )
         # Other parameters.
         self.max_grad_norm = max_grad_norm
-        self.gamma = gamma
+        self.discount = discount
         self.clip_eps = clip_eps
-        self.lambd = lambd
+        self.gae_param = gae_param
         self.ent_coef = vf_coef
         self.vf_coef = vf_coef
         # state and action spaces
@@ -103,23 +103,21 @@ class PPO():
     def update(self, wandb_run):
         # get buffer items and calculate state value
         print('getting_instance')
-        # Get replay buffer observations
+        # get all data
         outputs = self.buffer.get()
-        # Create an actor first output list
+        #
         actor_first_output = []
-        for output in outputs:  # loop over observations
-            output = jnp.array(output)  # convert observations to numerical arr
-            # observations shape = (batch,actor,84,84,3)
-            output = jnp.swapaxes(output, 0, 1)  # swap the batch with actor axis
-            actor_first_output.append(output)  # append output to list
+        for output in outputs:
+            output = jnp.array(output)
+            output = jnp.swapaxes(output, 0, 1)
+            actor_first_output.append(output)
         # unpack data
         A_states, A_actions, A_log_pi_olds, A_rewards, A_dones, A_next_states \
             = actor_first_output
-        A_discounts = A_dones*self.lambd
+        A_discounts = A_dones*self.discount
 
         # calculate values after swapping axes
         def get_play_values(params, obs):
-            """ Calculates values for a single join environement observation"""
             o = jnp.swapaxes(obs, 0, 1)
             behavior_values = [
                     self._get_value(self.params_policy, os) for os in o
@@ -132,7 +130,7 @@ class PPO():
         A_values = get_play_values(self.params_policy, A_states)
         # getting GAEs and targets
         print('Calculating gaes for all agents')
-        agent_wise_gae = jax.vmap(self.gae_advantages, in_axes=0)
+        agent_wise_gae = jax.jit(jax.vmap(self.gae_advantages, in_axes=0))
         A_gaes, A_targets = agent_wise_gae(
             A_rewards,
             A_discounts,
@@ -140,6 +138,7 @@ class PPO():
         )
         A_gaes = jnp.array(A_gaes)
         A_targets = jnp.array(A_targets)
+        print(A_gaes[0], A_targets[0])
         # align data discarding last step
         A_states, A_actions, A_log_pi_olds, A_rewards, A_dones, \
             A_next_states, A_values = jax.tree_map(
@@ -310,7 +309,7 @@ class PPO():
         advantages = rlax.truncated_generalized_advantage_estimation(
                 rewards[:-1],
                 discounts[:-1],
-                self.lambd,
+                self.gae_param,
                 values
             )
         advantages = jax.lax.stop_gradient(advantages)

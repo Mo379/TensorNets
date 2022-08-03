@@ -18,8 +18,10 @@ def tensor_scan(embedding_vectors, mps_params):
     """performs the contraction of the mps with the embedding vectors.
 
     Args:
-        embedding_vectors (array): shape = (# agents, embedding_dim, bond_dim, bond_dim)
-        mps_params (array): shape = (# agents, embedding_dim, bond_dim, bond_dim)
+        embedding_vectors (array):
+            shape = (# agents, embedding_dim, bond_dim, bond_dim)
+        mps_params (array):
+            shape = (# agents, embedding_dim, bond_dim, bond_dim)
 
     Returns:
         float : the value of the traced mps-embedding product.
@@ -29,19 +31,26 @@ def tensor_scan(embedding_vectors, mps_params):
     val = fori_loop(1, len(embedding_vectors), _tensor_step, val)
     return jnp.trace(val[0].T).T
 
+
 # A tensornet step function
 def _tensor_step(step, val):
-    """Contracts the left-environment onto the next matrix and embedding vector in the product"""
+    """Contracts the left-environment onto the next matrix and
+        embedding vector in the product
+    """
     env, embedding_vectors, mps_params = val
-    mat = jnp.tensordot(embedding_vectors[step], mps_params[step], axes=((0), (0)))
+    mat = jnp.tensordot(
+            embedding_vectors[step], mps_params[step], axes=((0), (0))
+            )
     env = jnp.matmul(env, mat)
     env = jax.nn.sigmoid(env)
     return env, embedding_vectors, mps_params
 
+
 def value_function_head(mps_params, embedding_vectors):
     """Example value function head that returns a value for each agent"""
     value = tensor_scan(embedding_vectors, mps_params)
-    return jnp.tile(value, [len(embedding_vectors),1])
+    return jnp.tile(value, [len(embedding_vectors), 1])
+
 
 def _tensor_step_right_policy(carry, input):
     """Contracts the left-environment onto the mpo_params corresponding
@@ -189,6 +198,7 @@ def test_model_visualisation():
         result = False
     return result
 
+
 # %%
 # keys
 key = random.PRNGKey(0)
@@ -198,7 +208,9 @@ NUM_ACTIONS = 4
 EMBEDDING_DIM = 64
 BOND_DIM = 16
 embedding_vectors = random.normal(key, (NUM_AGENTS, EMBEDDING_DIM))
-mps_params = random.normal(key2, (NUM_AGENTS, EMBEDDING_DIM, BOND_DIM, BOND_DIM))
+mps_params = random.normal(
+        key2, (NUM_AGENTS, EMBEDDING_DIM, BOND_DIM, BOND_DIM)
+        )
 print(tensor_scan(embedding_vectors, mps_params).shape)
 print(tensor_scan(embedding_vectors, mps_params))
 print(tensor_scan(embedding_vectors, mps_params).mean())

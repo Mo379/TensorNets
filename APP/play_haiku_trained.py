@@ -1,5 +1,6 @@
 # system
 import os
+import pickle
 from pathlib import Path
 # ML
 import numpy as np
@@ -12,8 +13,17 @@ import supersuit as ss
 import wandb
 import imageio
 # local
-from src.saving import load_params
-from src.network import my_model
+from src.agent import my_model
+
+
+def fn_load_params(path):
+    """
+    Load parameters.
+    """
+    path = os.path.join(path)
+    file = open(path, 'rb')
+    params = pickle.load(file)
+    return params
 
 
 # Initialising the actor
@@ -22,8 +32,8 @@ rng = jax.random.PRNGKey(0)
 examples = jax.random.normal(rng, (1, 84, 84, 3))
 # getting the save parameters
 root = Path(__file__).resolve().parent
-_path = os.path.join(root, 'logs/pkls/params_actor.npz')
-params = load_params(_path)
+_path = os.path.join(root, 'logs/pkls/params_policy.pkl')
+params = fn_load_params(_path)
 # tracking variable
 track = 1
 
@@ -55,6 +65,7 @@ if __name__ == '__main__':
         # model forward pass
         act = model.apply(params, rng, obs)[0][0] if not done else None
         act = np.array(act)
+        act = np.clip(act, -1, 1) if not done else act
         env.step(act)
         # saving image and reward
         img = env.render(mode='rgb_array')

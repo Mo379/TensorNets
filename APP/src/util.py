@@ -24,7 +24,7 @@ def environment_setup():
         ball_mass=0.75,
         ball_friction=0.3,
         ball_elasticity=1.5,
-        max_cycles=125
+        max_cycles=350
     )
     env = ss.color_reduction_v0(env, mode='B')
     env = ss.resize_v1(env, x_size=84, y_size=84)
@@ -170,8 +170,6 @@ class trainer:
             #
             if step % self.algo.buffer_size == 0:
                 print('learning')
-                for output in self.algo.buffer.get():
-                    output = np.array(output)
                 self.algo.update(self.wandb_run)
                 self.algo.buffer.clear()
             # if we are at a step where evaluation is wanted then evaluate
@@ -239,7 +237,7 @@ class trainer:
             wandb.log({"step": step})
             wandb.log({"mean_return": mean_return})
 
-    # deterministic explorative play 
+    # deterministic explorative play
     def _non_explorative_play(self):
         self.env_test.reset()
         # setting up logging lists
