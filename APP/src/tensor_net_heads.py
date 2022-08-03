@@ -1,7 +1,6 @@
 # %%
 # System
 # ML
-from agent import my_model_tensornet
 import jax
 import jax.numpy as jnp
 from jax import random
@@ -12,6 +11,9 @@ import graphviz
 from jax import value_and_grad
 config.update("jax_enable_x64", True)
 
+from jax.example_libraries import stax
+from jax.example_libraries.stax import (BatchNorm, Conv, Dense, Flatten,
+                                   Relu, LogSoftmax)
 
 # value net generalised
 def tensor_scan(embedding_vectors, mps_params):
@@ -38,10 +40,13 @@ def _tensor_step(step, val):
     env = jax.nn.sigmoid(env)
     return env, embedding_vectors, mps_params
 
-def value_function_head(mps_params, embedding_vectors):
+def value_function_head(embedding_vectors, mps_params):
     """Example value function head that returns a value for each agent"""
     value = tensor_scan(embedding_vectors, mps_params)
-    return jnp.tile(value, [len(embedding_vectors),1])
+    return value
+
+def tile_value(value, number_of_agents):
+    return jnp.tile(value, [number_of_agents,1])
 
 def _tensor_step_right_policy(carry, input):
     """Contracts the left-environment onto the mpo_params corresponding
@@ -165,30 +170,6 @@ def policy_head(embedding_vectors, key, policy_weights):
     log_prob_of_action = jnp.sum(jnp.log(chain_rule_probs))
     return log_prob_of_action, (action, key)
 
-# Normilisation step
-def _norm_step(step, val):
-    env, state, mps_params = val
-    env = jnp.tensordot(
-            env, mps_params[:, state[step], :, :], axis=((0), (1))
-        )
-    env = jnp.tensordot(
-            env, mps_params[:, state[step], :, :], axis=((0, 1), (1, 0))
-        )
-    return env, state, mps_params
-
-# Visualise the model
-def test_model_visualisation():
-    batch_input = jax.random.normal(key, (20, 84, 84, 3))
-    dot = hk.experimental.to_dot(model_apply)(
-            model_params, batch_input
-        )
-    try:
-        graphviz.Source(dot).render('/workdir/APP/src/output/model_graph')
-        result = True
-    except Exception:
-        result = False
-    return result
-
 # %%
 # keys
 key = random.PRNGKey(0)
@@ -202,21 +183,8 @@ mps_params = random.normal(key2, (NUM_AGENTS, EMBEDDING_DIM, BOND_DIM, BOND_DIM)
 print(tensor_scan(embedding_vectors, mps_params).shape)
 print(tensor_scan(embedding_vectors, mps_params))
 print(tensor_scan(embedding_vectors, mps_params).mean())
-print(value_function_head(mps_params, embedding_vectors))
+print(value_function_head(embedding_vectors, mps_params))
 # init model
-example_batch = random.normal(key, (20, 84, 84, 3))
-model_init, model_apply = hk.without_apply_rng(
-        hk.transform(my_model_tensornet)
-    )
-model_params = model_init(key, example_batch)
-print(jax.tree_map(lambda x: x.shape, model_params))
-output = model_apply(model_params, example_batch)
-for o in output:
-    print(o.shape)
-x = test_model_visualisation()
-print(x)
-# test normilisation
-
 # %%
 key, subkey = random.split(key)
 policy_weights = random.normal(subkey, (NUM_AGENTS, EMBEDDING_DIM, NUM_ACTIONS, BOND_DIM, BOND_DIM))
@@ -233,5 +201,48 @@ probs_unnormed = _get_prob_vector(SITE_IDX, policy_weights, left_environments, r
 
 log_prob, (action, key) = policy_head(embedding_vectors, key, policy_weights)
 # %%
-# policy_grad = value_and_grad(policy, argnums=2, has_aux=True)
-# value_grad = value_and_grad(value, argnums=1)
+policy_grad = value_and_grad(policy_head, argnums=2, has_aux=True)
+value_grad = value_and_grad(value_function_head, argnums=1)
+# %%
+(log_prob, (action, key)), pol_grad = policy_grad(embedding_vectors, key, policy_weights)
+value, val_grad = value_grad(embedding_vectors, mps_params)
+# %%
+num_classes = 64
+batch_size=1
+
+key = random.PRNGKey(0)
+init_fun, conv_net = stax.serial(Conv(32, (5, 5), (2, 2), padding="SAME"),
+                                 BatchNorm(), Relu,
+                                 Conv(32, (5, 5), (2, 2), padding="SAME"),
+                                 BatchNorm(), Relu,
+                                 Conv(10, (3, 3), (2, 2), padding="SAME"),
+                                 BatchNorm(), Relu,
+                                 Conv(10, (3, 3), (2, 2), padding="SAME"), Relu,
+                                 Flatten,
+                                 Dense(num_classes),
+                                 LogSoftmax)
+_, params = init_fun(key, (batch_size, 1, 84, 84))
+# %%
+def value_all(observation, weights):
+    cnn_params, mps_params = weights
+    cnn_output = conv_net(cnn_params, observation)
+    value_output = value_function_head(cnn_output, mps_params)
+    return value_output
+# %%
+def policy_all(observation, key, weights):
+    cnn_params, mpo_params = weights
+    cnn_output = conv_net(cnn_params, observation)
+    log_prob, (action, key) = policy_head(cnn_output, key, mpo_params)
+    return log_prob, (action, key)
+# %%
+observation = random.normal(key, (NUM_AGENTS, 1, 84, 84))
+value = value_all(observation, [params, mps_params])
+# %%
+value_grad = value_and_grad(value_all, argnums=1)
+value, val_grad = value_grad(observation, [params, mps_params])
+# %%
+key, subkey = random.split(key)
+log_prob, (action, key) = policy_all(observation, key, [params, policy_weights])
+policy_grad = value_and_grad(policy_all, argnums=2, has_aux=True)
+(log_prob, (action, key)), pol_grad = policy_grad(observation, key, [params, policy_weights])
+# %%
