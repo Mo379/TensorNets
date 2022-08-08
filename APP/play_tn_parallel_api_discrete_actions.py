@@ -1,20 +1,27 @@
-# %%
+# system
+import os
+from pathlib import Path
+# ML
 import numpy as np
+import jax
+import jax.numpy as jnp
+import haiku as hk
+# env
 from pettingzoo.butterfly import pistonball_v6
 import supersuit as ss
-from jax.example_libraries import stax
-from jax.example_libraries.stax import \
-        (BatchNorm, Conv, Dense, Flatten, Relu, LogSoftmax)
-from jax import random
-import jax.numpy as jnp
-from jax.config import config
-import matplotlib.pyplot as plt
-from src.tensor_net_heads import policy_head, value_function_head
-config.update("jax_enable_x64", True)
+# logging
+import wandb
+import imageio
+# local
+from src.agent import my_model_tensornet
 
-# %%
-# env = pistonball_v6.env(n_pistons=20)
-env = pistonball_v6.parallel_env(
+
+max_cycles = 125
+
+
+def environment_setup():
+    # setting up the testing and live cases
+    env = pistonball_v6.parallel_env(
         n_pistons=20,
         time_penalty=-0.1,
         continuous=False,
@@ -23,77 +30,77 @@ env = pistonball_v6.parallel_env(
         ball_mass=0.75,
         ball_friction=0.3,
         ball_elasticity=1.5,
-        max_cycles=125
+        max_cycles=max_cycles
     )
-env = ss.color_reduction_v0(env, mode='B')
-env = ss.resize_v1(env, x_size=84, y_size=84)
-observations = env.reset()
-# %%
-num_classes = 64
-batch_size = 1
+    env = ss.color_reduction_v0(env, mode='B')
+    env = ss.resize_v1(env, x_size=84, y_size=84)
+    env = ss.frame_stack_v1(env, stack_size=3)
+    return env
 
-key = random.PRNGKey(0)
-init_fun, conv_net = stax.serial(Conv(32, (5, 5), (2, 2), padding="SAME"),
-                                 BatchNorm(), Relu,
-                                 Conv(32, (5, 5), (2, 2), padding="SAME"),
-                                 BatchNorm(), Relu,
-                                 Conv(10, (3, 3), (2, 2), padding="SAME"),
-                                 BatchNorm(), Relu,
-                                 Conv(10, (3, 3), (2, 2), padding="SAME"),
-                                 Relu, Flatten,
-                                 Dense(num_classes),
-                                 LogSoftmax)
-example_data = (
-            batch_size,
-            1,
-            observations['piston_0'].shape[0],
-            observations['piston_0'].shape[1]
+
+# Initialising the actor
+model = hk.transform(my_model_tensornet)
+rng = jax.random.PRNGKey(0)
+examples = jax.random.normal(rng, (20, 84, 84, 3))
+# getting the save parameters
+root = Path(__file__).resolve().parent
+params = model.init(rng, examples)
+# tracking variable
+track = 1
+
+# main
+if __name__ == '__main__':
+    # setting up tracking run
+    if track == 1:
+        print('----Tracking----')
+        run = wandb.init(
+            dir=os.path.join(root, 'logs/wandb'),
+            project="TensorNets",
+            name="Play_Haiku_tensornet_untrained",
+            entity="mo379",
         )
-_, params = init_fun(key, example_data)
-# %%
-obs = [
-        jnp.array(observation).astype(jnp.float64)
-        for observation in list(observations.values())
-    ]
-obs = jnp.array(obs)
-obs = jnp.reshape(obs, (20, 1, 84, 84))
-# %%
-plt.imshow(observations['piston_0'])
-# %%
-plt.imshow(obs[0, 0, :, :])
-# %%
-cnn_output = conv_net(params, obs)
-# %%
-plt.imshow(cnn_output[:, :])
-# %%
-key, subkey = random.split(key)
-policy_weights = random.normal(subkey, (20, 64, 3, 16, 16))
-key, subkey = random.split(key)
-vf_weights = random.normal(subkey, (20, 64, 4, 4))
-values = value_function_head(vf_weights, cnn_output)
-log_prob, (action, key) = policy_head(cnn_output, key, policy_weights)
-# %%
-observations = env.reset()
-max_cycles = 10
-avg_rewards = []
-for step in range(max_cycles):
-
-    obs = [
-            jnp.array(observation).astype(jnp.float64)
-            for observation in list(observations.values())
-        ]
-    obs = jnp.array(obs)
-    obs = jnp.reshape(obs, (20, 1, 84, 84))
-    cnn_output = conv_net(params, obs)
-
-    key, subkey = random.split(key)
-    values = value_function_head(vf_weights, cnn_output)
-    log_prob, (actions, key) = policy_head(cnn_output, key, policy_weights)
-
-    actions = {
-            agent: int(actions[idx])
-            for idx, agent in zip(list(range(len(actions))), env.agents)
-        }
-    observations, rewards, dones, infos = env.step(actions)
-    avg_rewards.append(np.mean(list(rewards.values())))
-# %%
+    # setting up the environment
+    env = environment_setup()
+    obs = env.reset()
+    # setting up logging lists
+    imgs = []
+    rewards = []
+    # main playing loop (for all agents)
+    dones = jnp.array([0])
+    for cycle in range(max_cycles):
+        print(f'step: {cycle}')
+        obs = [
+                jnp.array(observation).astype(jnp.float64)
+                for observation in list(obs.values())
+            ]
+        obs = jnp.array(obs)
+        actions = model.apply(params, rng, obs)[0]
+        actions = {
+                agent: int(actions[idx]) for idx, agent in zip(list(range(len(actions))),env.agents)
+            }
+        obs, reward, dones, infos = env.step(actions)
+        img = env.render(mode='rgb_array')
+        imgs.append(img)
+        rewards.append(np.mean(list(reward.values())))
+    #
+    env.reset()
+    # logging the run
+    if track == 1:
+        for reward in rewards:
+            # logging reward
+            wandb.log({"rewards": reward})
+        # making video
+        imageio.mimsave(
+                os.path.join(root, 'logs/play_videos/0.gif'),
+                [np.array(img) for i, img in enumerate(imgs)],
+                fps=15
+            )
+        # saving video
+        wandb.log({
+                "video": wandb.Video(
+                        os.path.join(root, 'logs/play_videos/0.gif'),
+                        fps=15,
+                        format='gif'
+                    )
+            })
+        run.finish()

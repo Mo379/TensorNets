@@ -202,14 +202,13 @@ def sweep_to_left_policy(weights, embedding_vectors, left_environments, key):
     return carry, outputs
 
 
-def policy_head(embedding_vectors, key, policy_weights):
+def policy_head(embedding_vectors, key, policy_weights, left_environments):
     """Takes in embedding vectors and samples an action
 
     Args:
         embedding_vectors (_type_): _description_
         key (_type_): _description_
         policy_weights (_type_): _description_
-
     Returns:
         pyTree (tuple): log_probability of the sampled action,
         along with the action and key
@@ -240,7 +239,7 @@ def _norm_step(step, val):
 def test_model_visualisation():
     batch_input = jax.random.normal(key, (20, 84, 84, 3))
     dot = hk.experimental.to_dot(model_apply)(
-            model_params, batch_input
+            model_params, key, batch_input
         )
     try:
         graphviz.Source(dot).render('/workdir/APP/src/output/model_graph')
@@ -268,16 +267,12 @@ print(tensor_scan(embedding_vectors, mps_params).mean())
 print(value_function_head(mps_params, embedding_vectors))
 # init model
 example_batch = random.normal(key, (20, 84, 84, 3))
-model_init, model_apply = hk.without_apply_rng(
-        hk.transform(my_model_tensornet)
-    )
+model_init, model_apply = hk.transform(my_model_tensornet)
 model_params = model_init(key, example_batch)
 print(jax.tree_map(lambda x: x.shape, model_params))
-output = model_apply(model_params, example_batch)
+output = model_apply(model_params, key, example_batch)
 for o in output:
     print(o.shape)
-x = test_model_visualisation()
-print(x)
 # test normilisation
 
 # %%
@@ -289,6 +284,7 @@ policy_weights = random.normal(
 left_environments = calculate_left_environments(
         policy_weights, embedding_vectors
     )
+print(f'left_envs: {left_environments.shape}')
 norm = jnp.trace(left_environments[-1])
 # %%
 SITE_IDX = 19
@@ -297,7 +293,14 @@ right_environment = jnp.identity(policy_weights.shape[3]**2)
 probs_unnormed = _get_prob_vector(
         SITE_IDX, policy_weights, left_environments, right_environment
     )
-log_prob, (action, key) = policy_head(embedding_vectors, key, policy_weights)
+log_prob, (action, key) = policy_head(
+        embedding_vectors,
+        key,
+        policy_weights,
+        left_environments
+    )
+print(log_prob, action, key)
 # %%
 # policy_grad = value_and_grad(policy, argnums=2, has_aux=True)
 # value_grad = value_and_grad(value, argnums=1)
+

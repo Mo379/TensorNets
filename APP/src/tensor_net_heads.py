@@ -1,4 +1,7 @@
 # %%
+# add introduction,rename to deep network in jax,why jax whats the advantage,
+# flexible, deepmind advantages, model structrue
+
 # System
 # ML
 import jax
@@ -252,10 +255,13 @@ embedding_vectors = random.normal(key, (NUM_AGENTS, EMBEDDING_DIM))
 mps_params = random.normal(
         key2, (NUM_AGENTS, EMBEDDING_DIM, BOND_DIM, BOND_DIM)
     )
+print(embedding_vectors.shape)
 print(tensor_scan(embedding_vectors, mps_params).shape)
 print(tensor_scan(embedding_vectors, mps_params))
 print(tensor_scan(embedding_vectors, mps_params).mean())
-print(value_function_head(embedding_vectors, mps_params))
+print('value', value_function_head(embedding_vectors, mps_params))
+print(jax.tree_map(lambda x: x.shape, mps_params))
+print(len(embedding_vectors))
 # init model
 # %%
 key, subkey = random.split(key)
@@ -336,4 +342,5 @@ policy_grad = value_and_grad(policy_all, argnums=2, has_aux=True)
 (log_prob, (action, key)), pol_grad = policy_grad(
         observation, key, [params, policy_weights]
     )
+print(action)
 # %%
